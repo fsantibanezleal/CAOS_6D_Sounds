@@ -5,6 +5,7 @@ import * as THREE from "three";
 
 import { sampleColormap } from "../lib/colormaps";
 import { useStore } from "../store/useStore";
+import { SmokeTrail } from "./SmokeTrail";
 
 /**
  * The 6D visualization.
@@ -101,7 +102,16 @@ function SceneContents() {
         />
       )}
 
-      {embedding && trackValues && (
+      {embedding && trackValues && viz.renderMode === "smoke" && (
+        <SmokeTrail
+          key={"smoke-" + embedding.id + "-" + viz.smokeDensity}
+          values={trackValues.values}
+          numFrames={embedding.num_frames}
+          hopSeconds={embedding.hop_seconds}
+        />
+      )}
+
+      {embedding && trackValues && viz.renderMode === "spheres" && (
         <Trail6D
           key={"primary-" + embedding.id}
           values={trackValues.values}
