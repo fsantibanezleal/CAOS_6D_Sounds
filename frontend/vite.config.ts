@@ -19,6 +19,24 @@ export default defineConfig({
     outDir: "dist",
     emptyOutDir: true,
     sourcemap: false,
-    target: "es2022"
+    target: "es2022",
+    chunkSizeWarningLimit: 800,
+    rollupOptions: {
+      output: {
+        // Split the dependency graph so first paint can ship the React
+        // bundle while Three.js + R3F stream in parallel. Each chunk is
+        // hashed and aggressively cached by nginx (Cache-Control: immutable).
+        manualChunks(id: string) {
+          if (!id.includes("node_modules")) return undefined;
+          if (id.includes("three")) return "three";
+          if (id.includes("@react-three")) return "r3f";
+          if (id.includes("react-i18next") || id.includes("i18next")) return "i18n";
+          if (id.includes("react-dom")) return "react-dom";
+          if (id.includes("react")) return "react";
+          if (id.includes("zustand")) return "zustand";
+          return "vendor";
+        }
+      }
+    }
   }
 });
