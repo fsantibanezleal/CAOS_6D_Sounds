@@ -42,10 +42,20 @@ interface StoreState {
   embedding: ClipEmbedding | null;
   setEmbedding: (e: ClipEmbedding | null) => void;
 
+  comparisonClip: SoundClip | null;
+  setComparisonClip: (clip: SoundClip | null) => void;
+
+  comparisonEmbedding: ClipEmbedding | null;
+  setComparisonEmbedding: (e: ClipEmbedding | null) => void;
+
+  swapWithComparison: () => void;
+
   isPlaying: boolean;
   setIsPlaying: (b: boolean) => void;
   currentTime: number;
   setCurrentTime: (t: number) => void;
+  loopAudio: boolean;
+  setLoopAudio: (b: boolean) => void;
 
   viz: VizConfig;
   setViz: (patch: Partial<VizConfig>) => void;
@@ -94,10 +104,32 @@ export const useStore = create<StoreState>()(
       embedding: null,
       setEmbedding: (e) => set({ embedding: e }),
 
+      comparisonClip: null,
+      setComparisonClip: (clip) =>
+        set({ comparisonClip: clip, comparisonEmbedding: null }),
+
+      comparisonEmbedding: null,
+      setComparisonEmbedding: (e) => set({ comparisonEmbedding: e }),
+
+      swapWithComparison: () => {
+        const s = get();
+        if (!s.comparisonClip) return;
+        set({
+          selectedClip: s.comparisonClip,
+          embedding: s.comparisonEmbedding,
+          comparisonClip: s.selectedClip,
+          comparisonEmbedding: s.embedding,
+          currentTime: 0,
+          isPlaying: false
+        });
+      },
+
       isPlaying: false,
       setIsPlaying: (b) => set({ isPlaying: b }),
       currentTime: 0,
       setCurrentTime: (t) => set({ currentTime: t }),
+      loopAudio: true,
+      setLoopAudio: (b) => set({ loopAudio: b }),
 
       viz: DEFAULT_VIZ,
       setViz: (patch) => set({ viz: { ...get().viz, ...patch } }),
@@ -110,7 +142,11 @@ export const useStore = create<StoreState>()(
     }),
     {
       name: "auralis-state",
-      partialize: (state) => ({ theme: state.theme, viz: state.viz })
+      partialize: (state) => ({
+        theme: state.theme,
+        viz: state.viz,
+        loopAudio: state.loopAudio
+      })
     }
   )
 );

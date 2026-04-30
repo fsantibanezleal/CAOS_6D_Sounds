@@ -21,7 +21,14 @@
     "tags": "Etiquetas",
     "empty": "Aún no hay clips. Ejecuta el data pipeline (ver README) para cargar la biblioteca.",
     "play": "Reproducir",
-    "pause": "Pausar"
+    "pause": "Pausar",
+    "loop": "Repetir el clip cuando termine",
+    "loop_short": "Loop",
+    "compare_add": "Superponer la estela de este clip con el activo",
+    "compare_remove": "Quitar el clip de comparación",
+    "compare_self": "Es el clip activo",
+    "comparing_with": "Comparando con",
+    "swap": "Intercambiar primario y comparación"
   },
   "viz": {
     "title": "Visualización 6D",

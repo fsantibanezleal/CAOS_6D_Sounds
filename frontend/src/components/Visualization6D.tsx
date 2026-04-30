@@ -16,14 +16,15 @@ import { useStore } from "../store/useStore";
  *
  * Implementation notes:
  *
- * - We pre-allocate a single InstancedMesh of N spheres (one per frame in
- *   the loaded clip). Per-frame we update the *visibility window* and the
- *   matrix / color of every active instance. This is dramatically faster
- *   than mounting a Three node per frame.
- * - The trail line is a single Line2 reused across renders.
- * - Axis-mapping changes recompute the position/color/size of every
- *   instance once and then steady-state operations only touch the
- *   visibility window.
+ * - Spheres: a single InstancedMesh of N spheres rendered with a custom
+ *   ShaderMaterial that reads a per-instance RGBA attribute. This gives
+ *   us *real* per-instance transparency (Three.js's stock instanceColor
+ *   is RGB-only).
+ * - Trail line: a single Line mesh with a 4-component (RGBA) color
+ *   attribute and `vertexAlphas` enabled on the lineBasicMaterial, so
+ *   each vertex of the trail can fade out independently.
+ * - Per-frame useFrame writes the active visibility window only (fast
+ *   even at 6 000+ frames).
  */
 
 const AXIS_HALF = 1.5; // world units → embedding values in [0,1] map to [-1.5, 1.5]
@@ -45,6 +46,7 @@ export function Visualization6D() {
 function SceneContents() {
   const viz = useStore((s) => s.viz);
   const embedding = useStore((s) => s.embedding);
+  const comparisonEmbedding = useStore((s) => s.comparisonEmbedding);
   const showAxes = viz.showAxes;
   const showGrid = viz.showGrid;
 
@@ -54,6 +56,13 @@ function SceneContents() {
     if (!tr) return null;
     return tr;
   }, [embedding, viz.trackName]);
+
+  const comparisonTrackValues = useMemo(() => {
+    if (!comparisonEmbedding) return null;
+    const tr = comparisonEmbedding.tracks.find((t) => t.name === viz.trackName);
+    if (!tr) return null;
+    return tr;
+  }, [comparisonEmbedding, viz.trackName]);
 
   return (
     <>
@@ -76,11 +85,23 @@ function SceneContents() {
 
       {showAxes && <AxesGuide />}
 
+      {comparisonEmbedding && comparisonTrackValues && (
+        <Trail6D
+          key={"cmp-" + comparisonEmbedding.id}
+          values={comparisonTrackValues.values}
+          numFrames={comparisonEmbedding.num_frames}
+          hopSeconds={comparisonEmbedding.hop_seconds}
+          mode="silhouette"
+        />
+      )}
+
       {embedding && trackValues && (
         <Trail6D
+          key={"primary-" + embedding.id}
           values={trackValues.values}
           numFrames={embedding.num_frames}
           hopSeconds={embedding.hop_seconds}
+          mode="animated"
         />
       )}
 
@@ -92,6 +113,7 @@ function SceneContents() {
         rotateSpeed={0.7}
         target={[0, 0, 0]}
       />
+      <CameraReset />
     </>
   );
 }
@@ -134,32 +156,80 @@ function Axis({ dir, color }: { dir: [number, number, number]; color: string }) 
   );
 }
 
+// --------------------------------------------------------------------------- //
+// Custom material that reads per-instance RGBA from a custom attribute,       //
+// instead of Three.js's stock RGB-only instanceColor mechanism.               //
+// --------------------------------------------------------------------------- //
+
+const SPHERE_VERT = /* glsl */ `
+  attribute vec4 instanceRgba;
+  varying vec4 vColor;
+  varying vec3 vNormal;
+
+  void main() {
+    vColor = instanceRgba;
+    vec4 mvPosition = modelViewMatrix * instanceMatrix * vec4(position, 1.0);
+    vNormal = normalize(mat3(modelViewMatrix) * mat3(instanceMatrix) * normal);
+    gl_Position = projectionMatrix * mvPosition;
+  }
+`;
+
+const SPHERE_FRAG = /* glsl */ `
+  precision highp float;
+  varying vec4 vColor;
+  varying vec3 vNormal;
+
+  void main() {
+    // Cheap directional shading so the sphere doesn't read flat.
+    vec3 lightDir = normalize(vec3(0.4, 0.7, 0.6));
+    float ndl = max(dot(normalize(vNormal), lightDir), 0.0);
+    float light = 0.55 + 0.45 * ndl;
+    vec3 rgb = vColor.rgb * light;
+    if (vColor.a < 0.005) discard;
+    gl_FragColor = vec4(rgb, vColor.a);
+  }
+`;
+
+function makeSphereMaterial(): THREE.ShaderMaterial {
+  return new THREE.ShaderMaterial({
+    vertexShader: SPHERE_VERT,
+    fragmentShader: SPHERE_FRAG,
+    transparent: true,
+    depthWrite: false
+  });
+}
+
 /**
  * Core 6D trail. Renders an instanced sphere per frame plus a thin line
  * connecting consecutive frames. Each useFrame tick updates the
  * play-position window: instances inside the window are visible with
- * decreasing opacity from front to tail; instances outside are hidden.
+ * decreasing alpha from front to tail; instances outside are hidden.
  */
+type TrailMode = "animated" | "silhouette";
+
 function Trail6D({
   values,
   numFrames,
-  hopSeconds
+  hopSeconds,
+  mode = "animated"
 }: {
   values: number[][];
   numFrames: number;
   hopSeconds: number;
+  mode?: TrailMode;
 }) {
   const viz = useStore((s) => s.viz);
   const currentTime = useStore((s) => s.currentTime);
+  const isSilhouette = mode === "silhouette";
+  const SILHOUETTE_ALPHA = 0.18;
+  const SILHOUETTE_SIZE_SCALE = 0.55;
 
   const meshRef = useRef<THREE.InstancedMesh>(null);
-  const lineRef = useRef<THREE.Line>(null);
   const lineGeomRef = useRef<THREE.BufferGeometry>(null);
-  const lastEdgeColor = useRef<THREE.Color>(new THREE.Color(0.5, 0.5, 0.5));
+  const sphereMaterial = useMemo(() => makeSphereMaterial(), []);
 
-  // Reusable scratch objects to avoid allocations inside useFrame.
+  // Reusable scratch matrix.
   const matrixObj = useMemo(() => new THREE.Object3D(), []);
-  const colorObj = useMemo(() => new THREE.Color(), []);
 
   // Static positions / colors / sizes for every frame.
   // Recomputed when the active track or any axis mapping changes.
@@ -207,6 +277,17 @@ function Trail6D({
     viz.sphereMax
   ]);
 
+  // Allocate per-instance RGBA attribute and per-vertex RGBA line buffer
+  // each time the frame count changes. Both are written every useFrame
+  // tick on the active visibility window.
+  const instanceRgba = useMemo(
+    () => new THREE.InstancedBufferAttribute(new Float32Array(numFrames * 4), 4),
+    [numFrames]
+  );
+  useEffect(() => {
+    instanceRgba.setUsage(THREE.DynamicDrawUsage);
+  }, [instanceRgba]);
+
   // Initialize line geometry once per `numFrames`.
   useEffect(() => {
     const geo = lineGeomRef.current;
@@ -217,16 +298,80 @@ function Trail6D({
     );
     geo.setAttribute(
       "color",
-      new THREE.BufferAttribute(new Float32Array(numFrames * 3), 3)
+      new THREE.BufferAttribute(new Float32Array(numFrames * 4), 4)
     );
     geo.setDrawRange(0, 0);
   }, [numFrames]);
+
+  // Attach the custom RGBA attribute once the InstancedMesh's geometry
+  // is available. Three.js needs `instanceRgba` recognized as an
+  // *instanced* attribute, not a per-vertex one.
+  useEffect(() => {
+    const inst = meshRef.current;
+    if (!inst) return;
+    inst.geometry.setAttribute("instanceRgba", instanceRgba);
+    return () => {
+      inst.geometry.deleteAttribute("instanceRgba");
+    };
+  }, [instanceRgba, numFrames]);
 
   // Per-frame update.
   useFrame(() => {
     const inst = meshRef.current;
     if (!inst) return;
 
+    const rgbaArr = instanceRgba.array as Float32Array;
+    const geo = lineGeomRef.current;
+
+    if (isSilhouette) {
+      // Static "ghost" rendering: every frame is shown, with a constant
+      // low alpha. Useful as a comparison overlay behind the animated
+      // primary clip.
+      for (let i = 0; i < numFrames; i++) {
+        const px = frames.positions[3 * i];
+        const py = frames.positions[3 * i + 1];
+        const pz = frames.positions[3 * i + 2];
+        const s = frames.sizes[i] * SILHOUETTE_SIZE_SCALE;
+        matrixObj.position.set(px, py, pz);
+        matrixObj.scale.setScalar(s);
+        matrixObj.updateMatrix();
+        inst.setMatrixAt(i, matrixObj.matrix);
+        rgbaArr[4 * i] = frames.colors[3 * i];
+        rgbaArr[4 * i + 1] = frames.colors[3 * i + 1];
+        rgbaArr[4 * i + 2] = frames.colors[3 * i + 2];
+        rgbaArr[4 * i + 3] = SILHOUETTE_ALPHA;
+      }
+      inst.instanceMatrix.needsUpdate = true;
+      instanceRgba.needsUpdate = true;
+
+      if (geo && viz.showTrailLine) {
+        const positionAttr = geo.getAttribute("position") as THREE.BufferAttribute;
+        const colorAttr = geo.getAttribute("color") as THREE.BufferAttribute;
+        for (let i = 0; i < numFrames; i++) {
+          positionAttr.setXYZ(
+            i,
+            frames.positions[3 * i],
+            frames.positions[3 * i + 1],
+            frames.positions[3 * i + 2]
+          );
+          colorAttr.setXYZW(
+            i,
+            frames.colors[3 * i],
+            frames.colors[3 * i + 1],
+            frames.colors[3 * i + 2],
+            SILHOUETTE_ALPHA * 0.7
+          );
+        }
+        positionAttr.needsUpdate = true;
+        colorAttr.needsUpdate = true;
+        geo.setDrawRange(0, numFrames);
+      } else if (geo) {
+        geo.setDrawRange(0, 0);
+      }
+      return;
+    }
+
+    // Animated mode: only the active visibility window is drawn.
     const trailFrames = Math.max(
       MIN_TRAIL_FRAMES,
       Math.round(viz.trailSeconds / hopSeconds)
@@ -234,16 +379,13 @@ function Trail6D({
     const cursor = Math.min(numFrames - 1, Math.floor(currentTime / hopSeconds));
     const start = Math.max(0, cursor - trailFrames + 1);
 
-    // Hide everything first by writing identity scale-zero matrices outside
-    // the active range. We only walk the *changing* boundaries so this is
-    // O(trail) per frame, not O(numFrames).
-    let written = 0;
     for (let i = 0; i < numFrames; i++) {
       if (i < start || i > cursor) {
         matrixObj.position.set(0, 0, 0);
         matrixObj.scale.setScalar(0.0001);
         matrixObj.updateMatrix();
         inst.setMatrixAt(i, matrixObj.matrix);
+        rgbaArr[4 * i + 3] = 0;
         continue;
       }
       const px = frames.positions[3 * i];
@@ -255,21 +397,16 @@ function Trail6D({
       matrixObj.updateMatrix();
       inst.setMatrixAt(i, matrixObj.matrix);
 
-      // Per-instance color with fade-to-transparent via lerp toward bg color.
       const age = (cursor - i) / Math.max(1, trailFrames);
       const alpha = 1 - age;
-      const r = frames.colors[3 * i] * alpha;
-      const g = frames.colors[3 * i + 1] * alpha;
-      const b = frames.colors[3 * i + 2] * alpha;
-      colorObj.setRGB(r, g, b);
-      inst.setColorAt(i, colorObj);
-      written++;
+      rgbaArr[4 * i] = frames.colors[3 * i];
+      rgbaArr[4 * i + 1] = frames.colors[3 * i + 1];
+      rgbaArr[4 * i + 2] = frames.colors[3 * i + 2];
+      rgbaArr[4 * i + 3] = alpha;
     }
     inst.instanceMatrix.needsUpdate = true;
-    if (inst.instanceColor) inst.instanceColor.needsUpdate = true;
+    instanceRgba.needsUpdate = true;
 
-    // Update line geometry — same active window.
-    const geo = lineGeomRef.current;
     if (geo && viz.showTrailLine) {
       const positionAttr = geo.getAttribute("position") as THREE.BufferAttribute;
       const colorAttr = geo.getAttribute("color") as THREE.BufferAttribute;
@@ -283,45 +420,46 @@ function Trail6D({
         );
         const age = (cursor - i) / Math.max(1, trailFrames);
         const alpha = 1 - age;
-        colorAttr.setXYZ(
+        colorAttr.setXYZW(
           drawCount,
-          frames.colors[3 * i] * alpha,
-          frames.colors[3 * i + 1] * alpha,
-          frames.colors[3 * i + 2] * alpha
+          frames.colors[3 * i],
+          frames.colors[3 * i + 1],
+          frames.colors[3 * i + 2],
+          alpha
         );
         drawCount++;
       }
       positionAttr.needsUpdate = true;
       colorAttr.needsUpdate = true;
       geo.setDrawRange(0, drawCount);
-
-      lastEdgeColor.current.setRGB(
-        frames.colors[3 * cursor],
-        frames.colors[3 * cursor + 1],
-        frames.colors[3 * cursor + 2]
-      );
     } else if (geo) {
       geo.setDrawRange(0, 0);
     }
-
-    void written; // no-op, but keeps tslint happy if "noUnusedLocals" enabled
   });
 
   return (
     <group>
       <instancedMesh
         ref={meshRef as any}
-        args={[undefined as any, undefined as any, numFrames]}
+        args={[undefined as any, sphereMaterial as any, numFrames]}
         frustumCulled={false}
       >
         <sphereGeometry args={[1, 16, 16]} />
-        <meshStandardMaterial vertexColors transparent opacity={1} roughness={0.4} />
       </instancedMesh>
 
       {viz.showTrailLine && (
-        <line ref={lineRef as any}>
+        <line>
           <bufferGeometry ref={lineGeomRef as any} />
-          <lineBasicMaterial vertexColors transparent />
+          {/* 4-component vertex colors + vertexAlphas = real per-vertex alpha.
+              `vertexAlphas` is not declared on R3F's typed LineBasicMaterial
+              props, so we set it via the spread cast — Three.js reads it at
+              runtime from material.vertexAlphas. */}
+          <lineBasicMaterial
+            vertexColors
+            transparent
+            depthWrite={false}
+            {...({ vertexAlphas: true } as any)}
+          />
         </line>
       )}
     </group>

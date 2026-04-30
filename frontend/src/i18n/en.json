@@ -21,7 +21,14 @@
     "tags": "Tags",
     "empty": "No clips loaded yet. Run the data pipeline (see README) to seed the library.",
     "play": "Play",
-    "pause": "Pause"
+    "pause": "Pause",
+    "loop": "Loop the clip when it ends",
+    "loop_short": "Loop",
+    "compare_add": "Overlay this clip's trail behind the active one",
+    "compare_remove": "Remove the comparison clip",
+    "compare_self": "This is the active clip",
+    "comparing_with": "Comparing with",
+    "swap": "Swap primary and comparison"
   },
   "viz": {
     "title": "6D visualization",
