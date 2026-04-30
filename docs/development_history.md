@@ -3,6 +3,59 @@
 Newest-first log of the design decisions that shaped Auralis. Each entry
 records what changed, why, and the alternative we considered.
 
+## v0.2.0 — library + UX expansion (2026-04-30)
+
+**Library tripled.** Curation list grew from ~17 verified Wikimedia
+entries to ~50, organized by category + new subcategory tag. Each clip
+ships with a sidecar ``<id>.meta.json`` that the manifest builder reads
+back. Total uncompressed audio ≈ 100 MB, every individual clip ≤ 24 MB.
+
+**Selector redesign.** The flat list under "Sound library" was
+unworkable past ~15 clips. New layout:
+
+* Collapsible categories (▶ / ▼ caret) with per-category counts.
+* Subcategory groups inside each category (e.g. birds → songbirds /
+  raptors / waterfowl).
+* Search expands all matching categories automatically.
+* Sort by title or duration.
+* "Expand all" / "Collapse all" toolbar.
+* License badge per clip (CC, PD, ...).
+
+**More features.** Per-frame roster grew from 12 to 18:
+
+* spectral entropy
+* energy in 4 octave-spaced sub-bands (low / mid-low / mid-high / high)
+* harmonic-percussive ratio (via librosa HPSS)
+
+Plus two new clip-level scalars:
+
+* tempo (BPM, librosa estimator on onset envelope)
+* key (Krumhansl–Schmuckler estimator on mean chroma — pitch class + mode)
+
+The frontend's live-features panel now shows tempo + key alongside the
+per-frame readouts.
+
+**Snapshot export.** A single button on the control panel calls
+``canvas.toBlob()`` to download the current 6D viz frame as a timestamped
+PNG. Required ``preserveDrawingBuffer:true`` on the WebGL context — without
+it the buffer is cleared after compositing and the export is blank.
+
+**Schema bump.** Per-clip embedding JSON now carries a ``clip_level``
+object (tempo + key). Manifest schema gains ``subcategory`` per clip.
+Both fields are optional in the frontend types so older manifests still
+parse.
+
+## v0.1.x — post-launch sweep (2026-04)
+
+See PRs #2..#9. Highlights:
+- #2 instance colors render black bug (vertexColors flag)
+- #3 audio loop default + real per-instance/vertex transparency
+- #4 production bundle split via Rollup manualChunks
+- #5 cross-clip overlay (silhouette comparison)
+- #7 CREPE-based pitch tracker (optional, 440 Hz on pure-tone validated)
+- #8 YAMNet deep embeddings (4th 6D track via TF Hub; replaced OpenL3
+  which is incompatible with Python 3.12)
+
 ## v0.1.0 — initial public release (2026-04)
 
 **Scope.** Working FastAPI backend, React/Three.js SPA, Python data

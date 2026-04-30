@@ -73,8 +73,52 @@ spectrum. For frame `i` we keep the bin index with the largest magnitude as
 
 * **Onset strength** — half-rectified spectral flux summed across bands.
 * **Tempo proxy** — rolling standard deviation of onset strength over an
-  8-frame window. Coarse but cheap rhythmic indicator without committing
-  to a global BPM.
+  8-frame window. Coarse but cheap per-frame rhythmic indicator.
+* **Tempo BPM (clip-level)** — global tempo estimate via
+  ``librosa.feature.tempo`` on the onset envelope. One number per clip.
+
+### 1.6 Spectral entropy
+
+The Shannon entropy of the per-frame normalized magnitude spectrum:
+
+$$
+H_i = -\sum_{k} \tilde{S}_i[k] \log_2 \tilde{S}_i[k], \quad \tilde{S}_i[k] = \frac{S_i[k]^2}{\sum_j S_i[j]^2}
+$$
+
+normalized by `log2(K)` to live in `[0, 1]`. Tonal frames have low
+entropy (energy concentrated in a few bins); noise-like frames approach
+1.
+
+### 1.7 Sub-band energies
+
+Per-frame RMS energy in four octave-spaced bands:
+
+* Low (0–250 Hz)
+* Mid-low (250–1000 Hz)
+* Mid-high (1–4 kHz)
+* High (4 kHz – Nyquist)
+
+Useful when you want axes that map to "bass-iness" or "brightness" in a
+way that is robust to overall volume changes.
+
+### 1.8 Harmonic-percussive ratio
+
+Computed via librosa's HPSS decomposition. Per-frame:
+
+$$
+r_i = \frac{\sum_k H_i[k]^2}{\sum_k H_i[k]^2 + \sum_k P_i[k]^2}
+$$
+
+where `H` is the harmonic component and `P` the percussive component of
+the STFT. Tonal music sits near 1; transient / noisy content near 0.
+
+### 1.9 Key (clip-level)
+
+Clip-level musical key estimation using the
+**Krumhansl–Schmuckler key-finding algorithm**: the mean chroma vector
+across the clip is correlated with each rotated copy of the standard
+major and minor profiles, and the highest correlation wins. Output:
+``(pitch_class ∈ 0..11, mode ∈ {minor, major})``.
 
 ### 1.5 MFCCs
 

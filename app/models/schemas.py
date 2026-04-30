@@ -41,6 +41,10 @@ class SoundClip(BaseModel):
     title_en: str
     title_es: str
     category: str
+    subcategory: str = Field(
+        default="",
+        description="Finer grouping inside the category (e.g. 'songbirds')",
+    )
     duration_seconds: float
     sample_rate: int
     audio_path: str = Field(

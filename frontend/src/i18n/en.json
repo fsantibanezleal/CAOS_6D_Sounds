@@ -13,13 +13,13 @@
   },
   "library": {
     "title": "Sound library",
-    "search": "Search clips...",
+    "search": "Search clips, tags, categories...",
     "all": "All categories",
     "duration": "Duration",
     "license": "License",
     "source": "Source",
     "tags": "Tags",
-    "empty": "No clips loaded yet. Run the data pipeline (see README) to seed the library.",
+    "empty": "No clips match the current filter.",
     "play": "Play",
     "pause": "Pause",
     "loop": "Loop the clip when it ends",
@@ -28,7 +28,14 @@
     "compare_remove": "Remove the comparison clip",
     "compare_self": "This is the active clip",
     "comparing_with": "Comparing with",
-    "swap": "Swap primary and comparison"
+    "swap": "Swap primary and comparison",
+    "sort_by": "Sort by",
+    "sort_title": "Title",
+    "sort_duration": "Duration",
+    "expand_all": "Expand all categories",
+    "collapse_all": "Collapse all categories",
+    "expand_short": "Expand all",
+    "collapse_short": "Collapse all"
   },
   "viz": {
     "title": "6D visualization",
@@ -56,7 +63,9 @@
     "live_features": "Live features",
     "feature_rms": "RMS energy",
     "feature_centroid": "Spectral centroid",
-    "feature_pitch": "Dominant pitch"
+    "feature_pitch": "Dominant pitch",
+    "feature_tempo": "Tempo (clip)",
+    "feature_key": "Key (clip)"
   },
   "help": {
     "title": "How to use Auralis",

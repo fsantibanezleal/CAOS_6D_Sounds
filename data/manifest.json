@@ -1,6 +1,6 @@
 {
   "version": "0.1.0",
-  "generated_at": "2026-04-30T10:22:31Z",
+  "generated_at": "2026-04-30T11:51:52Z",
   "feature_names": [
     "rms",
     "zero_crossing_rate",
@@ -9,10 +9,16 @@
     "spectral_bandwidth",
     "spectral_flatness",
     "spectral_contrast_mean",
+    "spectral_entropy",
+    "energy_low",
+    "energy_mid_low",
+    "energy_mid_high",
+    "energy_high",
     "dominant_pitch",
     "pitch_confidence",
-    "tempo_proxy",
     "chroma_dominant",
+    "harmonic_ratio",
+    "tempo_proxy",
     "onset_strength"
   ],
   "embedding_methods": [
@@ -25,9 +31,9 @@
     {
       "id": "synthetic",
       "name_en": "Synthetic",
-      "name_es": "Sint\u00e9ticos",
+      "name_es": "Sintéticos",
       "description_en": "Algorithmically generated calibration sounds",
-      "description_es": "Sonidos de calibraci\u00f3n generados por algoritmo",
+      "description_es": "Sonidos de calibración generados por algoritmo",
       "icon": "WAVE"
     },
     {
@@ -41,10 +47,18 @@
     {
       "id": "mammals",
       "name_en": "Mammals",
-      "name_es": "Mam\u00edferos",
+      "name_es": "Mamíferos",
       "description_en": "Calls and vocalisations of mammals",
-      "description_es": "Llamados y vocalizaciones de mam\u00edferos",
+      "description_es": "Llamados y vocalizaciones de mamíferos",
       "icon": "PAW"
+    },
+    {
+      "id": "amphibians_reptiles",
+      "name_en": "Amphibians and reptiles",
+      "name_es": "Anfibios y reptiles",
+      "description_en": "Frogs, toads, and reptile vocalisations",
+      "description_es": "Vocalizaciones de ranas, sapos y reptiles",
+      "icon": "FROG"
     },
     {
       "id": "insects",
@@ -67,34 +81,240 @@
       "name_en": "Famous speeches",
       "name_es": "Discursos famosos",
       "description_en": "Public-domain historical speeches",
-      "description_es": "Discursos hist\u00f3ricos en dominio p\u00fablico",
+      "description_es": "Discursos históricos en dominio público",
       "icon": "SPEAK"
+    },
+    {
+      "id": "music",
+      "name_en": "Music",
+      "name_es": "Música",
+      "description_en": "Public-domain or CC-licensed musical pieces",
+      "description_es": "Obras musicales en dominio público o con licencia CC",
+      "icon": "MUSIC"
+    },
+    {
+      "id": "space",
+      "name_en": "Space",
+      "name_es": "Espacio",
+      "description_en": "NASA recordings and space-related public-domain audio",
+      "description_es": "Grabaciones de NASA y audio espacial en dominio público",
+      "icon": "STAR"
     },
     {
       "id": "mechanical",
       "name_en": "Mechanical",
-      "name_es": "Mec\u00e1nicos",
+      "name_es": "Mecánicos",
       "description_en": "Machines, engines, vehicles, industrial sounds",
-      "description_es": "M\u00e1quinas, motores, veh\u00edculos, sonidos industriales",
+      "description_es": "Máquinas, motores, vehículos, sonidos industriales",
       "icon": "GEAR"
     }
   ],
   "clips": [
     {
+      "id": "amphibian-common-toad",
+      "title_en": "Common toad (Bufo bufo) call",
+      "title_es": "Llamado del sapo común",
+      "category": "amphibians_reptiles",
+      "subcategory": "toads",
+      "duration_seconds": 53.619,
+      "sample_rate": 22050,
+      "audio_path": "sounds/amphibians_reptiles/amphibian-common-toad.ogg",
+      "embedding_path": "embeddings/amphibian-common-toad.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "toad"
+      ]
+    },
+    {
+      "id": "amphibian-frog-chorus",
+      "title_en": "Night chorus of frogs and toads",
+      "title_es": "Coro nocturno de ranas y sapos",
+      "category": "amphibians_reptiles",
+      "subcategory": "ambient",
+      "duration_seconds": 26.389,
+      "sample_rate": 22050,
+      "audio_path": "sounds/amphibians_reptiles/amphibian-frog-chorus.ogg",
+      "embedding_path": "embeddings/amphibian-frog-chorus.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "frog",
+        "toad",
+        "ambient"
+      ]
+    },
+    {
+      "id": "amphibian-tree-frog-hyla",
+      "title_en": "European tree frog (Hyla arborea) call",
+      "title_es": "Llamado de la rana de San Antonio (Hyla arborea)",
+      "category": "amphibians_reptiles",
+      "subcategory": "frogs",
+      "duration_seconds": 51.973,
+      "sample_rate": 22050,
+      "audio_path": "sounds/amphibians_reptiles/amphibian-tree-frog-hyla.ogg",
+      "embedding_path": "embeddings/amphibian-tree-frog-hyla.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "frog"
+      ]
+    },
+    {
+      "id": "reptile-alligator",
+      "title_en": "American alligator bellow",
+      "title_es": "Bramido de aligátor americano",
+      "category": "amphibians_reptiles",
+      "subcategory": "reptiles",
+      "duration_seconds": 23.624,
+      "sample_rate": 22050,
+      "audio_path": "sounds/amphibians_reptiles/reptile-alligator.ogg",
+      "embedding_path": "embeddings/reptile-alligator.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "reptile"
+      ]
+    },
+    {
       "id": "bird-american-robin",
       "title_en": "American Robin (Turdus migratorius) song",
-      "title_es": "Canto del zorzal rob\u00edn (Turdus migratorius)",
+      "title_es": "Canto del zorzal robín (Turdus migratorius)",
       "category": "birds",
+      "subcategory": "songbirds",
       "duration_seconds": 154.392,
       "sample_rate": 22050,
       "audio_path": "sounds/birds/bird-american-robin.ogg",
       "embedding_path": "embeddings/bird-american-robin.json",
       "source": "Wikimedia Commons / Xeno-canto",
       "license": "CC-BY-NC-SA-3.0",
-      "attribution": "Xeno-canto contributor \u2014 see file page on Wikimedia Commons",
+      "attribution": "Xeno-canto contributor — see file page on Wikimedia Commons",
       "tags": [
         "bird",
         "songbird"
+      ]
+    },
+    {
+      "id": "bird-blackbird",
+      "title_en": "Common Blackbird (Turdus merula) song",
+      "title_es": "Canto del mirlo común (Turdus merula)",
+      "category": "birds",
+      "subcategory": "songbirds",
+      "duration_seconds": 70.049,
+      "sample_rate": 22050,
+      "audio_path": "sounds/birds/bird-blackbird.ogg",
+      "embedding_path": "embeddings/bird-blackbird.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "songbird"
+      ]
+    },
+    {
+      "id": "bird-cuckoo",
+      "title_en": "Cuckoo singing on a tree",
+      "title_es": "Cuco cantando en un árbol",
+      "category": "birds",
+      "subcategory": "songbirds",
+      "duration_seconds": 29.536,
+      "sample_rate": 22050,
+      "audio_path": "sounds/birds/bird-cuckoo.ogg",
+      "embedding_path": "embeddings/bird-cuckoo.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "cuckoo"
+      ]
+    },
+    {
+      "id": "bird-house-sparrow",
+      "title_en": "House Sparrow chirping",
+      "title_es": "Gorrión común piando",
+      "category": "birds",
+      "subcategory": "songbirds",
+      "duration_seconds": 9.609,
+      "sample_rate": 22050,
+      "audio_path": "sounds/birds/bird-house-sparrow.ogg",
+      "embedding_path": "embeddings/bird-house-sparrow.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "songbird"
+      ]
+    },
+    {
+      "id": "bird-kingfisher",
+      "title_en": "Belted Kingfisher call",
+      "title_es": "Llamado del martín pescador norteño",
+      "category": "birds",
+      "subcategory": "waterfowl",
+      "duration_seconds": 35.16,
+      "sample_rate": 22050,
+      "audio_path": "sounds/birds/bird-kingfisher.ogg",
+      "embedding_path": "embeddings/bird-kingfisher.json",
+      "source": "Wikimedia Commons / Xeno-canto",
+      "license": "CC-BY-NC-SA-3.0",
+      "attribution": "Xeno-canto contributor",
+      "tags": [
+        "water"
+      ]
+    },
+    {
+      "id": "bird-kookaburra",
+      "title_en": "Laughing Kookaburra call",
+      "title_es": "Llamado del kookaburra",
+      "category": "birds",
+      "subcategory": "tropical",
+      "duration_seconds": 45.493,
+      "sample_rate": 22050,
+      "audio_path": "sounds/birds/bird-kookaburra.ogg",
+      "embedding_path": "embeddings/bird-kookaburra.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "kookaburra"
+      ]
+    },
+    {
+      "id": "bird-magpie-robin",
+      "title_en": "Oriental Magpie-Robin song",
+      "title_es": "Canto del shama oriental",
+      "category": "birds",
+      "subcategory": "songbirds",
+      "duration_seconds": 80.833,
+      "sample_rate": 22050,
+      "audio_path": "sounds/birds/bird-magpie-robin.ogg",
+      "embedding_path": "embeddings/bird-magpie-robin.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "songbird"
+      ]
+    },
+    {
+      "id": "bird-peacock",
+      "title_en": "Peacock call (Pavo cristatus)",
+      "title_es": "Llamado de pavo real (Pavo cristatus)",
+      "category": "birds",
+      "subcategory": "tropical",
+      "duration_seconds": 8.759,
+      "sample_rate": 22050,
+      "audio_path": "sounds/birds/bird-peacock.ogg",
+      "embedding_path": "embeddings/bird-peacock.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "tropical"
       ]
     },
     {
@@ -102,6 +322,7 @@
       "title_en": "Rooster crowing",
       "title_es": "Canto de gallo",
       "category": "birds",
+      "subcategory": "domestic",
       "duration_seconds": 3.841,
       "sample_rate": 22050,
       "audio_path": "sounds/birds/bird-rooster.ogg",
@@ -117,8 +338,9 @@
     {
       "id": "bird-tawny-owl",
       "title_en": "Tawny owl (Strix aluco) call",
-      "title_es": "Llamado del c\u00e1rabo com\u00fan (Strix aluco)",
+      "title_es": "Llamado del cárabo común (Strix aluco)",
       "category": "birds",
+      "subcategory": "raptors",
       "duration_seconds": 8.261,
       "sample_rate": 22050,
       "audio_path": "sounds/birds/bird-tawny-owl.oga",
@@ -135,8 +357,9 @@
     {
       "id": "bird-toco-toucan",
       "title_en": "Toco Toucan call",
-      "title_es": "Llamado del tuc\u00e1n toco",
+      "title_es": "Llamado del tucán toco",
       "category": "birds",
+      "subcategory": "tropical",
       "duration_seconds": 10.637,
       "sample_rate": 22050,
       "audio_path": "sounds/birds/bird-toco-toucan.ogg",
@@ -150,10 +373,47 @@
       ]
     },
     {
+      "id": "bird-woodpecker",
+      "title_en": "Great Spotted Woodpecker drumming",
+      "title_es": "Pico picapinos tamborileando",
+      "category": "birds",
+      "subcategory": "woodpeckers",
+      "duration_seconds": 5.652,
+      "sample_rate": 22050,
+      "audio_path": "sounds/birds/bird-woodpecker.ogg",
+      "embedding_path": "embeddings/bird-woodpecker.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "woodpecker",
+        "percussive"
+      ]
+    },
+    {
+      "id": "insect-cicada-chorus",
+      "title_en": "Chorus of cicadas",
+      "title_es": "Coro de cigarras",
+      "category": "insects",
+      "subcategory": "hemiptera",
+      "duration_seconds": 23.527,
+      "sample_rate": 22050,
+      "audio_path": "sounds/insects/insect-cicada-chorus.ogg",
+      "embedding_path": "embeddings/insect-cicada-chorus.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "cicada",
+        "ambient"
+      ]
+    },
+    {
       "id": "insect-cicada",
       "title_en": "Cicada (Cicada orni) singing",
       "title_es": "Canto de cigarra (Cicada orni)",
       "category": "insects",
+      "subcategory": "hemiptera",
       "duration_seconds": 28.841,
       "sample_rate": 22050,
       "audio_path": "sounds/insects/insect-cicada.ogg",
@@ -170,6 +430,7 @@
       "title_en": "Field cricket chirping",
       "title_es": "Chirrido de grillo de campo",
       "category": "insects",
+      "subcategory": "orthoptera",
       "duration_seconds": 10.453,
       "sample_rate": 22050,
       "audio_path": "sounds/insects/insect-cricket.ogg",
@@ -183,10 +444,46 @@
       ]
     },
     {
+      "id": "mammal-bat-echolocation",
+      "title_en": "Bat echolocation calls",
+      "title_es": "Ecolocalización de murciélagos",
+      "category": "mammals",
+      "subcategory": "wild",
+      "duration_seconds": 55.405,
+      "sample_rate": 22050,
+      "audio_path": "sounds/mammals/mammal-bat-echolocation.ogg",
+      "embedding_path": "embeddings/mammal-bat-echolocation.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-3.0",
+      "attribution": "Yannick Dauby (CC-BY)",
+      "tags": [
+        "wild",
+        "ultrasonic"
+      ]
+    },
+    {
+      "id": "mammal-bear-growl",
+      "title_en": "Bear growling",
+      "title_es": "Gruñido de oso",
+      "category": "mammals",
+      "subcategory": "wild",
+      "duration_seconds": 9.93,
+      "sample_rate": 22050,
+      "audio_path": "sounds/mammals/mammal-bear-growl.ogg",
+      "embedding_path": "embeddings/mammal-bear-growl.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "wild"
+      ]
+    },
+    {
       "id": "mammal-cat-meow",
       "title_en": "Domestic cat meow",
-      "title_es": "Maullido de gato dom\u00e9stico",
+      "title_es": "Maullido de gato doméstico",
       "category": "mammals",
+      "subcategory": "domestic",
       "duration_seconds": 0.779,
       "sample_rate": 22050,
       "audio_path": "sounds/mammals/mammal-cat-meow.ogg",
@@ -204,6 +501,7 @@
       "title_en": "Cow mooing",
       "title_es": "Mugido de vaca",
       "category": "mammals",
+      "subcategory": "livestock",
       "duration_seconds": 3.768,
       "sample_rate": 22050,
       "audio_path": "sounds/mammals/mammal-cow-moo.ogg",
@@ -217,10 +515,28 @@
       ]
     },
     {
+      "id": "mammal-deer-call",
+      "title_en": "Red deer roaring (rut)",
+      "title_es": "Berreo del ciervo común",
+      "category": "mammals",
+      "subcategory": "wild",
+      "duration_seconds": 7.04,
+      "sample_rate": 22050,
+      "audio_path": "sounds/mammals/mammal-deer-call.ogg",
+      "embedding_path": "embeddings/mammal-deer-call.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "wild"
+      ]
+    },
+    {
       "id": "mammal-dog-bark",
       "title_en": "Dog barking",
       "title_es": "Ladrido de perro",
       "category": "mammals",
+      "subcategory": "domestic",
       "duration_seconds": 2.61,
       "sample_rate": 22050,
       "audio_path": "sounds/mammals/mammal-dog-bark.ogg",
@@ -234,10 +550,28 @@
       ]
     },
     {
+      "id": "mammal-elephant-trumpet",
+      "title_en": "Elephant trumpeting",
+      "title_es": "Barrito de elefante",
+      "category": "mammals",
+      "subcategory": "wild",
+      "duration_seconds": 1.44,
+      "sample_rate": 22050,
+      "audio_path": "sounds/mammals/mammal-elephant-trumpet.ogg",
+      "embedding_path": "embeddings/mammal-elephant-trumpet.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "wild"
+      ]
+    },
+    {
       "id": "mammal-horse-neigh",
       "title_en": "Horse neighing",
       "title_es": "Relincho de caballo",
       "category": "mammals",
+      "subcategory": "livestock",
       "duration_seconds": 2.273,
       "sample_rate": 22050,
       "audio_path": "sounds/mammals/mammal-horse-neigh.ogg",
@@ -250,10 +584,80 @@
       ]
     },
     {
+      "id": "mammal-howler-monkey",
+      "title_en": "Mantled Howler Monkey call",
+      "title_es": "Aullido del mono aullador negro",
+      "category": "mammals",
+      "subcategory": "primates",
+      "duration_seconds": 58.539,
+      "sample_rate": 22050,
+      "audio_path": "sounds/mammals/mammal-howler-monkey.ogg",
+      "embedding_path": "embeddings/mammal-howler-monkey.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "primate"
+      ]
+    },
+    {
+      "id": "mammal-humpback-whale",
+      "title_en": "Humpback whale song",
+      "title_es": "Canto de ballena jorobada",
+      "category": "mammals",
+      "subcategory": "marine",
+      "duration_seconds": 55.381,
+      "sample_rate": 22050,
+      "audio_path": "sounds/mammals/mammal-humpback-whale.oga",
+      "embedding_path": "embeddings/mammal-humpback-whale.json",
+      "source": "Wikimedia Commons / PLOS",
+      "license": "CC-BY-4.0",
+      "attribution": "From a PLOS ONE supplement (CC-BY)",
+      "tags": [
+        "marine",
+        "cetacean"
+      ]
+    },
+    {
+      "id": "mammal-pig-grunt",
+      "title_en": "Pig grunting",
+      "title_es": "Gruñido de cerdo",
+      "category": "mammals",
+      "subcategory": "livestock",
+      "duration_seconds": 0.655,
+      "sample_rate": 22050,
+      "audio_path": "sounds/mammals/mammal-pig-grunt.ogg",
+      "embedding_path": "embeddings/mammal-pig-grunt.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "livestock"
+      ]
+    },
+    {
+      "id": "mammal-sheep-bleat",
+      "title_en": "Sheep bleating",
+      "title_es": "Balido de oveja",
+      "category": "mammals",
+      "subcategory": "livestock",
+      "duration_seconds": 8.186,
+      "sample_rate": 22050,
+      "audio_path": "sounds/mammals/mammal-sheep-bleat.ogg",
+      "embedding_path": "embeddings/mammal-sheep-bleat.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "livestock"
+      ]
+    },
+    {
       "id": "mammal-wolf-howl",
       "title_en": "Wolf howls",
       "title_es": "Aullido de lobo",
       "category": "mammals",
+      "subcategory": "canids",
       "duration_seconds": 28.32,
       "sample_rate": 22050,
       "audio_path": "sounds/mammals/mammal-wolf-howl.ogg",
@@ -266,10 +670,83 @@
       ]
     },
     {
+      "id": "mechanical-car-horn-doppler",
+      "title_en": "Car horn (Doppler effect)",
+      "title_es": "Bocina de auto (efecto Doppler)",
+      "category": "mechanical",
+      "subcategory": "vehicles",
+      "duration_seconds": 2.038,
+      "sample_rate": 22050,
+      "audio_path": "sounds/mechanical/mechanical-car-horn-doppler.ogg",
+      "embedding_path": "embeddings/mechanical-car-horn-doppler.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "car",
+        "doppler"
+      ]
+    },
+    {
+      "id": "mechanical-doorbell-ding-dong",
+      "title_en": "Doorbell ding-dong",
+      "title_es": "Timbre ding-dong",
+      "category": "mechanical",
+      "subcategory": "household",
+      "duration_seconds": 10.621,
+      "sample_rate": 22050,
+      "audio_path": "sounds/mechanical/mechanical-doorbell-ding-dong.ogg",
+      "embedding_path": "embeddings/mechanical-doorbell-ding-dong.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "doorbell",
+        "household"
+      ]
+    },
+    {
+      "id": "mechanical-grandfather-clock",
+      "title_en": "Grandfather clock ticking",
+      "title_es": "Reloj de pie haciendo tic-tac",
+      "category": "mechanical",
+      "subcategory": "clocks",
+      "duration_seconds": 60.944,
+      "sample_rate": 22050,
+      "audio_path": "sounds/mechanical/mechanical-grandfather-clock.ogg",
+      "embedding_path": "embeddings/mechanical-grandfather-clock.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "clock",
+        "ticking"
+      ]
+    },
+    {
+      "id": "mechanical-lawnmower",
+      "title_en": "Lawnmower",
+      "title_es": "Cortacésped",
+      "category": "mechanical",
+      "subcategory": "vehicles",
+      "duration_seconds": 67.854,
+      "sample_rate": 22050,
+      "audio_path": "sounds/mechanical/mechanical-lawnmower.ogg",
+      "embedding_path": "embeddings/mechanical-lawnmower.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "engine",
+        "garden"
+      ]
+    },
+    {
       "id": "mechanical-steam-whistle",
       "title_en": "Steam train whistle",
       "title_es": "Silbato de tren a vapor",
       "category": "mechanical",
+      "subcategory": "trains",
       "duration_seconds": 11.019,
       "sample_rate": 22050,
       "audio_path": "sounds/mechanical/mechanical-steam-whistle.ogg",
@@ -287,6 +764,7 @@
       "title_en": "Steam locomotive sound",
       "title_es": "Sonido de locomotora a vapor",
       "category": "mechanical",
+      "subcategory": "trains",
       "duration_seconds": 3.411,
       "sample_rate": 22050,
       "audio_path": "sounds/mechanical/mechanical-train-engine.ogg",
@@ -301,10 +779,250 @@
       ]
     },
     {
+      "id": "mechanical-typewriter",
+      "title_en": "Typewriter",
+      "title_es": "Máquina de escribir",
+      "category": "mechanical",
+      "subcategory": "office",
+      "duration_seconds": 25.898,
+      "sample_rate": 22050,
+      "audio_path": "sounds/mechanical/mechanical-typewriter.ogg",
+      "embedding_path": "embeddings/mechanical-typewriter.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "typewriter",
+        "office"
+      ]
+    },
+    {
+      "id": "music-bach-cello-prelude",
+      "title_en": "Bach — Cello Suite No.1 (Prelude)",
+      "title_es": "Bach — Suite para violonchelo Nº1 (Preludio)",
+      "category": "music",
+      "subcategory": "classical",
+      "duration_seconds": 130.273,
+      "sample_rate": 22050,
+      "audio_path": "sounds/music/music-bach-cello-prelude.ogg",
+      "embedding_path": "embeddings/music-bach-cello-prelude.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "John Michel cello (CC-BY-SA)",
+      "tags": [
+        "classical",
+        "cello",
+        "baroque"
+      ]
+    },
+    {
+      "id": "music-bach-violin-allemanda",
+      "title_en": "Bach — Partita No.2 (Allemanda)",
+      "title_es": "Bach — Partita Nº2 (Allemanda)",
+      "category": "music",
+      "subcategory": "classical",
+      "duration_seconds": 134.972,
+      "sample_rate": 22050,
+      "audio_path": "sounds/music/music-bach-violin-allemanda.ogg",
+      "embedding_path": "embeddings/music-bach-violin-allemanda.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "classical",
+        "violin",
+        "baroque"
+      ]
+    },
+    {
+      "id": "music-darkies-dream-banjo",
+      "title_en": "Banjo — The Darkies Dream (1898, public domain)",
+      "title_es": "Banjo — The Darkies Dream (1898, dominio público)",
+      "category": "music",
+      "subcategory": "vintage",
+      "duration_seconds": 144.51,
+      "sample_rate": 22050,
+      "audio_path": "sounds/music/music-darkies-dream-banjo.ogg",
+      "embedding_path": "embeddings/music-darkies-dream-banjo.json",
+      "source": "Wikimedia Commons",
+      "license": "Public Domain",
+      "attribution": "1898 recording (public domain)",
+      "tags": [
+        "banjo",
+        "vintage",
+        "ragtime"
+      ]
+    },
+    {
+      "id": "music-didgeridoo",
+      "title_en": "Didgeridoo solo",
+      "title_es": "Solo de didgeridoo",
+      "category": "music",
+      "subcategory": "world",
+      "duration_seconds": 38.127,
+      "sample_rate": 22050,
+      "audio_path": "sounds/music/music-didgeridoo.ogg",
+      "embedding_path": "embeddings/music-didgeridoo.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "world",
+        "drone"
+      ]
+    },
+    {
+      "id": "music-gregorian-chant",
+      "title_en": "Gregorian chant — Rorate Caeli",
+      "title_es": "Canto gregoriano — Rorate Caeli",
+      "category": "music",
+      "subcategory": "vocal",
+      "duration_seconds": 142.06,
+      "sample_rate": 22050,
+      "audio_path": "sounds/music/music-gregorian-chant.ogg",
+      "embedding_path": "embeddings/music-gregorian-chant.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "vocal",
+        "sacred"
+      ]
+    },
+    {
+      "id": "music-jazz-violin-solo",
+      "title_en": "Jazz violin solo",
+      "title_es": "Solo de violín jazz",
+      "category": "music",
+      "subcategory": "jazz",
+      "duration_seconds": 30.0,
+      "sample_rate": 22050,
+      "audio_path": "sounds/music/music-jazz-violin-solo.ogg",
+      "embedding_path": "embeddings/music-jazz-violin-solo.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "jazz",
+        "violin"
+      ]
+    },
+    {
+      "id": "music-music-box-rag",
+      "title_en": "Luckey Roberts — The Music Box Rag (1914)",
+      "title_es": "Luckey Roberts — The Music Box Rag (1914)",
+      "category": "music",
+      "subcategory": "vintage",
+      "duration_seconds": 183.631,
+      "sample_rate": 22050,
+      "audio_path": "sounds/music/music-music-box-rag.ogg",
+      "embedding_path": "embeddings/music-music-box-rag.json",
+      "source": "Wikimedia Commons / Public Domain",
+      "license": "Public Domain",
+      "attribution": "Luckey Roberts, 1914 (public domain)",
+      "tags": [
+        "ragtime",
+        "vintage"
+      ]
+    },
+    {
+      "id": "music-pentatonic-c",
+      "title_en": "Pentatonic scale (C major)",
+      "title_es": "Escala pentatónica (Do mayor)",
+      "category": "music",
+      "subcategory": "reference",
+      "duration_seconds": 20.872,
+      "sample_rate": 22050,
+      "audio_path": "sounds/music/music-pentatonic-c.ogg",
+      "embedding_path": "embeddings/music-pentatonic-c.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "scale",
+        "reference"
+      ]
+    },
+    {
+      "id": "music-rock-drum-beat",
+      "title_en": "Rock drum beat (hi-hat)",
+      "title_es": "Patrón de batería rock (hi-hat)",
+      "category": "music",
+      "subcategory": "modern",
+      "duration_seconds": 9.167,
+      "sample_rate": 22050,
+      "audio_path": "sounds/music/music-rock-drum-beat.ogg",
+      "embedding_path": "embeddings/music-rock-drum-beat.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "drums",
+        "rhythm"
+      ]
+    },
+    {
+      "id": "music-vivaldi-spring-allegro",
+      "title_en": "Vivaldi — Four Seasons, Spring (Allegro)",
+      "title_es": "Vivaldi — Las Cuatro Estaciones, Primavera (Allegro)",
+      "category": "music",
+      "subcategory": "classical",
+      "duration_seconds": 215.28,
+      "sample_rate": 22050,
+      "audio_path": "sounds/music/music-vivaldi-spring-allegro.oga",
+      "embedding_path": "embeddings/music-vivaldi-spring-allegro.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-3.0",
+      "attribution": "John Harrison violin (CC-BY)",
+      "tags": [
+        "classical",
+        "violin",
+        "baroque"
+      ]
+    },
+    {
+      "id": "music-vivaldi-summer-presto",
+      "title_en": "Vivaldi — Four Seasons, Summer (Presto)",
+      "title_es": "Vivaldi — Las Cuatro Estaciones, Verano (Presto)",
+      "category": "music",
+      "subcategory": "classical",
+      "duration_seconds": 158.96,
+      "sample_rate": 22050,
+      "audio_path": "sounds/music/music-vivaldi-summer-presto.oga",
+      "embedding_path": "embeddings/music-vivaldi-summer-presto.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-3.0",
+      "attribution": "John Harrison violin (CC-BY)",
+      "tags": [
+        "classical",
+        "violin",
+        "baroque"
+      ]
+    },
+    {
+      "id": "nature-ice-cracking",
+      "title_en": "Ice cracking",
+      "title_es": "Hielo crujiendo",
+      "category": "nature",
+      "subcategory": "weather",
+      "duration_seconds": 1.972,
+      "sample_rate": 22050,
+      "audio_path": "sounds/nature/nature-ice-cracking.ogg",
+      "embedding_path": "embeddings/nature-ice-cracking.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "ice",
+        "winter"
+      ]
+    },
+    {
       "id": "nature-thunder",
       "title_en": "Thunder",
       "title_es": "Trueno",
       "category": "nature",
+      "subcategory": "weather",
       "duration_seconds": 9.044,
       "sample_rate": 22050,
       "audio_path": "sounds/nature/nature-thunder.ogg",
@@ -322,6 +1040,7 @@
       "title_en": "Wind in a Swedish pine forest",
       "title_es": "Viento en un bosque sueco de pinos",
       "category": "nature",
+      "subcategory": "ambient",
       "duration_seconds": 60.459,
       "sample_rate": 22050,
       "audio_path": "sounds/nature/nature-wind-pine.ogg",
@@ -336,10 +1055,65 @@
       ]
     },
     {
+      "id": "space-apollo-13-problem",
+      "title_en": "Apollo 13 — \"We've had a problem\"",
+      "title_es": "Apollo 13 — \"Hemos tenido un problema\"",
+      "category": "space",
+      "subcategory": "apollo",
+      "duration_seconds": 16.55,
+      "sample_rate": 22050,
+      "audio_path": "sounds/space/space-apollo-13-problem.ogg",
+      "embedding_path": "embeddings/space-apollo-13-problem.json",
+      "source": "NASA",
+      "license": "Public Domain",
+      "attribution": "NASA, 1970 (U.S. Government work)",
+      "tags": [
+        "nasa",
+        "apollo"
+      ]
+    },
+    {
+      "id": "space-apollo-17-strolling",
+      "title_en": "Apollo 17 — Strolling on the Moon",
+      "title_es": "Apollo 17 — Paseando por la Luna",
+      "category": "space",
+      "subcategory": "apollo",
+      "duration_seconds": 13.312,
+      "sample_rate": 22050,
+      "audio_path": "sounds/space/space-apollo-17-strolling.ogg",
+      "embedding_path": "embeddings/space-apollo-17-strolling.json",
+      "source": "NASA",
+      "license": "Public Domain",
+      "attribution": "NASA, 1972 (U.S. Government work)",
+      "tags": [
+        "nasa",
+        "apollo"
+      ]
+    },
+    {
+      "id": "space-apollo-8-genesis",
+      "title_en": "Apollo 8 — Genesis reading",
+      "title_es": "Apollo 8 — Lectura del Génesis",
+      "category": "space",
+      "subcategory": "apollo",
+      "duration_seconds": 115.644,
+      "sample_rate": 22050,
+      "audio_path": "sounds/space/space-apollo-8-genesis.ogg",
+      "embedding_path": "embeddings/space-apollo-8-genesis.json",
+      "source": "NASA",
+      "license": "Public Domain",
+      "attribution": "NASA, 1968 (U.S. Government work)",
+      "tags": [
+        "nasa",
+        "apollo"
+      ]
+    },
+    {
       "id": "speech-armstrong-step",
-      "title_en": "Armstrong \u2014 One small step",
-      "title_es": "Armstrong \u2014 Un peque\u00f1o paso",
+      "title_en": "Armstrong — One small step",
+      "title_es": "Armstrong — Un pequeño paso",
       "category": "speeches",
+      "subcategory": "us-historical",
       "duration_seconds": 24.113,
       "sample_rate": 22050,
       "audio_path": "sounds/speeches/speech-armstrong-step.ogg",
@@ -354,10 +1128,45 @@
       ]
     },
     {
-      "id": "speech-jfk-berlin",
-      "title_en": "JFK \u2014 Ich bin ein Berliner",
-      "title_es": "JFK \u2014 Ich bin ein Berliner",
+      "id": "speech-churchill-valour",
+      "title_en": "Churchill — Be Ye Men of Valour",
+      "title_es": "Churchill — Sed hombres de valor",
       "category": "speeches",
+      "subcategory": "historical",
+      "duration_seconds": 610.406,
+      "sample_rate": 22050,
+      "audio_path": "sounds/speeches/speech-churchill-valour.ogg",
+      "embedding_path": "embeddings/speech-churchill-valour.json",
+      "source": "Wikimedia Commons",
+      "license": "Public Domain",
+      "attribution": "Winston Churchill, 1940 (UK Crown copyright expired)",
+      "tags": [
+        "history"
+      ]
+    },
+    {
+      "id": "speech-fdr-pearl-harbor",
+      "title_en": "FDR — Day of Infamy (Pearl Harbor)",
+      "title_es": "FDR — Día de la Infamia (Pearl Harbor)",
+      "category": "speeches",
+      "subcategory": "us-historical",
+      "duration_seconds": 258.972,
+      "sample_rate": 22050,
+      "audio_path": "sounds/speeches/speech-fdr-pearl-harbor.ogg",
+      "embedding_path": "embeddings/speech-fdr-pearl-harbor.json",
+      "source": "Wikimedia Commons",
+      "license": "Public Domain",
+      "attribution": "Franklin D. Roosevelt, 1941 (U.S. Government work)",
+      "tags": [
+        "history"
+      ]
+    },
+    {
+      "id": "speech-jfk-berlin",
+      "title_en": "JFK — Ich bin ein Berliner",
+      "title_es": "JFK — Ich bin ein Berliner",
+      "category": "speeches",
+      "subcategory": "us-historical",
       "duration_seconds": 2.204,
       "sample_rate": 22050,
       "audio_path": "sounds/speeches/speech-jfk-berlin.ogg",
@@ -376,6 +1185,7 @@
       "title_en": "Synth am noise",
       "title_es": "Synth am noise",
       "category": "synthetic",
+      "subcategory": "",
       "duration_seconds": 6.0,
       "sample_rate": 22050,
       "audio_path": "sounds/synthetic/synth-am-noise.ogg",
@@ -393,6 +1203,7 @@
       "title_en": "Synth chirp falling",
       "title_es": "Synth chirp falling",
       "category": "synthetic",
+      "subcategory": "",
       "duration_seconds": 6.0,
       "sample_rate": 22050,
       "audio_path": "sounds/synthetic/synth-chirp-falling.ogg",
@@ -410,6 +1221,7 @@
       "title_en": "Synth chirp rising",
       "title_es": "Synth chirp rising",
       "category": "synthetic",
+      "subcategory": "",
       "duration_seconds": 6.0,
       "sample_rate": 22050,
       "audio_path": "sounds/synthetic/synth-chirp-rising.ogg",
@@ -427,6 +1239,7 @@
       "title_en": "Synth fm drone",
       "title_es": "Synth fm drone",
       "category": "synthetic",
+      "subcategory": "",
       "duration_seconds": 6.0,
       "sample_rate": 22050,
       "audio_path": "sounds/synthetic/synth-fm-drone.ogg",
@@ -444,6 +1257,7 @@
       "title_en": "Synth harmonic arpeggio",
       "title_es": "Synth harmonic arpeggio",
       "category": "synthetic",
+      "subcategory": "",
       "duration_seconds": 6.0,
       "sample_rate": 22050,
       "audio_path": "sounds/synthetic/synth-harmonic-arpeggio.ogg",
@@ -461,6 +1275,7 @@
       "title_en": "Synth organ chord",
       "title_es": "Synth organ chord",
       "category": "synthetic",
+      "subcategory": "",
       "duration_seconds": 6.0,
       "sample_rate": 22050,
       "audio_path": "sounds/synthetic/synth-organ-chord.ogg",
@@ -478,6 +1293,7 @@
       "title_en": "Synth pink noise",
       "title_es": "Synth pink noise",
       "category": "synthetic",
+      "subcategory": "",
       "duration_seconds": 6.0,
       "sample_rate": 22050,
       "audio_path": "sounds/synthetic/synth-pink-noise.ogg",
@@ -495,6 +1311,7 @@
       "title_en": "Synth pure tone 440",
       "title_es": "Synth pure tone 440",
       "category": "synthetic",
+      "subcategory": "",
       "duration_seconds": 6.0,
       "sample_rate": 22050,
       "audio_path": "sounds/synthetic/synth-pure-tone-440.ogg",

@@ -3,9 +3,9 @@
   "title_es": "Armstrong — Un pequeño paso",
   "source": "NASA",
   "license": "Public Domain",
-  "attribution": "Neil Armstrong / NASA, 1969 (U.S. Government work, public domain)",
+  "attribution": "Neil Armstrong / NASA, 1969 (U.S. Government work)",
+  "subcategory": "us-historical",
   "tags": [
-    "speech",
     "history",
     "nasa"
   ]
