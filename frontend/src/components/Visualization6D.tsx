@@ -315,7 +315,12 @@ function Trail6D({
         frustumCulled={false}
       >
         <sphereGeometry args={[1, 16, 16]} />
-        <meshStandardMaterial vertexColors transparent opacity={1} roughness={0.4} />
+        {/* Note: per-instance colors flow through Three.js's `instanceColor`
+             mechanism (set via `setColorAt`). We must NOT set `vertexColors`
+             on the material — that switch expects a per-vertex `color`
+             attribute which the geometry does not have, and would silently
+             render every sphere black. */}
+        <meshStandardMaterial transparent opacity={1} roughness={0.4} metalness={0.05} />
       </instancedMesh>
 
       {viz.showTrailLine && (
