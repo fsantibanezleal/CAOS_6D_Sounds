@@ -6,7 +6,13 @@ import { type ColormapName } from "../lib/colormaps";
 
 export type Theme = "dark" | "light";
 export type AxisRole = "x" | "y" | "z" | "color" | "size";
-export type RenderMode = "spheres" | "smoke" | "bursts";
+export type RenderMode =
+  | "spheres"
+  | "smoke"
+  | "bursts"
+  | "constellation"
+  | "aurora"
+  | "comet";
 
 export interface VizConfig {
   /** Which embedding track to use (features / pca / tsne / umap / tonnetz / yamnet). */
@@ -31,6 +37,15 @@ export interface VizConfig {
   /** Bursts-mode parameters (ignored when renderMode !== "bursts"). */
   burstRays: number;     // 4..32 rays per frame
   burstSize: number;     // global multiplier for ray length (0..2)
+  /** Constellation-mode parameters. */
+  constellationNodeScale: number; // 0.2..2 (scales the size mapping)
+  constellationEdgeAlpha: number; // 0..1 (overall edge brightness)
+  /** Aurora-mode parameters. */
+  auroraHeight: number;  // 0..3 (global multiplier on ribbon height)
+  auroraWobble: number;  // 0..0.4 (horizontal sway amplitude)
+  /** Comet-mode parameters. */
+  cometHeadScale: number; // 1..10 (head size = frame size * this)
+  cometTailDecay: number; // 0.5..4 (higher = tail dies off faster)
 }
 
 interface StoreState {
@@ -98,7 +113,13 @@ const DEFAULT_VIZ: VizConfig = {
   smokeSpread: 0.05,
   smokeDrift: 0.08,
   burstRays: 12,
-  burstSize: 1.0
+  burstSize: 1.0,
+  constellationNodeScale: 0.6,
+  constellationEdgeAlpha: 0.6,
+  auroraHeight: 1.0,
+  auroraWobble: 0.06,
+  cometHeadScale: 5.0,
+  cometTailDecay: 1.8
 };
 
 /** Stable id of the clip that loads automatically when the library
