@@ -82,7 +82,7 @@ export function ControlPanel() {
             {t("viz.mode_comet")}
           </button>
         </div>
-        <div className="mode-toggle two" style={{ marginTop: 4 }}>
+        <div className="mode-toggle three" style={{ marginTop: 4 }}>
           <button
             className={viz.renderMode === "tube" ? "active" : ""}
             onClick={() => setViz({ renderMode: "tube" })}
@@ -96,6 +96,13 @@ export function ControlPanel() {
             title={t("viz.mode_galaxy_help")}
           >
             {t("viz.mode_galaxy")}
+          </button>
+          <button
+            className={viz.renderMode === "flowfield" ? "active" : ""}
+            onClick={() => setViz({ renderMode: "flowfield" })}
+            title={t("viz.mode_flowfield_help")}
+          >
+            {t("viz.mode_flowfield")}
           </button>
         </div>
 
@@ -363,6 +370,57 @@ export function ControlPanel() {
               />
               <span className="value-readout">
                 {viz.galaxyTwinkle.toFixed(2)}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {viz.renderMode === "flowfield" && (
+          <div style={{ marginTop: 8 }}>
+            <div className="row">
+              <label>{t("viz.flowfield_particles")}</label>
+              <input
+                type="range"
+                min={32}
+                max={800}
+                step={16}
+                value={viz.flowfieldParticles}
+                onChange={(e) =>
+                  setViz({ flowfieldParticles: Number(e.target.value) })
+                }
+              />
+              <span className="value-readout">{viz.flowfieldParticles}</span>
+            </div>
+            <div className="row">
+              <label>{t("viz.flowfield_speed")}</label>
+              <input
+                type="range"
+                min={0.05}
+                max={1.0}
+                step={0.05}
+                value={viz.flowfieldSpeed}
+                onChange={(e) =>
+                  setViz({ flowfieldSpeed: Number(e.target.value) })
+                }
+              />
+              <span className="value-readout">
+                {viz.flowfieldSpeed.toFixed(2)}
+              </span>
+            </div>
+            <div className="row">
+              <label>{t("viz.flowfield_lifetime")}</label>
+              <input
+                type="range"
+                min={0.5}
+                max={6}
+                step={0.1}
+                value={viz.flowfieldLifetime}
+                onChange={(e) =>
+                  setViz({ flowfieldLifetime: Number(e.target.value) })
+                }
+              />
+              <span className="value-readout">
+                {viz.flowfieldLifetime.toFixed(1)}s
               </span>
             </div>
           </div>

@@ -1,6 +1,6 @@
 {
   "version": "0.1.0",
-  "generated_at": "2026-04-30T12:35:52Z",
+  "generated_at": "2026-04-30T17:21:40Z",
   "feature_names": [
     "rms",
     "zero_crossing_rate",
@@ -13,10 +13,15 @@
     "spectral_entropy",
     "spectral_skewness",
     "spectral_kurtosis",
+    "spectral_irregularity",
     "energy_low",
     "energy_mid_low",
     "energy_mid_high",
     "energy_high",
+    "mel_band_0",
+    "mel_band_1",
+    "mel_band_2",
+    "mel_band_3",
     "dominant_pitch",
     "pitch_confidence",
     "chroma_dominant",
@@ -116,6 +121,41 @@
   ],
   "clips": [
     {
+      "id": "amphibian-bufo-bufo-call",
+      "title_en": "Common toad (Bufo bufo) call",
+      "title_es": "Llamado del sapo com\u00fan (Bufo bufo)",
+      "category": "amphibians_reptiles",
+      "subcategory": "toads",
+      "duration_seconds": 17.461,
+      "sample_rate": 22050,
+      "audio_path": "sounds/amphibians_reptiles/amphibian-bufo-bufo-call.ogg",
+      "embedding_path": "embeddings/amphibian-bufo-bufo-call.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "toad"
+      ]
+    },
+    {
+      "id": "amphibian-bufo-viridis-mating",
+      "title_en": "European green toad mating call (Bufo viridis)",
+      "title_es": "Llamado de apareamiento del sapo verde",
+      "category": "amphibians_reptiles",
+      "subcategory": "toads",
+      "duration_seconds": 55.127,
+      "sample_rate": 22050,
+      "audio_path": "sounds/amphibians_reptiles/amphibian-bufo-viridis-mating.ogg",
+      "embedding_path": "embeddings/amphibian-bufo-viridis-mating.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "toad",
+        "mating"
+      ]
+    },
+    {
       "id": "amphibian-common-toad",
       "title_en": "Common toad (Bufo bufo) call",
       "title_es": "Llamado del sapo com\u00fan",
@@ -130,6 +170,24 @@
       "attribution": "Wikimedia Commons contributors",
       "tags": [
         "toad"
+      ]
+    },
+    {
+      "id": "amphibian-cope-gray-treefrog",
+      "title_en": "Cope's gray tree frog (Hyla chrysoscelis)",
+      "title_es": "Rana arbor\u00edcola gris de Cope (Hyla chrysoscelis)",
+      "category": "amphibians_reptiles",
+      "subcategory": "frogs",
+      "duration_seconds": 10.367,
+      "sample_rate": 22050,
+      "audio_path": "sounds/amphibians_reptiles/amphibian-cope-gray-treefrog.ogg",
+      "embedding_path": "embeddings/amphibian-cope-gray-treefrog.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "frog",
+        "tree-frog"
       ]
     },
     {
@@ -149,6 +207,24 @@
         "frog",
         "toad",
         "ambient"
+      ]
+    },
+    {
+      "id": "amphibian-spring-peeper",
+      "title_en": "Spring peeper (Pseudacris crucifer)",
+      "title_es": "Rana primavera silbadora (Pseudacris crucifer)",
+      "category": "amphibians_reptiles",
+      "subcategory": "frogs",
+      "duration_seconds": 34.971,
+      "sample_rate": 22050,
+      "audio_path": "sounds/amphibians_reptiles/amphibian-spring-peeper.ogg",
+      "embedding_path": "embeddings/amphibian-spring-peeper.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "frog",
+        "peeper"
       ]
     },
     {
@@ -183,6 +259,42 @@
       "attribution": "Wikimedia Commons contributors",
       "tags": [
         "reptile"
+      ]
+    },
+    {
+      "id": "reptile-rattlesnake",
+      "title_en": "Rattlesnake rattle",
+      "title_es": "Cascabel de serpiente cascabel",
+      "category": "amphibians_reptiles",
+      "subcategory": "reptiles",
+      "duration_seconds": 15.144,
+      "sample_rate": 22050,
+      "audio_path": "sounds/amphibians_reptiles/reptile-rattlesnake.ogg",
+      "embedding_path": "embeddings/reptile-rattlesnake.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "snake",
+        "rattle"
+      ]
+    },
+    {
+      "id": "reptile-tokay-gecko",
+      "title_en": "Tokay gecko mating call (Gekko gecko)",
+      "title_es": "Llamado de apareamiento del gecko tokay",
+      "category": "amphibians_reptiles",
+      "subcategory": "reptiles",
+      "duration_seconds": 29.257,
+      "sample_rate": 22050,
+      "audio_path": "sounds/amphibians_reptiles/reptile-tokay-gecko.ogg",
+      "embedding_path": "embeddings/reptile-tokay-gecko.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "gecko",
+        "lizard"
       ]
     },
     {
@@ -305,6 +417,42 @@
       ]
     },
     {
+      "id": "bird-mallard-duck",
+      "title_en": "Mallard duck quack",
+      "title_es": "Graznido de pato real",
+      "category": "birds",
+      "subcategory": "waterfowl",
+      "duration_seconds": 82.036,
+      "sample_rate": 22050,
+      "audio_path": "sounds/birds/bird-mallard-duck.ogg",
+      "embedding_path": "embeddings/bird-mallard-duck.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "duck",
+        "waterfowl"
+      ]
+    },
+    {
+      "id": "bird-northern-raven",
+      "title_en": "Northern raven (Corvus corax)",
+      "title_es": "Cuervo com\u00fan (Corvus corax)",
+      "category": "birds",
+      "subcategory": "corvids",
+      "duration_seconds": 13.374,
+      "sample_rate": 22050,
+      "audio_path": "sounds/birds/bird-northern-raven.ogg",
+      "embedding_path": "embeddings/bird-northern-raven.json",
+      "source": "Wikimedia Commons / Xeno-canto",
+      "license": "CC-BY-NC-SA-3.0",
+      "attribution": "Xeno-canto contributor",
+      "tags": [
+        "raven",
+        "corvid"
+      ]
+    },
+    {
       "id": "bird-peacock",
       "title_en": "Peacock call (Pavo cristatus)",
       "title_es": "Llamado de pavo real (Pavo cristatus)",
@@ -374,6 +522,23 @@
       ]
     },
     {
+      "id": "bird-wild-turkey",
+      "title_en": "Wild turkey gobble",
+      "title_es": "Llamado del pavo salvaje",
+      "category": "birds",
+      "subcategory": "domestic",
+      "duration_seconds": 259.176,
+      "sample_rate": 22050,
+      "audio_path": "sounds/birds/bird-wild-turkey.ogg",
+      "embedding_path": "embeddings/bird-wild-turkey.json",
+      "source": "Wikimedia Commons / Xeno-canto",
+      "license": "CC-BY-NC-SA-3.0",
+      "attribution": "Xeno-canto contributor",
+      "tags": [
+        "turkey"
+      ]
+    },
+    {
       "id": "bird-woodpecker",
       "title_en": "Great Spotted Woodpecker drumming",
       "title_es": "Pico picapinos tamborileando",
@@ -389,6 +554,24 @@
       "tags": [
         "woodpecker",
         "percussive"
+      ]
+    },
+    {
+      "id": "insect-bumblebee",
+      "title_en": "Bumblebee buzz (Bombus)",
+      "title_es": "Zumbido de abejorro (Bombus)",
+      "category": "insects",
+      "subcategory": "hymenoptera",
+      "duration_seconds": 10.868,
+      "sample_rate": 22050,
+      "audio_path": "sounds/insects/insect-bumblebee.ogg",
+      "embedding_path": "embeddings/insect-bumblebee.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "bee",
+        "bumblebee"
       ]
     },
     {
@@ -441,6 +624,25 @@
       "attribution": "Wikimedia Commons contributors",
       "tags": [
         "cricket"
+      ]
+    },
+    {
+      "id": "insect-honeybee-hive",
+      "title_en": "Honeybee hive ambience",
+      "title_es": "Ambiente de colmena de abejas",
+      "category": "insects",
+      "subcategory": "hymenoptera",
+      "duration_seconds": 226.757,
+      "sample_rate": 22050,
+      "audio_path": "sounds/insects/insect-honeybee-hive.ogg",
+      "embedding_path": "embeddings/insect-honeybee-hive.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "bee",
+        "hive",
+        "ambient"
       ]
     },
     {
@@ -618,6 +820,25 @@
       ]
     },
     {
+      "id": "mammal-killer-whale",
+      "title_en": "Killer whale (orca) calls",
+      "title_es": "Llamados de orca",
+      "category": "mammals",
+      "subcategory": "marine",
+      "duration_seconds": 85.159,
+      "sample_rate": 22050,
+      "audio_path": "sounds/mammals/mammal-killer-whale.ogg",
+      "embedding_path": "embeddings/mammal-killer-whale.json",
+      "source": "Wikimedia Commons",
+      "license": "Public Domain",
+      "attribution": "NOAA / Wikimedia Commons (public domain)",
+      "tags": [
+        "marine",
+        "cetacean",
+        "orca"
+      ]
+    },
+    {
       "id": "mammal-pig-grunt",
       "title_en": "Pig grunting",
       "title_es": "Gru\u00f1ido de cerdo",
@@ -666,6 +887,25 @@
       "attribution": "Wikimedia Commons contributors",
       "tags": [
         "wild"
+      ]
+    },
+    {
+      "id": "mechanical-alarm-clock",
+      "title_en": "Mechanical alarm clock ringing",
+      "title_es": "Despertador mec\u00e1nico sonando",
+      "category": "mechanical",
+      "subcategory": "clocks",
+      "duration_seconds": 13.96,
+      "sample_rate": 22050,
+      "audio_path": "sounds/mechanical/mechanical-alarm-clock.ogg",
+      "embedding_path": "embeddings/mechanical-alarm-clock.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "alarm",
+        "clock",
+        "ring"
       ]
     },
     {
@@ -815,6 +1055,25 @@
       ]
     },
     {
+      "id": "music-bach-flute-allemande",
+      "title_en": "Bach \u2014 Partita for Solo Flute, Allemande",
+      "title_es": "Bach \u2014 Partita para flauta sola, Allemande",
+      "category": "music",
+      "subcategory": "classical",
+      "duration_seconds": 181.2,
+      "sample_rate": 22050,
+      "audio_path": "sounds/music/music-bach-flute-allemande.ogg",
+      "embedding_path": "embeddings/music-bach-flute-allemande.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "classical",
+        "flute",
+        "baroque"
+      ]
+    },
+    {
       "id": "music-bach-violin-allemanda",
       "title_en": "Bach \u2014 Partita No.2 (Allemanda)",
       "title_es": "Bach \u2014 Partita N\u00ba2 (Allemanda)",
@@ -958,6 +1217,26 @@
       "tags": [
         "drums",
         "rhythm"
+      ]
+    },
+    {
+      "id": "music-violin-pizzicato-scale",
+      "title_en": "Violin pizzicato (G major scale)",
+      "title_es": "Pizzicato de viol\u00edn (escala Sol mayor)",
+      "category": "music",
+      "subcategory": "reference",
+      "duration_seconds": 14.675,
+      "sample_rate": 22050,
+      "audio_path": "sounds/music/music-violin-pizzicato-scale.ogg",
+      "embedding_path": "embeddings/music-violin-pizzicato-scale.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "violin",
+        "scale",
+        "pizzicato",
+        "reference"
       ]
     },
     {
