@@ -163,6 +163,16 @@ def extract_clip(audio_path: Path, category: str) -> ClipFeatures:
     # peaky spectra.
     spec_skew, spec_kurt = _spectral_moments(stft)
 
+    # Spectral irregularity (Krimphoff 1994) — sum of squared
+    # differences between consecutive bin amplitudes, normalised by
+    # the total energy in the frame. Higher = noisier amplitude
+    # distribution; lower = smooth spectral envelope.
+    spec_irreg = _spectral_irregularity(stft)
+
+    # Mel-band energies — 4 perceptually-spaced bands across the full
+    # 0..Nyquist range. Complements the linear `energy_*` bands above.
+    mel_bands = _mel_band_energies(stft, sr, n_mel_bands=4)
+
     # Chroma — pick the strongest bin per frame as a 0..1 scalar.
     chroma = librosa.feature.chroma_stft(
         S=stft, sr=sr, n_fft=n_fft, hop_length=hop_length
@@ -206,8 +216,9 @@ def extract_clip(audio_path: Path, category: str) -> ClipFeatures:
         len(tempo_proxy), len(chroma_dominant), len(onset_env),
         len(spec_entropy), len(harmonic_ratio),
         len(loudness_db), len(spec_skew), len(spec_kurt),
-        len(onset_density),
+        len(onset_density), len(spec_irreg),
         energies["energy_low"].shape[0],
+        mel_bands["mel_band_0"].shape[0],
         mfcc.shape[0],
         tonnetz.shape[0],
     )
@@ -224,10 +235,15 @@ def extract_clip(audio_path: Path, category: str) -> ClipFeatures:
         "spectral_entropy": spec_entropy[:n],
         "spectral_skewness": spec_skew[:n],
         "spectral_kurtosis": spec_kurt[:n],
+        "spectral_irregularity": spec_irreg[:n],
         "energy_low": energies["energy_low"][:n],
         "energy_mid_low": energies["energy_mid_low"][:n],
         "energy_mid_high": energies["energy_mid_high"][:n],
         "energy_high": energies["energy_high"][:n],
+        "mel_band_0": mel_bands["mel_band_0"][:n],
+        "mel_band_1": mel_bands["mel_band_1"][:n],
+        "mel_band_2": mel_bands["mel_band_2"][:n],
+        "mel_band_3": mel_bands["mel_band_3"][:n],
         "dominant_pitch": dominant_pitch[:n],
         "pitch_confidence": pitch_confidence[:n],
         "chroma_dominant": chroma_dominant[:n],
@@ -345,6 +361,48 @@ def _spectral_entropy(stft: np.ndarray) -> np.ndarray:
     h = -(psd * np.log2(psd + eps)).sum(axis=0)
     h_max = float(np.log2(psd.shape[0]))
     return (h / max(h_max, eps)).astype(np.float32)
+
+
+def _spectral_irregularity(stft: np.ndarray) -> np.ndarray:
+    """Per-frame Krimphoff (1994) spectral irregularity.
+
+    Sum of squared differences between consecutive bin amplitudes,
+    normalised by total spectral energy. Reads as "how jagged is the
+    amplitude envelope between adjacent bins" — high for noisy /
+    inharmonic content, low for smooth tonal envelopes.
+
+    Returns shape ``(num_frames,)`` in roughly ``[0, 1]``.
+    """
+    eps = 1e-12
+    diffs = np.diff(stft, axis=0)
+    num = (diffs**2).sum(axis=0)
+    denom = (stft**2).sum(axis=0) + eps
+    return (num / denom).astype(np.float32)
+
+
+def _mel_band_energies(
+    stft: np.ndarray, sr: int, n_mel_bands: int = 4
+) -> dict[str, np.ndarray]:
+    """Per-frame energy in `n_mel_bands` perceptually-spaced bands.
+
+    Uses librosa's mel filterbank, then groups the (typically 80) mel
+    bins into `n_mel_bands` consecutive bands of equal mel width and
+    sums the energy per group. This is the perceptual counterpart to
+    the linear octave bands in `_sub_band_energies`.
+    """
+    # Project the magnitude STFT onto a mel scale (80 bins).
+    mel_filters = librosa.filters.mel(sr=sr, n_fft=(stft.shape[0] - 1) * 2)
+    mel_spec = mel_filters @ (stft**2)  # shape (80, num_frames)
+    n_mel = mel_spec.shape[0]
+    out: dict[str, np.ndarray] = {}
+    bin_size = max(1, n_mel // n_mel_bands)
+    for k in range(n_mel_bands):
+        lo = k * bin_size
+        hi = (k + 1) * bin_size if k < n_mel_bands - 1 else n_mel
+        out[f"mel_band_{k}"] = np.sqrt(
+            mel_spec[lo:hi].mean(axis=0)
+        ).astype(np.float32)
+    return out
 
 
 def _sub_band_energies(stft: np.ndarray, sr: int) -> dict[str, np.ndarray]:

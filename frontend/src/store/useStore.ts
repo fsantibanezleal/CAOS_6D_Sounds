@@ -14,7 +14,8 @@ export type RenderMode =
   | "aurora"
   | "comet"
   | "tube"
-  | "galaxy";
+  | "galaxy"
+  | "flowfield";
 
 export interface VizConfig {
   /** Which embedding track to use (features / pca / tsne / umap / tonnetz / yamnet). */
@@ -54,6 +55,10 @@ export interface VizConfig {
   galaxyDensity: number;  // 1..20 stars per frame
   galaxySpread: number;   // 0..0.4 cluster radius in world units
   galaxyTwinkle: number;  // 0..0.8 multiplicative brightness wobble
+  /** Flowfield-mode parameters. */
+  flowfieldParticles: number; // 32..800 particles in the swarm
+  flowfieldSpeed: number;     // 0.05..1 advection speed (world units / s)
+  flowfieldLifetime: number;  // 0.5..6 seconds before respawn
 }
 
 interface StoreState {
@@ -131,7 +136,10 @@ const DEFAULT_VIZ: VizConfig = {
   tubeWidth: 1.4,
   galaxyDensity: 6,
   galaxySpread: 0.04,
-  galaxyTwinkle: 0.35
+  galaxyTwinkle: 0.35,
+  flowfieldParticles: 240,
+  flowfieldSpeed: 0.35,
+  flowfieldLifetime: 2.5
 };
 
 /** Stable id of the clip that loads automatically when the library
@@ -208,7 +216,8 @@ export const useStore = create<StoreState>()(
       // History:
       //   v2 — added Constellation + Aurora + Comet fields (release 0.5.1)
       //   v3 — added Tube + Galaxy fields (release 0.6.0)
-      version: 3,
+      //   v4 — added Flowfield fields (release 0.7.0)
+      version: 4,
       partialize: (state) => ({
         theme: state.theme,
         viz: state.viz,

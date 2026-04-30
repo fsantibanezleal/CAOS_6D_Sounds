@@ -3,6 +3,73 @@
 Newest-first log of the design decisions that shaped Auralis. Each entry
 records what changed, why, and the alternative we considered.
 
+## v0.7.0 — Flowfield mode + library expansion + new features (2026-04-30)
+
+The 9th and final render mode of the original roadmap, plus library
+growth and feature roster expansion.
+
+### Flowfield render mode (9th, last roadmap mode)
+A swarm of ~240 glowing particles advecting along the trail's tangent
+vectors. Each particle is anchored to a deterministic frame inside
+the visibility window (chosen via stable hash of particle index +
+slow phase advance), reads the local tangent at its anchor, and
+blends its current velocity toward that tangent before advecting.
+Particles respawn after `lifetime` seconds with a new anchor. The
+3-phase alpha envelope (fast fade-in / hold / fade-out) makes the
+swarm read as a continuous wake.
+
+User controls: Particle count (32..800), Flow speed (0.05..1),
+Particle lifetime (0.5..6 s). Code:
+`components/FlowfieldTrail.tsx`. Renders via the same gaussian +
+additive ShaderMaterial used by Smoke / Constellation / Comet.
+
+This closes the original roadmap. The Render-Modes wiki page now
+documents 9 modes implemented and zero pending.
+
+### Library expanded to 82 clips
+Added 15 new clips across the previously-underpopulated categories:
+
+* `birds` (12 → 16): Anna's hummingbird (broken — Skeleton container,
+  removed), Northern raven, Wild turkey, Mallard duck. (4 net)
+* `mammals` (13 → 14): Killer whale (orca, NOAA public domain).
+* `amphibians_reptiles` (4 → 9): Bufo bufo + Bufo viridis toad calls,
+  Spring peeper, Cope's gray treefrog, Rattlesnake, Tokay gecko.
+* `insects` (3 → 4): Bumblebee buzz, Honeybee hive ambience.
+* `music` (11 → 13): Bach Partita for Solo Flute (Allemande), Violin
+  pizzicato (G major reference scale).
+* `mechanical` (7): Mechanical alarm clock (replaces nothing —
+  added). Helicopter clip removed (Theora video, libsndfile crash).
+
+Net change: +15 clips. Several formerly-pending blacklisted clips
+were removed permanently from `curated_downloads.py` with explanatory
+comments.
+
+### Audio feature roster: 22 → 27
+Five new per-frame features:
+
+* `spectral_irregularity` (Krimphoff 1994) — sum of squared bin-
+  to-bin amplitude differences, normalised by total energy. Reads
+  as "how jagged is the spectral envelope".
+* `mel_band_0` through `mel_band_3` — perceptually-spaced bands
+  computed via librosa's mel filterbank (80 mels grouped into 4
+  equal-width sub-bands). Complements the existing linear octave
+  bands.
+
+The mel bands are deliberately added *alongside* the linear ones
+rather than replacing them, so users can pick whichever axis
+semantics fits their use case (linear Hz vs. perceptual mel).
+
+### Persist version bumped to 4
+`flowfieldParticles`, `flowfieldSpeed`, `flowfieldLifetime` added
+to DEFAULT_VIZ. Stale localStorage from any 0.6.x is discarded;
+the defensive merge from 0.5.1 keeps everything else intact.
+
+### Wiki
+- `Render-Modes`: full Flowfield section, roadmap retired.
+- `Audio-Features`: spectral_irregularity + mel-band-energies sections.
+- `Library-Curation`: bumped to 82 clips with the new subcategory listing.
+- `Home`: bumped to release 0.7.0 numbers.
+
 ## v0.6.0 — Tube + Galaxy + video recording + tag filter (2026-04-30)
 
 Two more render modes (8 total), a video recording feature, and a
