@@ -37,9 +37,10 @@ embedding space.
   drives X / Y / Z position, which drives color (4D), which drives
   sphere size (5D). Time is the implicit 6th axis (past frames fade
   out into a trail).
-* **Two render modes**, switchable from the control panel:
-  * **Spheres** — discrete coloured spheres connected by a polyline (default).
-  * **Smoke** — diffuse coloured clouds with additive blending and outward drift. Pure-shader, billboarded particles, 60 fps.
+* **Three render modes**, switchable from the control panel:
+  * **Spheres** — discrete coloured spheres connected by a polyline.
+  * **Smoke** (default) — diffuse coloured clouds with additive blending and outward drift.
+  * **Bursts** — each frame is a tiny explosion of coloured rays radiating from its centre. Old bursts persist with fading alpha. Pairs well with percussive clips.
 * **Five 6D embedding tracks**, all min-max normalized to `[0, 1]`:
   * **Features** — six interpretable spectral scalars.
   * **PCA / t-SNE / UMAP** — corpus-wide projections of MFCC frames.

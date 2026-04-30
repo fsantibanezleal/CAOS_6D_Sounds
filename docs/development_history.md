@@ -3,6 +3,49 @@
 Newest-first log of the design decisions that shaped Auralis. Each entry
 records what changed, why, and the alternative we considered.
 
+## v0.4.2 — Bursts render mode (2026-04-30)
+
+**Third visualisation mode: Bursts.** Each frame in the active
+visibility window draws a tiny explosion of K rays from its 6D-mapped
+centre in random unit directions. Ray length scales with the frame's
+size axis times an age-grow factor (older bursts have longer flares).
+Each ray colour-fades from bright at the centre to nearly transparent
+at the tip; bursts persist with overall age-decaying alpha.
+
+Implementation:
+
+- New `components/BurstsTrail.tsx` — single `THREE.LineSegments` with
+  `vertexColors + vertexAlphas + AdditiveBlending` and depth-write
+  disabled. ``numFrames * rayCount * 2`` vertices in one draw call.
+- Static per-ray data (random unit direction + length jitter) seeded
+  with a fixed RNG so a given frame's burst is stable across replays.
+- Per-frame writes only positions + RGBA on the segments inside the
+  visibility window; outside frames collapse to a degenerate
+  zero-length segment with alpha 0.
+- Visualization6D branches between Spheres / Smoke / Bursts.
+
+UI:
+
+- The mode toggle in the control panel is now a 3-button group
+  (Spheres / Smoke / Bursts).
+- Burst-specific sliders appear when active: Rays (4..32),
+  Burst size (0.2..2.0×).
+- i18n strings for ES + EN.
+
+Performance: ~70 K vertices for the 67-clip corpus; one
+`THREE.LineSegments` draw call. Holds 60 fps comfortably.
+
+Visually: pairs especially well with percussive / transient clips
+(bird trills, cricket chirps, explosions) where each frame has a
+distinct identity worth highlighting.
+
+## v0.4.1 — first-visit defaults (2026-04-30)
+
+The SPA now auto-loads `bird-house-sparrow` in Smoke mode with
+sphereMin/Max pinned to slider extremes and a 17-second trail when
+a fresh visitor arrives (no localStorage state). Returning users
+keep their persisted setup. See PR #17.
+
 ## v0.4.0 — Smoke render mode (2026-04-30)
 
 **New visualisation mode: Smoke.** Each frame in the active visibility

@@ -35,7 +35,7 @@ export function ControlPanel() {
 
       <section>
         <label>{t("viz.render_mode")}</label>
-        <div className="mode-toggle">
+        <div className="mode-toggle three">
           <button
             className={viz.renderMode === "spheres" ? "active" : ""}
             onClick={() => setViz({ renderMode: "spheres" })}
@@ -49,6 +49,13 @@ export function ControlPanel() {
             title={t("viz.mode_smoke_help")}
           >
             {t("viz.mode_smoke")}
+          </button>
+          <button
+            className={viz.renderMode === "bursts" ? "active" : ""}
+            onClick={() => setViz({ renderMode: "bursts" })}
+            title={t("viz.mode_bursts_help")}
+          >
+            {t("viz.mode_bursts")}
           </button>
         </div>
 
@@ -98,6 +105,41 @@ export function ControlPanel() {
               />
               <span className="value-readout">
                 {viz.smokeDrift.toFixed(2)}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {viz.renderMode === "bursts" && (
+          <div style={{ marginTop: 8 }}>
+            <div className="row">
+              <label>{t("viz.burst_rays")}</label>
+              <input
+                type="range"
+                min={4}
+                max={32}
+                step={1}
+                value={viz.burstRays}
+                onChange={(e) =>
+                  setViz({ burstRays: Number(e.target.value) })
+                }
+              />
+              <span className="value-readout">{viz.burstRays}</span>
+            </div>
+            <div className="row">
+              <label>{t("viz.burst_size")}</label>
+              <input
+                type="range"
+                min={0.2}
+                max={2.0}
+                step={0.05}
+                value={viz.burstSize}
+                onChange={(e) =>
+                  setViz({ burstSize: Number(e.target.value) })
+                }
+              />
+              <span className="value-readout">
+                {viz.burstSize.toFixed(2)}×
               </span>
             </div>
           </div>

@@ -288,6 +288,7 @@ a:hover { text-decoration: underline; }
   gap: 4px;
   margin-bottom: 4px;
 }
+.mode-toggle.three { grid-template-columns: 1fr 1fr 1fr; }
 .mode-toggle button {
   padding: 6px 10px;
   font-size: 12px;
