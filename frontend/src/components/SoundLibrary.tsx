@@ -1,8 +1,10 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { Category, SoundClip } from "../lib/api";
 import { useStore } from "../store/useStore";
+
+type SortKey = "title" | "duration" | "category";
 
 function categoryLabel(c: Category, lang: string): string {
   return lang.startsWith("en") ? c.name_en : c.name_es;
@@ -12,13 +14,18 @@ function clipTitle(c: SoundClip, lang: string): string {
   return lang.startsWith("en") ? c.title_en : c.title_es;
 }
 
+function durationLabel(s: number): string {
+  if (s < 60) return `${s.toFixed(1)} s`;
+  const m = Math.floor(s / 60);
+  const r = Math.round(s - m * 60);
+  return `${m}:${r.toString().padStart(2, "0")}`;
+}
+
 export function SoundLibrary() {
   const { t, i18n } = useTranslation();
   const lang = i18n.resolvedLanguage ?? "es";
 
   const library = useStore((s) => s.library);
-  const selectedCategory = useStore((s) => s.selectedCategory);
-  const setSelectedCategory = useStore((s) => s.setSelectedCategory);
   const search = useStore((s) => s.search);
   const setSearch = useStore((s) => s.setSearch);
   const selectedClip = useStore((s) => s.selectedClip);
@@ -27,101 +34,244 @@ export function SoundLibrary() {
   const setComparisonClip = useStore((s) => s.setComparisonClip);
   const swapWithComparison = useStore((s) => s.swapWithComparison);
 
-  const filteredClips = useMemo(() => {
+  const [sortKey, setSortKey] = useState<SortKey>("title");
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+
+  // Filter clips by search query
+  const filteredClips = useMemo<SoundClip[]>(() => {
     if (!library) return [];
     const q = search.trim().toLowerCase();
-    return library.clips.filter((c) => {
-      if (selectedCategory && c.category !== selectedCategory) return false;
-      if (!q) return true;
-      const hay = [c.title_en, c.title_es, c.category, ...c.tags]
-        .join(" ")
-        .toLowerCase();
-      return hay.includes(q);
-    });
-  }, [library, selectedCategory, search]);
+    let clips = library.clips;
+    if (q) {
+      clips = clips.filter((c) => {
+        const hay = [
+          c.title_en,
+          c.title_es,
+          c.category,
+          c.subcategory ?? "",
+          ...c.tags
+        ]
+          .join(" ")
+          .toLowerCase();
+        return hay.includes(q);
+      });
+    }
+    return clips;
+  }, [library, search]);
+
+  // Group by category, then subcategory
+  const grouped = useMemo(() => {
+    const out: Record<string, Record<string, SoundClip[]>> = {};
+    for (const c of filteredClips) {
+      const sub = (c.subcategory ?? "").trim() || "_";
+      out[c.category] ??= {};
+      out[c.category][sub] ??= [];
+      out[c.category][sub].push(c);
+    }
+    // Sort the leaves
+    for (const cat of Object.values(out)) {
+      for (const subClips of Object.values(cat)) {
+        subClips.sort((a, b) => {
+          if (sortKey === "duration") {
+            return a.duration_seconds - b.duration_seconds;
+          }
+          if (sortKey === "category") {
+            return a.category.localeCompare(b.category);
+          }
+          return clipTitle(a, lang).localeCompare(clipTitle(b, lang));
+        });
+      }
+    }
+    return out;
+  }, [filteredClips, sortKey, lang]);
+
+  // Whenever a clip is selected, auto-expand its category.
+  useEffect(() => {
+    if (!selectedClip) return;
+    setExpanded((prev) =>
+      prev[selectedClip.category] ? prev : { ...prev, [selectedClip.category]: true }
+    );
+  }, [selectedClip]);
+
+  // When a search term is active, expand every matching category.
+  useEffect(() => {
+    if (!search.trim()) return;
+    const all: Record<string, boolean> = {};
+    for (const cat of Object.keys(grouped)) all[cat] = true;
+    setExpanded(all);
+  }, [search, grouped]);
+
+  // Default: expand the first category when the library loads.
+  useEffect(() => {
+    if (!library) return;
+    if (Object.keys(expanded).length > 0) return;
+    const first = library.categories.find((c) =>
+      library.clips.some((clip) => clip.category === c.id)
+    );
+    if (first) setExpanded({ [first.id]: true });
+  }, [library, expanded]);
+
+  function toggleCategory(id: string) {
+    setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
+  }
+
+  // Order the categories using the manifest order, but only show those
+  // with at least one matching clip.
+  const orderedCategories = useMemo<Category[]>(() => {
+    if (!library) return [];
+    const ids = Object.keys(grouped);
+    return library.categories.filter((c) => ids.includes(c.id));
+  }, [library, grouped]);
+
+  const totalClips = filteredClips.length;
+  const totalAll = library?.clips.length ?? 0;
 
   return (
     <aside className="panel left">
-      <h2>{t("library.title")}</h2>
+      <div className="library-header">
+        <h2>{t("library.title")}</h2>
+        <span className="library-count">
+          {search.trim() ? `${totalClips} / ${totalAll}` : totalAll}
+        </span>
+      </div>
 
       <input
         type="search"
         placeholder={t("library.search") ?? ""}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        style={{ marginBottom: 10 }}
+        style={{ marginBottom: 8 }}
       />
 
-      {library && (
-        <div className="cat-pills">
-          <button
-            className={selectedCategory === null ? "active" : ""}
-            onClick={() => setSelectedCategory(null)}
-          >
-            {t("library.all")}
-          </button>
-          {library.categories.map((c) => (
-            <button
-              key={c.id}
-              className={selectedCategory === c.id ? "active" : ""}
-              onClick={() => setSelectedCategory(c.id)}
-              title={lang.startsWith("en") ? c.description_en : c.description_es}
-            >
-              {categoryLabel(c, lang)}
-            </button>
-          ))}
-        </div>
-      )}
+      <div className="library-toolbar">
+        <label className="inline-label">{t("library.sort_by")}</label>
+        <select
+          value={sortKey}
+          onChange={(e) => setSortKey(e.target.value as SortKey)}
+        >
+          <option value="title">{t("library.sort_title")}</option>
+          <option value="duration">{t("library.sort_duration")}</option>
+        </select>
+        <button
+          className="icon"
+          onClick={() => {
+            const all: Record<string, boolean> = {};
+            for (const c of orderedCategories) all[c.id] = true;
+            setExpanded(all);
+          }}
+          title={t("library.expand_all")}
+        >
+          {t("library.expand_short")}
+        </button>
+        <button
+          className="icon"
+          onClick={() => setExpanded({})}
+          title={t("library.collapse_all")}
+        >
+          {t("library.collapse_short")}
+        </button>
+      </div>
 
-      {filteredClips.length === 0 && (
-        <p style={{ color: "var(--text-muted)", fontSize: 12 }}>
+      {totalClips === 0 && (
+        <p style={{ color: "var(--text-muted)", fontSize: 12, marginTop: 12 }}>
           {t("library.empty")}
         </p>
       )}
 
-      <ul className="clip-list">
-        {filteredClips.map((c) => {
-          const isPrimary = selectedClip?.id === c.id;
-          const isComparison = comparisonClip?.id === c.id;
-          const cls = [
-            isPrimary ? "active" : "",
-            isComparison ? "comparison" : ""
-          ]
-            .filter(Boolean)
-            .join(" ");
+      <div className="cat-tree">
+        {orderedCategories.map((cat) => {
+          const subs = grouped[cat.id] ?? {};
+          const subKeys = Object.keys(subs).sort((a, b) =>
+            a === "_" ? 1 : b === "_" ? -1 : a.localeCompare(b)
+          );
+          const totalInCat = Object.values(subs).reduce(
+            (acc, arr) => acc + arr.length,
+            0
+          );
+          const isOpen = !!expanded[cat.id];
           return (
-            <li
-              key={c.id}
-              className={cls}
-              onClick={() => setSelectedClip(c)}
-            >
-              <div className="title">{clipTitle(c, lang)}</div>
-              <div className="meta">
-                <span>{c.category}</span>
-                <span>{c.duration_seconds.toFixed(1)} s</span>
-              </div>
+            <div key={cat.id} className="cat-group">
               <button
-                className="compare-btn"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (isPrimary) return; // can't compare with itself
-                  setComparisonClip(isComparison ? null : c);
-                }}
-                disabled={isPrimary}
-                title={
-                  isPrimary
-                    ? t("library.compare_self")
-                    : isComparison
-                      ? t("library.compare_remove")
-                      : t("library.compare_add")
-                }
+                className={`cat-header ${isOpen ? "open" : ""}`}
+                onClick={() => toggleCategory(cat.id)}
+                aria-expanded={isOpen}
               >
-                {isComparison ? "+ active" : "+ compare"}
+                <span className="caret">{isOpen ? "▼" : "▶"}</span>
+                <span className="cat-name">{categoryLabel(cat, lang)}</span>
+                <span className="cat-count">{totalInCat}</span>
               </button>
-            </li>
+
+              {isOpen && (
+                <div className="cat-body">
+                  {subKeys.map((sub) => {
+                    const clips = subs[sub];
+                    const showSubLabel = sub !== "_" && subKeys.length > 1;
+                    return (
+                      <div key={sub} className="sub-group">
+                        {showSubLabel && (
+                          <div className="sub-label">
+                            <span>{sub.replace(/_/g, " ")}</span>
+                            <span className="sub-count">{clips.length}</span>
+                          </div>
+                        )}
+                        <ul className="clip-list">
+                          {clips.map((c) => {
+                            const isPrimary = selectedClip?.id === c.id;
+                            const isComparison = comparisonClip?.id === c.id;
+                            const cls = [
+                              isPrimary ? "active" : "",
+                              isComparison ? "comparison" : ""
+                            ]
+                              .filter(Boolean)
+                              .join(" ");
+                            return (
+                              <li
+                                key={c.id}
+                                className={cls}
+                                onClick={() => setSelectedClip(c)}
+                              >
+                                <div className="title">
+                                  {clipTitle(c, lang)}
+                                </div>
+                                <div className="meta">
+                                  <span>{durationLabel(c.duration_seconds)}</span>
+                                  {c.license && (
+                                    <span className="license-badge">
+                                      {c.license.split("-")[0]}
+                                    </span>
+                                  )}
+                                </div>
+                                <button
+                                  className="compare-btn"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (isPrimary) return;
+                                    setComparisonClip(isComparison ? null : c);
+                                  }}
+                                  disabled={isPrimary}
+                                  title={
+                                    isPrimary
+                                      ? t("library.compare_self")
+                                      : isComparison
+                                        ? t("library.compare_remove")
+                                        : t("library.compare_add")
+                                  }
+                                >
+                                  {isComparison ? "+ active" : "+ compare"}
+                                </button>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           );
         })}
-      </ul>
+      </div>
 
       {comparisonClip && (
         <div className="compare-bar">

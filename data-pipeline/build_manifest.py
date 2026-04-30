@@ -215,6 +215,20 @@ def write_clip_embedding(
         "dominant_pitch_hz": features.scalar_features["dominant_pitch"]
         .round(2)
         .tolist(),
+        "spectral_entropy": features.scalar_features["spectral_entropy"]
+        .round(4)
+        .tolist(),
+        "harmonic_ratio": features.scalar_features["harmonic_ratio"]
+        .round(4)
+        .tolist(),
+        "energy_low": features.scalar_features["energy_low"].round(5).tolist(),
+        "energy_mid_low": features.scalar_features["energy_mid_low"]
+        .round(5)
+        .tolist(),
+        "energy_mid_high": features.scalar_features["energy_mid_high"]
+        .round(5)
+        .tolist(),
+        "energy_high": features.scalar_features["energy_high"].round(5).tolist(),
     }
 
     payload = {
@@ -223,6 +237,11 @@ def write_clip_embedding(
         "sample_rate": features.sample_rate,
         "hop_seconds": features.hop_seconds,
         "num_frames": features.num_frames,
+        "clip_level": {
+            "tempo_bpm": round(features.tempo_bpm, 2),
+            "key_pitch_class": features.key_pitch_class,
+            "key_mode": features.key_mode,
+        },
         "tracks": tracks,
         "raw": raw,
     }
@@ -251,6 +270,7 @@ def write_manifest(
                 "title_en": meta.get("title_en", f.clip_id),
                 "title_es": meta.get("title_es", f.clip_id),
                 "category": f.category,
+                "subcategory": meta.get("subcategory", ""),
                 "duration_seconds": round(f.duration_seconds, 3),
                 "sample_rate": f.sample_rate,
                 "audio_path": str(rel_audio).replace("\\", "/"),

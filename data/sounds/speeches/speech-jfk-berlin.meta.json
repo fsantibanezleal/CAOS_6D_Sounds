@@ -3,10 +3,9 @@
   "title_es": "JFK — Ich bin ein Berliner",
   "source": "Wikimedia Commons / John F. Kennedy",
   "license": "Public Domain",
-  "attribution": "John F. Kennedy, 1963 (U.S. Government work, public domain)",
+  "attribution": "John F. Kennedy, 1963 (U.S. Government work)",
+  "subcategory": "us-historical",
   "tags": [
-    "speech",
-    "history",
-    "english"
+    "history"
   ]
 }

@@ -34,7 +34,13 @@ export function Visualization6D() {
   return (
     <div className="viz-canvas" style={{ height: "100%" }}>
       <Canvas
-        gl={{ antialias: true, powerPreference: "high-performance" }}
+        gl={{
+          antialias: true,
+          powerPreference: "high-performance",
+          // Required to grab a non-blank PNG via canvas.toBlob() — by default
+          // R3F clears the drawing buffer right after the frame is composited.
+          preserveDrawingBuffer: true
+        }}
         camera={{ position: [3.6, 2.4, 4.0], fov: 45, near: 0.01, far: 100 }}
       >
         <SceneContents />

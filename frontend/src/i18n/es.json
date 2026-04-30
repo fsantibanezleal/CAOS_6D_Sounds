@@ -13,13 +13,13 @@
   },
   "library": {
     "title": "Biblioteca de sonidos",
-    "search": "Buscar clips...",
+    "search": "Buscar clips, etiquetas, categorías...",
     "all": "Todas las categorías",
     "duration": "Duración",
     "license": "Licencia",
     "source": "Fuente",
     "tags": "Etiquetas",
-    "empty": "Aún no hay clips. Ejecuta el data pipeline (ver README) para cargar la biblioteca.",
+    "empty": "Ningún clip coincide con el filtro actual.",
     "play": "Reproducir",
     "pause": "Pausar",
     "loop": "Repetir el clip cuando termine",
@@ -28,7 +28,14 @@
     "compare_remove": "Quitar el clip de comparación",
     "compare_self": "Es el clip activo",
     "comparing_with": "Comparando con",
-    "swap": "Intercambiar primario y comparación"
+    "swap": "Intercambiar primario y comparación",
+    "sort_by": "Ordenar por",
+    "sort_title": "Título",
+    "sort_duration": "Duración",
+    "expand_all": "Expandir todas las categorías",
+    "collapse_all": "Contraer todas las categorías",
+    "expand_short": "Expandir",
+    "collapse_short": "Contraer"
   },
   "viz": {
     "title": "Visualización 6D",
@@ -56,7 +63,9 @@
     "live_features": "Características en vivo",
     "feature_rms": "Energía RMS",
     "feature_centroid": "Centroide espectral",
-    "feature_pitch": "Tono dominante"
+    "feature_pitch": "Tono dominante",
+    "feature_tempo": "Tempo (clip)",
+    "feature_key": "Tonalidad (clip)"
   },
   "help": {
     "title": "Cómo usar Auralis",

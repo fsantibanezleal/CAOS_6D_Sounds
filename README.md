@@ -49,8 +49,12 @@ embedding space.
 * **Bilingual UI from day one.** Spanish (default) + English with a
   visible switcher; preference persists across reloads.
 * **Light + dark themes**, also persistent.
-* **25 ready-to-play clips** out of the box, organised by category
-  (synthetic, birds, mammals, insects, nature, speeches, mechanical).
+* **~70 ready-to-play clips** out of the box, organised in a
+  collapsible tree by category and subcategory (synthetic, birds,
+  mammals, amphibians/reptiles, insects, nature, speeches, music,
+  space, mechanical). Each clip ships with verified license metadata
+  and per-clip credits.
+* **Snapshot export** — one button to grab the current 6D viz as a PNG.
 
 ## Diagrams
 
