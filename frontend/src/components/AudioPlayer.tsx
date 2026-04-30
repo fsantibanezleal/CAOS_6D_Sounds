@@ -25,6 +25,8 @@ export function AudioPlayer() {
   const setEmbedding = useStore((s) => s.setEmbedding);
   const loopAudio = useStore((s) => s.loopAudio);
   const setLoopAudio = useStore((s) => s.setLoopAudio);
+  const comparisonClip = useStore((s) => s.comparisonClip);
+  const setComparisonEmbedding = useStore((s) => s.setComparisonEmbedding);
 
   // Load embedding metadata whenever the clip changes.
   useEffect(() => {
@@ -37,6 +39,22 @@ export function AudioPlayer() {
       cancelled = true;
     };
   }, [selectedClip, setEmbedding]);
+
+  // Load embedding metadata for the comparison clip too (silhouette only —
+  // the comparison clip's audio is not played).
+  useEffect(() => {
+    if (!comparisonClip) {
+      setComparisonEmbedding(null);
+      return;
+    }
+    let cancelled = false;
+    void api.getClipEmbedding(comparisonClip.id).then((e) => {
+      if (!cancelled) setComparisonEmbedding(e);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [comparisonClip, setComparisonEmbedding]);
 
   // Drive currentTime via rAF so the visualization stays smooth (audio
   // element timeupdate fires only every ~250 ms).
