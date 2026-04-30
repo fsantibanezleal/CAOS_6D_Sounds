@@ -40,7 +40,9 @@
     "license_any": "Cualquiera",
     "license_permissive": "Permisiva (CC-BY, PD)",
     "license_pd": "Solo dominio público",
-    "max_duration": "Duración máx"
+    "max_duration": "Duración máx",
+    "tags_filter": "Filtrar por etiqueta",
+    "tags_clear": "Limpiar"
   },
   "viz": {
     "title": "Visualización 6D",
@@ -51,12 +53,16 @@
     "mode_constellation": "Constelación",
     "mode_aurora": "Aurora",
     "mode_comet": "Cometa",
+    "mode_tube": "Cinta",
+    "mode_galaxy": "Galaxia",
     "mode_spheres_help": "Esferas discretas de colores unidas por una línea.",
-    "mode_smoke_help": "Humo difuso de colores con mezcla aditiva y deriva hacia afuera (por defecto).",
+    "mode_smoke_help": "Humo difuso de colores con mezcla aditiva y deriva hacia afuera.",
     "mode_bursts_help": "Cada cuadro dibuja una pequeña explosión de rayos de color desde su centro.",
     "mode_constellation_help": "Nodos pequeños y brillantes unidos por aristas finas que pulsan — un mapa estelar.",
     "mode_aurora_help": "Cortinas verticales de luz que se elevan desde cada cuadro con una oscilación suave.",
-    "mode_comet_help": "Una cabeza brillante en el cursor con una cola larga estirada detrás.",
+    "mode_comet_help": "Una cabeza brillante en el cursor con una cola larga estirada detrás (por defecto).",
+    "mode_tube_help": "Una cinta gruesa que fluye a lo largo del trail; el grosor sigue al eje de tamaño.",
+    "mode_galaxy_help": "Cúmulos de estrellas titilando permanentemente en cada cuadro — toda la ruta 6D queda visible.",
     "smoke_density": "Densidad de humo",
     "smoke_spread": "Dispersión de humo",
     "smoke_drift": "Deriva de humo",
@@ -68,6 +74,10 @@
     "aurora_wobble": "Oscilación",
     "comet_head": "Tamaño de cabeza",
     "comet_tail": "Decaimiento de cola",
+    "tube_width": "Ancho de cinta",
+    "galaxy_density": "Estrellas por cuadro",
+    "galaxy_spread": "Radio del cúmulo",
+    "galaxy_twinkle": "Titilación",
     "track": "Pista de embedding",
     "track_help": "Elige el espacio subyacente — características espectrales interpretables o una proyección aprendida (PCA / t-SNE / UMAP / Tonnetz / YAMNet).",
     "axis_x": "Eje X",
@@ -84,7 +94,11 @@
     "show_axes": "Mostrar ejes",
     "show_grid": "Mostrar grilla",
     "reset_camera": "Reiniciar cámara",
-    "snapshot": "Captura"
+    "snapshot": "Captura",
+    "record_start": "Grabar video",
+    "record_stop": "Detener ({{n}}s)",
+    "record_saving": "Guardando...",
+    "record_help": "Captura el canvas como video webm. Reproduce el trail exactamente como lo viste."
   },
   "panels": {
     "spectrogram": "Espectrograma",

@@ -40,7 +40,9 @@
     "license_any": "Any",
     "license_permissive": "Permissive (CC-BY, PD)",
     "license_pd": "Public domain only",
-    "max_duration": "Max duration"
+    "max_duration": "Max duration",
+    "tags_filter": "Filter by tag",
+    "tags_clear": "Clear"
   },
   "viz": {
     "title": "6D visualization",
@@ -51,12 +53,16 @@
     "mode_constellation": "Constellation",
     "mode_aurora": "Aurora",
     "mode_comet": "Comet",
+    "mode_tube": "Tube",
+    "mode_galaxy": "Galaxy",
     "mode_spheres_help": "Discrete colored spheres connected by a polyline.",
-    "mode_smoke_help": "Diffuse colored smoke with additive blending and outward drift (default).",
+    "mode_smoke_help": "Diffuse colored smoke with additive blending and outward drift.",
     "mode_bursts_help": "Each frame draws a tiny explosion of color rays radiating from its center.",
     "mode_constellation_help": "Tiny glowing nodes joined by thin pulsing edges — a star-map of the trail.",
     "mode_aurora_help": "Vertical curtains of light rising from each frame's position with a gentle sway.",
-    "mode_comet_help": "A bright glowing head at the cursor with a long stretched tail behind it.",
+    "mode_comet_help": "A bright glowing head at the cursor with a long stretched tail behind it (default).",
+    "mode_tube_help": "A thick camera-aligned ribbon flowing along the trail; thickness = size axis.",
+    "mode_galaxy_help": "Permanent twinkling star-clusters at every frame — the whole 6D path stays visible.",
     "smoke_density": "Smoke density",
     "smoke_spread": "Smoke spread",
     "smoke_drift": "Smoke drift",
@@ -68,6 +74,10 @@
     "aurora_wobble": "Curtain sway",
     "comet_head": "Head size",
     "comet_tail": "Tail decay",
+    "tube_width": "Ribbon width",
+    "galaxy_density": "Stars per frame",
+    "galaxy_spread": "Cluster radius",
+    "galaxy_twinkle": "Twinkle",
     "track": "Embedding track",
     "track_help": "Pick the underlying space — interpretable spectral features, or a learned projection (PCA / t-SNE / UMAP / Tonnetz / YAMNet).",
     "axis_x": "X axis",
@@ -84,7 +94,11 @@
     "show_axes": "Show axes",
     "show_grid": "Show grid",
     "reset_camera": "Reset camera",
-    "snapshot": "Snapshot"
+    "snapshot": "Snapshot",
+    "record_start": "Record video",
+    "record_stop": "Stop ({{n}}s)",
+    "record_saving": "Saving...",
+    "record_help": "Capture the canvas as a webm video. Plays back the trail exactly as you saw it."
   },
   "panels": {
     "spectrogram": "Spectrogram",

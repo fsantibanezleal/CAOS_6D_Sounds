@@ -9,7 +9,9 @@ import { AuroraTrail } from "./AuroraTrail";
 import { BurstsTrail } from "./BurstsTrail";
 import { CometTrail } from "./CometTrail";
 import { ConstellationTrail } from "./ConstellationTrail";
+import { GalaxyTrail } from "./GalaxyTrail";
 import { SmokeTrail } from "./SmokeTrail";
+import { TubeTrail } from "./TubeTrail";
 
 /**
  * The 6D visualization.
@@ -145,6 +147,24 @@ function SceneContents() {
       {embedding && trackValues && viz.renderMode === "comet" && (
         <CometTrail
           key={"comet-" + embedding.id}
+          values={trackValues.values}
+          numFrames={embedding.num_frames}
+          hopSeconds={embedding.hop_seconds}
+        />
+      )}
+
+      {embedding && trackValues && viz.renderMode === "tube" && (
+        <TubeTrail
+          key={"tube-" + embedding.id}
+          values={trackValues.values}
+          numFrames={embedding.num_frames}
+          hopSeconds={embedding.hop_seconds}
+        />
+      )}
+
+      {embedding && trackValues && viz.renderMode === "galaxy" && (
+        <GalaxyTrail
+          key={"galaxy-" + embedding.id + "-" + viz.galaxyDensity}
           values={trackValues.values}
           numFrames={embedding.num_frames}
           hopSeconds={embedding.hop_seconds}

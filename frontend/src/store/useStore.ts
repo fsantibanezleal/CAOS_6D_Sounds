@@ -12,7 +12,9 @@ export type RenderMode =
   | "bursts"
   | "constellation"
   | "aurora"
-  | "comet";
+  | "comet"
+  | "tube"
+  | "galaxy";
 
 export interface VizConfig {
   /** Which embedding track to use (features / pca / tsne / umap / tonnetz / yamnet). */
@@ -46,6 +48,12 @@ export interface VizConfig {
   /** Comet-mode parameters. */
   cometHeadScale: number; // 1..10 (head size = frame size * this)
   cometTailDecay: number; // 0.5..4 (higher = tail dies off faster)
+  /** Tube-ribbon parameters. */
+  tubeWidth: number;      // 0.2..3.0 (multiplier on frame.size to derive ribbon half-width)
+  /** Galaxy-mode parameters. */
+  galaxyDensity: number;  // 1..20 stars per frame
+  galaxySpread: number;   // 0..0.4 cluster radius in world units
+  galaxyTwinkle: number;  // 0..0.8 multiplicative brightness wobble
 }
 
 interface StoreState {
@@ -119,7 +127,11 @@ const DEFAULT_VIZ: VizConfig = {
   auroraHeight: 1.0,
   auroraWobble: 0.06,
   cometHeadScale: 5.0,
-  cometTailDecay: 1.8
+  cometTailDecay: 1.8,
+  tubeWidth: 1.4,
+  galaxyDensity: 6,
+  galaxySpread: 0.04,
+  galaxyTwinkle: 0.35
 };
 
 /** Stable id of the clip that loads automatically when the library
@@ -193,7 +205,10 @@ export const useStore = create<StoreState>()(
       // persisted states that lack those fields are discarded so we
       // don't render with `undefined` numbers (which propagate as NaN
       // and freeze the WebGL InstancedMesh).
-      version: 2,
+      // History:
+      //   v2 — added Constellation + Aurora + Comet fields (release 0.5.1)
+      //   v3 — added Tube + Galaxy fields (release 0.6.0)
+      version: 3,
       partialize: (state) => ({
         theme: state.theme,
         viz: state.viz,
