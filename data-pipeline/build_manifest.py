@@ -237,6 +237,9 @@ def write_clip_embedding(
         "spectral_entropy": features.scalar_features["spectral_entropy"]
         .round(4)
         .tolist(),
+        "spectral_irregularity": features.scalar_features["spectral_irregularity"]
+        .round(4)
+        .tolist(),
         "harmonic_ratio": features.scalar_features["harmonic_ratio"]
         .round(4)
         .tolist(),
@@ -248,6 +251,10 @@ def write_clip_embedding(
         .round(5)
         .tolist(),
         "energy_high": features.scalar_features["energy_high"].round(5).tolist(),
+        "mel_band_0": features.scalar_features["mel_band_0"].round(5).tolist(),
+        "mel_band_1": features.scalar_features["mel_band_1"].round(5).tolist(),
+        "mel_band_2": features.scalar_features["mel_band_2"].round(5).tolist(),
+        "mel_band_3": features.scalar_features["mel_band_3"].round(5).tolist(),
         "onset_density": features.scalar_features["onset_density"]
         .round(3)
         .tolist(),

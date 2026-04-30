@@ -41,7 +41,7 @@ N_MFCC: Final[int] = 13
 # --------------------------------------------------------------------------- #
 
 # Order matters: the frontend treats the same indices as the same feature.
-# 22 scalar features per analysis frame.
+# 27 scalar features per analysis frame.
 SCALAR_FEATURES: Final[tuple[str, ...]] = (
     # Core energy / time domain
     "rms",
@@ -56,11 +56,17 @@ SCALAR_FEATURES: Final[tuple[str, ...]] = (
     "spectral_entropy",  # Shannon entropy of the normalized spectrum
     "spectral_skewness",  # 3rd standardized moment of the spectrum
     "spectral_kurtosis",  # 4th standardized moment, excess (Fisher) form
+    "spectral_irregularity",  # frame-to-frame partial-amplitude variation (Krimphoff 1994)
     # Spectral sub-band energies (4 octave-spaced bands)
     "energy_low",      # 0-250 Hz
     "energy_mid_low",  # 250-1000 Hz
     "energy_mid_high",  # 1-4 kHz
     "energy_high",     # 4-22 kHz
+    # Mel-band energies (4 perceptually-spaced bands across 0..Nyquist)
+    "mel_band_0",      # roughly 0-500 Hz on the mel scale
+    "mel_band_1",      # roughly 500-1500 Hz
+    "mel_band_2",      # roughly 1500-4000 Hz
+    "mel_band_3",      # roughly 4000-Nyquist
     # Pitch + harmonic content
     "dominant_pitch",
     "pitch_confidence",

@@ -9,6 +9,7 @@ import { AuroraTrail } from "./AuroraTrail";
 import { BurstsTrail } from "./BurstsTrail";
 import { CometTrail } from "./CometTrail";
 import { ConstellationTrail } from "./ConstellationTrail";
+import { FlowfieldTrail } from "./FlowfieldTrail";
 import { GalaxyTrail } from "./GalaxyTrail";
 import { SmokeTrail } from "./SmokeTrail";
 import { TubeTrail } from "./TubeTrail";
@@ -165,6 +166,15 @@ function SceneContents() {
       {embedding && trackValues && viz.renderMode === "galaxy" && (
         <GalaxyTrail
           key={"galaxy-" + embedding.id + "-" + viz.galaxyDensity}
+          values={trackValues.values}
+          numFrames={embedding.num_frames}
+          hopSeconds={embedding.hop_seconds}
+        />
+      )}
+
+      {embedding && trackValues && viz.renderMode === "flowfield" && (
+        <FlowfieldTrail
+          key={"flowfield-" + embedding.id + "-" + viz.flowfieldParticles}
           values={trackValues.values}
           numFrames={embedding.num_frames}
           hopSeconds={embedding.hop_seconds}
