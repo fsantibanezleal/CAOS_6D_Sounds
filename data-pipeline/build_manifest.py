@@ -191,11 +191,17 @@ def write_clip_embedding(
         }
     ]
     for method, matrix in projections.items():
+        if method == "yamnet":
+            desc_en = "6D PCA projection of YAMNet's pretrained 1024-D embeddings (deep CNN trained on AudioSet)"
+            desc_es = "Proyección PCA 6D de los embeddings preentrenados YAMNet de 1024-D (CNN profunda entrenada con AudioSet)"
+        else:
+            desc_en = f"6-dimensional {method.upper()} projection of MFCC frames"
+            desc_es = f"Proyección {method.upper()} de 6 dimensiones de los cuadros MFCC"
         tracks.append(
             {
                 "name": method,
-                "description_en": f"6-dimensional {method.upper()} projection of MFCC frames",
-                "description_es": f"Proyección {method.upper()} de 6 dimensiones de los cuadros MFCC",
+                "description_en": desc_en,
+                "description_es": desc_es,
                 "dim_labels": [f"D{i + 1}" for i in range(matrix.shape[1])],
                 "values": matrix.round(4).tolist(),
             }

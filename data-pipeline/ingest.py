@@ -18,13 +18,21 @@ import argparse
 import sys
 from pathlib import Path
 
+import numpy as np  # noqa: F401  (re-exported via type hints in modules)
+
 # Make sibling modules importable when invoked as `python data-pipeline/ingest.py`
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from build_manifest import write_clip_embedding, write_manifest
-from compute_embeddings import available_methods, fit_all
+from compute_embeddings import available_methods, fit_all, fit_yamnet
 from extract_features import discover_clips, extract_clip
 from synthetic_seeds import write_seeds
+from yamnet_embeddings import (
+    YAMNET_SR,
+    try_yamnet,
+    upsample_to_hop,
+    yamnet_embedding,
+)
 
 
 def main() -> int:
@@ -60,12 +68,29 @@ def main() -> int:
             f"duration={feats.duration_seconds:.1f}s"
         )
 
-    print("[4/5] Fitting projections (PCA / t-SNE / UMAP)...")
+    print("[4/6] Fitting MFCC projections (PCA / t-SNE / UMAP)...")
     projections_by_method = fit_all([(f.clip_id, f.mfcc) for f in feature_set])
-    methods = available_methods(projections_by_method)
-    print(f"  produced: {', '.join(methods) if methods else '(none)'}")
 
-    print("[5/5] Writing manifest + per-clip embedding JSONs...")
+    print("[5/6] Computing YAMNet deep embeddings (optional)...")
+    yamnet_model = try_yamnet()
+    yamnet_per_clip: dict[str, np.ndarray] | None = None
+    if yamnet_model is not None:
+        yamnet_matrices: list[tuple[str, np.ndarray]] = []
+        for f in feature_set:
+            emb = yamnet_embedding(yamnet_model, f.raw_audio, f.sample_rate)
+            upsampled = upsample_to_hop(emb, f.num_frames, f.hop_seconds)
+            yamnet_matrices.append((f.clip_id, upsampled))
+            print(f"  [{f.category}] {f.clip_id}  yamnet frames={emb.shape[0]} -> {upsampled.shape[0]}")
+        yamnet_per_clip = fit_yamnet(yamnet_matrices)
+        if yamnet_per_clip is not None:
+            projections_by_method["yamnet"] = yamnet_per_clip
+    else:
+        print("  yamnet skipped (tensorflow_hub unavailable or model load failed)")
+
+    methods = available_methods(projections_by_method)
+    print(f"  methods produced: {', '.join(methods) if methods else '(none)'}")
+
+    print("[6/6] Writing manifest + per-clip embedding JSONs...")
     for f in feature_set:
         per_clip = {m: projections_by_method[m][f.clip_id] for m in methods}
         target = write_clip_embedding(f, per_clip)
