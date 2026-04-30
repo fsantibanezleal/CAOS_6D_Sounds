@@ -37,6 +37,21 @@ except ImportError as exc:  # pragma: no cover
     ) from exc
 
 
+# Optional pitch tracker. When the `crepe` package is installed, we use it
+# in place of librosa's piptrack — it is dramatically more accurate on
+# voiced / harmonic content and gives a calibrated 0..1 confidence per
+# frame. The dependency is heavy (tensorflow), so it stays optional.
+def _try_crepe():
+    try:
+        import crepe  # type: ignore
+        return crepe
+    except ImportError:
+        return None
+
+
+_CREPE = _try_crepe()
+
+
 SUPPORTED_EXTS = {".ogg", ".oga", ".opus", ".mp3", ".wav", ".flac", ".m4a"}
 
 
@@ -101,11 +116,18 @@ def extract_clip(audio_path: Path, category: str) -> ClipFeatures:
         S=stft, sr=sr, n_fft=n_fft, hop_length=hop_length
     ).mean(axis=0)
 
-    # Pitch via piptrack (cheap, robust enough for visualization).
-    pitches, magnitudes = librosa.piptrack(
-        S=stft, sr=sr, n_fft=n_fft, hop_length=hop_length
-    )
-    dominant_pitch, pitch_confidence = _track_dominant_pitch(pitches, magnitudes)
+    # Pitch tracking. Prefer CREPE (deep model, much better on voiced /
+    # harmonic content); fall back to librosa.piptrack when CREPE is not
+    # installed.
+    if _CREPE is not None:
+        dominant_pitch, pitch_confidence = _crepe_pitch(
+            y=y, sr=sr, hop_seconds=HOP_SECONDS, target_n=stft.shape[1]
+        )
+    else:
+        pitches, magnitudes = librosa.piptrack(
+            S=stft, sr=sr, n_fft=n_fft, hop_length=hop_length
+        )
+        dominant_pitch, pitch_confidence = _track_dominant_pitch(pitches, magnitudes)
 
     # Coarse "tempo proxy": rolling std-dev of onset strength.
     onset_env = librosa.onset.onset_strength(
@@ -187,6 +209,42 @@ def _track_dominant_pitch(
             conf[i] = magnitudes[idx, i]
     if conf.max() > 0:
         conf /= conf.max()
+    return pitch, conf
+
+
+def _crepe_pitch(
+    y: np.ndarray, sr: int, hop_seconds: float, target_n: int
+) -> tuple[np.ndarray, np.ndarray]:
+    """Return (pitch_hz, confidence) per frame using CREPE.
+
+    CREPE provides a calibrated 0..1 confidence per frame and is far more
+    accurate than ``librosa.piptrack`` on voiced / harmonic content.
+
+    The model is invoked at ``hop_seconds`` directly via its ``step_size``
+    argument (in milliseconds). The output is then trimmed / padded to
+    ``target_n`` frames so it lines up with the rest of the feature stack.
+
+    Frames where confidence is below 0.3 are silenced (pitch set to 0)
+    to avoid noisy contour glitches dominating the visualization.
+    """
+    crepe = _CREPE  # captured for type-checkers
+    assert crepe is not None
+    step_ms = max(1, int(round(hop_seconds * 1000)))
+    # CREPE works at 16 kHz internally; pass the workstation's audio
+    # at any sample rate, the model resamples for us.
+    _, frequency, confidence, _ = crepe.predict(
+        y, sr, viterbi=True, step_size=step_ms, model_capacity="tiny",
+        verbose=0,
+    )
+    # Silence noisy contour frames
+    silenced = frequency.copy()
+    silenced[confidence < 0.3] = 0.0
+
+    pitch = np.zeros(target_n, dtype=np.float32)
+    conf = np.zeros(target_n, dtype=np.float32)
+    n = min(target_n, silenced.shape[0])
+    pitch[:n] = silenced[:n]
+    conf[:n] = confidence[:n]
     return pitch, conf
 
 
