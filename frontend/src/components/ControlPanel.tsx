@@ -7,6 +7,7 @@ import {
 } from "../lib/colormaps";
 import { snapshotCanvas } from "../lib/snapshot";
 import { useStore, type AxisRole } from "../store/useStore";
+import { RecordButton } from "./RecordButton";
 
 export function ControlPanel() {
   const { t, i18n } = useTranslation();
@@ -79,6 +80,22 @@ export function ControlPanel() {
             title={t("viz.mode_comet_help")}
           >
             {t("viz.mode_comet")}
+          </button>
+        </div>
+        <div className="mode-toggle two" style={{ marginTop: 4 }}>
+          <button
+            className={viz.renderMode === "tube" ? "active" : ""}
+            onClick={() => setViz({ renderMode: "tube" })}
+            title={t("viz.mode_tube_help")}
+          >
+            {t("viz.mode_tube")}
+          </button>
+          <button
+            className={viz.renderMode === "galaxy" ? "active" : ""}
+            onClick={() => setViz({ renderMode: "galaxy" })}
+            title={t("viz.mode_galaxy_help")}
+          >
+            {t("viz.mode_galaxy")}
           </button>
         </div>
 
@@ -274,6 +291,78 @@ export function ControlPanel() {
               />
               <span className="value-readout">
                 {viz.cometTailDecay.toFixed(2)}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {viz.renderMode === "tube" && (
+          <div style={{ marginTop: 8 }}>
+            <div className="row">
+              <label>{t("viz.tube_width")}</label>
+              <input
+                type="range"
+                min={0.2}
+                max={3.0}
+                step={0.05}
+                value={viz.tubeWidth}
+                onChange={(e) =>
+                  setViz({ tubeWidth: Number(e.target.value) })
+                }
+              />
+              <span className="value-readout">
+                {viz.tubeWidth.toFixed(2)}×
+              </span>
+            </div>
+          </div>
+        )}
+
+        {viz.renderMode === "galaxy" && (
+          <div style={{ marginTop: 8 }}>
+            <div className="row">
+              <label>{t("viz.galaxy_density")}</label>
+              <input
+                type="range"
+                min={1}
+                max={20}
+                step={1}
+                value={viz.galaxyDensity}
+                onChange={(e) =>
+                  setViz({ galaxyDensity: Number(e.target.value) })
+                }
+              />
+              <span className="value-readout">{viz.galaxyDensity}</span>
+            </div>
+            <div className="row">
+              <label>{t("viz.galaxy_spread")}</label>
+              <input
+                type="range"
+                min={0}
+                max={0.4}
+                step={0.005}
+                value={viz.galaxySpread}
+                onChange={(e) =>
+                  setViz({ galaxySpread: Number(e.target.value) })
+                }
+              />
+              <span className="value-readout">
+                {viz.galaxySpread.toFixed(2)}
+              </span>
+            </div>
+            <div className="row">
+              <label>{t("viz.galaxy_twinkle")}</label>
+              <input
+                type="range"
+                min={0}
+                max={0.8}
+                step={0.05}
+                value={viz.galaxyTwinkle}
+                onChange={(e) =>
+                  setViz({ galaxyTwinkle: Number(e.target.value) })
+                }
+              />
+              <span className="value-readout">
+                {viz.galaxyTwinkle.toFixed(2)}
               </span>
             </div>
           </div>
@@ -484,6 +573,8 @@ export function ControlPanel() {
         >
           {t("viz.snapshot")}
         </button>
+
+        <RecordButton />
       </section>
 
       {library && (

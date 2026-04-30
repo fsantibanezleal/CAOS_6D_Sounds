@@ -3,6 +3,52 @@
 Newest-first log of the design decisions that shaped Auralis. Each entry
 records what changed, why, and the alternative we considered.
 
+## v0.6.0 — Tube + Galaxy + video recording + tag filter (2026-04-30)
+
+Two more render modes (8 total), a video recording feature, and a
+tag-based library filter.
+
+### Tube ribbon mode
+Thick camera-aligned triangle strip along the trail. Two vertices
+per frame (top + bottom of the strip); ribbon perpendicular comes
+from `camera.viewDir × segmentDir` so the strip always faces the
+camera regardless of orbit angle. Width = size axis × `tubeWidth`
+slider. Code: `components/TubeTrail.tsx`. Looks sculptural and
+continuous — pairs especially well with Tonnetz on music clips.
+
+### Galaxy mode
+Permanent star-clusters at every frame. No drift, no age fade —
+the entire 6D path remains visible. Each point twinkles with a
+deterministic sine of the frame index. Sliders: stars per frame
+(1..20), cluster radius (0..0.4), twinkle amplitude (0..0.8).
+Different ergonomics from the other modes (history-preserving
+rather than window-based). Code: `components/GalaxyTrail.tsx`.
+
+### Video recording
+New `Record video` button uses `HTMLCanvasElement.captureStream(30)`
++ `MediaRecorder` to capture the 6D viz as a webm at 8 Mbps. 60 s
+safety cap. Pulsing red dot + elapsed seconds while recording.
+Hidden when the browser lacks support (very old Safari). Files:
+`lib/videoRecorder.ts`, `components/RecordButton.tsx`.
+
+### Tag filter in the library
+Collapsible facet under the library toolbar lists every distinct
+tag with its clip count. Click to toggle; OR semantics (a clip
+matches if it carries any selected tag). Combines with the existing
+search + license + max-duration filters.
+
+### Persist version bumped to 3
+DEFAULT_VIZ gained four new fields (`tubeWidth`, `galaxyDensity`,
+`galaxySpread`, `galaxyTwinkle`); the version bump discards stale
+localStorage that lacked them.
+
+### Wiki
+- New page **Recording-And-Snapshots** documenting both PNG and
+  webm capture in detail (browser-support matrix included).
+- New page **Cookbook** with eight practical workflows
+  (start-here, harmonic-shape video, two-species comparison,
+  brand-coloured palette, etc.).
+
 ## v0.5.0 — Three more render modes (2026-04-30)
 
 Three new visualisation modes — **Constellation**, **Aurora**,

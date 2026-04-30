@@ -51,8 +51,32 @@ export function SoundLibrary() {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [licenseFilter, setLicenseFilter] = useState<LicenseFilter>("any");
   const [maxDuration, setMaxDuration] = useState<number>(0); // 0 = no cap
+  const [activeTags, setActiveTags] = useState<Set<string>>(() => new Set());
 
-  // Filter clips by search query + license + duration
+  function toggleTag(tag: string) {
+    setActiveTags((prev) => {
+      const next = new Set(prev);
+      if (next.has(tag)) next.delete(tag);
+      else next.add(tag);
+      return next;
+    });
+  }
+
+  // Sorted distinct list of all tags in the library, with their counts.
+  const tagCounts = useMemo<Array<[string, number]>>(() => {
+    if (!library) return [];
+    const counts = new Map<string, number>();
+    for (const c of library.clips) {
+      for (const tag of c.tags) {
+        counts.set(tag, (counts.get(tag) ?? 0) + 1);
+      }
+    }
+    return [...counts.entries()].sort((a, b) =>
+      b[1] - a[1] || a[0].localeCompare(b[0])
+    );
+  }, [library]);
+
+  // Filter clips by search query + license + duration + active tag set
   const filteredClips = useMemo<SoundClip[]>(() => {
     if (!library) return [];
     const q = search.trim().toLowerCase();
@@ -79,8 +103,14 @@ export function SoundLibrary() {
     if (maxDuration > 0) {
       clips = clips.filter((c) => c.duration_seconds <= maxDuration);
     }
+    if (activeTags.size > 0) {
+      // OR semantics — show any clip that has at least one of the
+      // selected tags. AND semantics would too easily produce empty
+      // results at this corpus size.
+      clips = clips.filter((c) => c.tags.some((tag) => activeTags.has(tag)));
+    }
     return clips;
-  }, [library, search, licenseFilter, maxDuration]);
+  }, [library, search, licenseFilter, maxDuration, activeTags]);
 
   // Group by category, then subcategory
   const grouped = useMemo(() => {
@@ -221,6 +251,38 @@ export function SoundLibrary() {
           {maxDuration === 0 ? "∞" : `${maxDuration}s`}
         </span>
       </div>
+
+      {tagCounts.length > 0 && (
+        <details className="tag-facet">
+          <summary>
+            {t("library.tags_filter")}
+            {activeTags.size > 0 && (
+              <span className="tag-active-count">{activeTags.size}</span>
+            )}
+          </summary>
+          <div className="tag-pills">
+            {tagCounts.map(([tag, count]) => (
+              <button
+                key={tag}
+                className={activeTags.has(tag) ? "tag-pill active" : "tag-pill"}
+                onClick={() => toggleTag(tag)}
+                title={`${count} clip(s)`}
+              >
+                {tag}
+                <span className="tag-count">{count}</span>
+              </button>
+            ))}
+            {activeTags.size > 0 && (
+              <button
+                className="tag-pill clear"
+                onClick={() => setActiveTags(new Set())}
+              >
+                {t("library.tags_clear")}
+              </button>
+            )}
+          </div>
+        </details>
+      )}
 
       {totalClips === 0 && (
         <p style={{ color: "var(--text-muted)", fontSize: 12, marginTop: 12 }}>
