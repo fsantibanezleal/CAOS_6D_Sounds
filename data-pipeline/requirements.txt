@@ -26,3 +26,8 @@ umap-learn==0.5.6
 crepe==0.0.16
 hmmlearn==0.3.3
 tensorflow==2.21.0
+
+# Optional: YAMNet (Hershey et al., 2017) pretrained deep audio embeddings
+# via TensorFlow Hub. Adds a "yamnet" track in the manifest, projected to
+# 6D via corpus-wide PCA. Requires tensorflow (already pinned above).
+tensorflow-hub==0.16.1

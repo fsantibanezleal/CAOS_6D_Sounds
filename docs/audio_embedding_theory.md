@@ -87,9 +87,12 @@ non-linear projections below.
 
 ## 2. Six-dimensional projections
 
-Three projections are fit on the **concatenated** MFCC matrix across all
-clips, then split back per clip. Concatenation matters: it puts
-recordings in a common embedding so the user can compare them visually.
+Four projections are produced. The first three (PCA, t-SNE, UMAP) fit
+on the **concatenated** MFCC matrix across all clips, then split back
+per clip. Concatenation matters: it puts recordings in a common
+embedding so the user can compare them visually. The fourth (YAMNet)
+is a deep-learned representation that is *absolute* — the same
+recording yields the same embedding regardless of corpus.
 
 ### 2.1 PCA
 
@@ -148,6 +151,30 @@ preserves global topology better, and supports out-of-sample inference.
 **Strengths**: fast, smooth global geometry, supports arbitrary `n_components`
 including 6 directly. **Weaknesses**: slightly more parameters to tune
 (`n_neighbors`, `min_dist`).
+
+### 2.4 YAMNet (deep, pretrained)
+
+YAMNet (Hershey et al., 2017) is a pretrained CNN trained on AudioSet
+to classify 521 sound classes. Its penultimate layer produces 1024-D
+embeddings every ~480 ms — a high-level, semantically rich
+representation of audio.
+
+We:
+
+1. Resample each clip to 16 kHz mono.
+2. Run YAMNet, getting `(num_yamnet_frames, 1024)`.
+3. Nearest-neighbour upsample to the project hop (50 ms).
+4. Across the corpus, fit a 6-component PCA on the upsampled
+   `(total_frames, 1024)` matrix.
+5. Split per-clip and min-max normalize.
+
+The result is a 6D track that captures category-level semantics
+(speech vs. music vs. animal vs. noise) much more cleanly than MFCC
+projections, at the cost of coarser temporal granularity.
+
+**Strengths**: semantic embedding, trained on 5+ M sound clips,
+well-maintained via TensorFlow Hub. **Weaknesses**: 480 ms hop is too
+coarse for fine sub-second dynamics; heavy dependency (TF + Hub).
 
 ## 3. Mapping 6D → 3D + color + size
 

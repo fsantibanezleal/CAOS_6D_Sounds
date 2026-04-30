@@ -1,16 +1,20 @@
 """Project each clip's MFCC sequence into 6 dimensions.
 
-Three projections are produced when the corresponding library is installed:
+Four projections are produced when the corresponding library is installed:
 
 * **PCA** — linear, deterministic. Always available.
 * **t-SNE** — non-linear, focuses on local structure (van der Maaten & Hinton).
 * **UMAP** — non-linear, faster than t-SNE, often better global topology
   (McInnes et al., 2018). Optional dependency; skipped if missing.
+* **YAMNet** — pretrained deep CNN embeddings (Hershey et al., 2017),
+  PCA-projected to 6D. Captures higher-level semantics than MFCCs.
+  Optional dependency; skipped if missing.
 
-Each projection is fitted on the *concatenated* per-frame matrix across the
-whole library so frames from different clips live in the same space and can
-be compared visually. After fitting, every clip is split back into its own
-6D track and min-max normalized per dimension to ``[0, 1]``.
+The first three projections are fitted on the *concatenated* MFCC matrix
+across the whole library so frames from different clips live in the same
+space. YAMNet runs per-clip with a corpus-wide PCA at the end. After
+fitting, every clip is split back into its own 6D track and min-max
+normalized per dimension to ``[0, 1]``.
 """
 from __future__ import annotations
 
@@ -134,7 +138,7 @@ def _pad_to_6(matrix: np.ndarray) -> np.ndarray:
 def fit_all(
     mfcc_matrices: Iterable[tuple[str, np.ndarray]],
 ) -> dict[str, dict[str, np.ndarray]]:
-    """Fit each method on the concatenated corpus and split back per clip.
+    """Fit each MFCC-based method on the concatenated corpus and split per clip.
 
     Returns a nested mapping ``{method_name: {clip_id: 6D matrix}}``.
 
@@ -178,6 +182,36 @@ def fit_all(
         }
 
     return out
+
+
+def fit_yamnet(
+    yamnet_matrices: Iterable[tuple[str, np.ndarray]],
+) -> dict[str, np.ndarray] | None:
+    """Project YAMNet 1024-D vectors to 6D via corpus-wide PCA.
+
+    Each clip contributes its own (frames, 1024) matrix. We stack them,
+    fit a single 6-component PCA across the corpus, then split back so
+    each clip lives in the same YAMNet-derived space.
+
+    Returns ``{clip_id: (frames, 6) matrix}`` or None when no YAMNet
+    matrices are provided.
+    """
+    items = list(yamnet_matrices)
+    if not items:
+        return None
+
+    big = np.vstack([m for _, m in items])
+    if big.shape[0] < 6:
+        return None
+
+    boundaries: list[tuple[str, int, int]] = []
+    cursor = 0
+    for clip_id, m in items:
+        boundaries.append((clip_id, cursor, cursor + m.shape[0]))
+        cursor += m.shape[0]
+
+    pca_full = project_pca(big, n_components=6)
+    return {cid: normalize01(pca_full[a:b]) for cid, a, b in boundaries}
 
 
 def available_methods(produced: dict[str, dict[str, np.ndarray]]) -> list[str]:
