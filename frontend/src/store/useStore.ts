@@ -92,7 +92,7 @@ interface StoreState {
 }
 
 // Defaults tuned for first-time visitors — landing on the House Sparrow
-// clip in Smoke mode with a generous trail produces an immediately
+// clip in Comet mode with a generous trail produces an immediately
 // striking visual that showcases what Auralis is for.
 //
 // `sphereMin` is at the slider's minimum and `sphereMax` at the slider's
@@ -108,7 +108,7 @@ const DEFAULT_VIZ: VizConfig = {
   showTrailLine: true,
   showAxes: true,
   showGrid: true,
-  renderMode: "smoke",
+  renderMode: "comet",
   smokeDensity: 8,
   smokeSpread: 0.05,
   smokeDrift: 0.08,
@@ -189,11 +189,33 @@ export const useStore = create<StoreState>()(
     }),
     {
       name: "auralis-state",
+      // Bump this every time we add new required fields to `viz`. Older
+      // persisted states that lack those fields are discarded so we
+      // don't render with `undefined` numbers (which propagate as NaN
+      // and freeze the WebGL InstancedMesh).
+      version: 2,
       partialize: (state) => ({
         theme: state.theme,
         viz: state.viz,
         loopAudio: state.loopAudio
-      })
+      }),
+      // Defensive merger: even when the version matches, we deep-merge
+      // the persisted `viz` over the current defaults so any missing
+      // sub-key (e.g. a freshly-added `cometHeadScale`) is filled in
+      // with the default value rather than `undefined`.
+      merge: (persistedRaw, current) => {
+        const persisted = (persistedRaw ?? {}) as Partial<StoreState>;
+        const persistedViz = (persisted.viz ?? {}) as Partial<VizConfig>;
+        return {
+          ...current,
+          ...persisted,
+          viz: {
+            ...current.viz,
+            ...persistedViz,
+            axes: { ...current.viz.axes, ...(persistedViz.axes ?? {}) }
+          }
+        } as StoreState;
+      }
     }
   )
 );

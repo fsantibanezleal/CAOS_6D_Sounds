@@ -189,8 +189,14 @@ export function ConstellationTrail({
     // Edges (continuous polyline through the visible frames).
     const geo = lineGeomRef.current;
     if (geo) {
-      const positionAttr = geo.getAttribute("position") as THREE.BufferAttribute;
-      const colorAttr = geo.getAttribute("color") as THREE.BufferAttribute;
+      const positionAttr = geo.getAttribute("position") as THREE.BufferAttribute | undefined;
+      const colorAttr = geo.getAttribute("color") as THREE.BufferAttribute | undefined;
+      // Attributes are attached lazily inside a useEffect; on the very
+      // first useFrame tick they may not yet exist. Bail out cleanly
+      // instead of crashing the render loop.
+      if (!positionAttr || !colorAttr) {
+        return;
+      }
       let drawCount = 0;
       for (let i = start; i <= cursor; i++) {
         positionAttr.setXYZ(
