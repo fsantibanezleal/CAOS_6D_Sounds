@@ -3,6 +3,54 @@
 Newest-first log of the design decisions that shaped Auralis. Each entry
 records what changed, why, and the alternative we considered.
 
+## v0.5.0 — Three more render modes (2026-04-30)
+
+Three new visualisation modes — **Constellation**, **Aurora**,
+**Comet** — bringing the total to six. Each shares the same
+`(values, numFrames, hopSeconds)` interface and consumes the new
+shared `lib/frameMap.ts` helpers (`buildFrameMap`, `computeWindow`)
+that replace ~120 lines of duplicated per-frame code across the
+existing modes.
+
+### Constellation
+A minimalist "graph" aesthetic. Small bright nodes (additive
+billboards with a soft halo, sized far below the Spheres default)
+joined by thin glowing edges that brighten where they overlap
+(additive lineBasicMaterial). Per-node alpha pulses subtly with a
+deterministic sine of the frame index — scrubbing back replays the
+same pulsation. Controls: `Node size` (0.2..2.0×), `Edge brightness`
+(0..1).
+
+### Aurora
+Vertical curtains of light. Each frame in the visibility window
+becomes a thin vertical ribbon rising upward from its 6D-mapped
+position. The custom `auroraMaterial` shader fades alpha from full
+at the base to zero at the top and applies a deterministic sine sway
+that scales with local height — base barely moves, top flutters.
+Additive blending so dense clusters of frames produce a luminous
+curtain. Controls: `Curtain height` (0.1..3.0×), `Sway` (0..0.4).
+
+### Comet
+A bright "head" billboard at the cursor + a stretched fading trail
+of smaller billboards behind it. Two `InstancedMesh` (trail and
+head) sharing the gaussian-textured additive material from Smoke;
+the head is rendered with size = ``frame.size * cometHeadScale``
+(default 5×). Trail alpha decays with `pow(1 - age, cometTailDecay)`
+so the user can crank the falloff sharper or softer. Controls:
+`Head size` (1..10×), `Tail decay` (0.5..4).
+
+### UI
+The render-mode toggle is now two rows of three buttons each
+(Spheres / Smoke / Bursts on top, Constellation / Aurora / Comet on
+the bottom). Mode-specific sliders replace each other when you
+switch; persisted in zustand.
+
+### New shared helpers
+- `lib/frameMap.ts` — pure functions `buildFrameMap()` and
+  `computeWindow()` consolidate the per-frame position+colour+size
+  computation and the cursor-window math.
+- `lib/auroraMaterial.ts` — the vertical-ribbon shader.
+
 ## v0.4.2 — Bursts render mode (2026-04-30)
 
 **Third visualisation mode: Bursts.** Each frame in the active
