@@ -9,7 +9,7 @@ import { SoundLibrary } from "./components/SoundLibrary";
 import { Spectrogram } from "./components/Spectrogram";
 import { Visualization6D } from "./components/Visualization6D";
 import { api } from "./lib/api";
-import { useStore } from "./store/useStore";
+import { DEFAULT_CLIP_ID, useStore } from "./store/useStore";
 
 export default function App() {
   const setLibrary = useStore((s) => s.setLibrary);
@@ -30,6 +30,16 @@ export default function App() {
         console.error("Failed to load library", err);
       });
   }, [setLibrary]);
+
+  // Auto-select the default clip on first load (when nothing is yet
+  // chosen). This gives first-time visitors something immediate to
+  // look at without forcing them to click around the library.
+  useEffect(() => {
+    if (!library || selectedClip) return;
+    const fallback =
+      library.clips.find((c) => c.id === DEFAULT_CLIP_ID) ?? library.clips[0];
+    if (fallback) setSelectedClip(fallback);
+  }, [library, selectedClip, setSelectedClip]);
 
   // Keyboard shortcuts.
   useEffect(() => {

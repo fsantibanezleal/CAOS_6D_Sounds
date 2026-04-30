@@ -73,22 +73,32 @@ interface StoreState {
   setHelpOpen: (b: boolean) => void;
 }
 
+// Defaults tuned for first-time visitors — landing on the House Sparrow
+// clip in Smoke mode with a generous trail produces an immediately
+// striking visual that showcases what Auralis is for.
+//
+// `sphereMin` is at the slider's minimum and `sphereMax` at the slider's
+// maximum so the dynamic range of the size mapping is fully exercised.
 const DEFAULT_VIZ: VizConfig = {
   trackName: "features",
   axes: { x: 0, y: 1, z: 2, color: 3, size: 4 },
   colormap: "viridis",
   reverseColormap: false,
-  sphereMin: 0.04,
-  sphereMax: 0.18,
-  trailSeconds: 4,
+  sphereMin: 0.01,   // matches the slider's minimum
+  sphereMax: 0.6,    // matches the slider's maximum
+  trailSeconds: 17,
   showTrailLine: true,
   showAxes: true,
   showGrid: true,
-  renderMode: "spheres",
+  renderMode: "smoke",
   smokeDensity: 8,
   smokeSpread: 0.05,
   smokeDrift: 0.08
 };
+
+/** Stable id of the clip that loads automatically when the library
+ *  first arrives and the user has no clip selected yet. */
+export const DEFAULT_CLIP_ID = "bird-house-sparrow";
 
 export const useStore = create<StoreState>()(
   persist(
