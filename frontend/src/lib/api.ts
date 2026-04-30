@@ -18,6 +18,7 @@ export interface SoundClip {
   title_en: string;
   title_es: string;
   category: string;
+  subcategory?: string;
   duration_seconds: number;
   sample_rate: number;
   audio_path: string;
@@ -45,17 +46,30 @@ export interface EmbeddingTrack {
   values: number[][];
 }
 
+export interface ClipLevelInfo {
+  tempo_bpm: number;
+  key_pitch_class: number;
+  key_mode: 0 | 1;
+}
+
 export interface ClipEmbedding {
   id: string;
   duration_seconds: number;
   sample_rate: number;
   hop_seconds: number;
   num_frames: number;
+  clip_level?: ClipLevelInfo;
   tracks: EmbeddingTrack[];
   raw?: {
     rms: number[];
     spectral_centroid_hz: number[];
     dominant_pitch_hz: number[];
+    spectral_entropy?: number[];
+    harmonic_ratio?: number[];
+    energy_low?: number[];
+    energy_mid_low?: number[];
+    energy_mid_high?: number[];
+    energy_high?: number[];
   } | null;
 }
 

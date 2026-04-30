@@ -2,10 +2,15 @@ import { useTranslation } from "react-i18next";
 
 import { useStore } from "../store/useStore";
 
+const PITCH_CLASS_LABELS = [
+  "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"
+];
+
 /**
  * Read-only readout of the per-frame features that the data pipeline
  * stored in the embedding payload. The values are sampled at the current
- * audio time so they tick along with the visualization.
+ * audio time so they tick along with the visualization. Clip-level
+ * scalars (tempo + key) are static for the whole clip.
  */
 export function LiveFeatures() {
   const { t } = useTranslation();
@@ -30,6 +35,12 @@ export function LiveFeatures() {
   const centroid = embedding.raw.spectral_centroid_hz[idx] ?? 0;
   const pitch = embedding.raw.dominant_pitch_hz[idx] ?? 0;
 
+  const cl = embedding.clip_level;
+  const keyLabel = cl
+    ? `${PITCH_CLASS_LABELS[cl.key_pitch_class] ?? "?"} ${cl.key_mode === 1 ? "maj" : "min"}`
+    : "";
+  const tempoLabel = cl && cl.tempo_bpm > 0 ? `${cl.tempo_bpm.toFixed(0)} BPM` : "";
+
   return (
     <div className="aux-card">
       <h3>{t("panels.live_features")}</h3>
@@ -42,6 +53,8 @@ export function LiveFeatures() {
         label={t("panels.feature_pitch")}
         value={pitch > 0 ? `${pitch.toFixed(0)} Hz` : "—"}
       />
+      {tempoLabel && <Row label={t("panels.feature_tempo")} value={tempoLabel} />}
+      {keyLabel && <Row label={t("panels.feature_key")} value={keyLabel} />}
     </div>
   );
 }

@@ -5,6 +5,7 @@ import {
   type ColormapName,
   colormapCss
 } from "../lib/colormaps";
+import { snapshotCanvas } from "../lib/snapshot";
 import { useStore, type AxisRole } from "../store/useStore";
 
 export function ControlPanel() {
@@ -228,6 +229,13 @@ export function ControlPanel() {
           }
         >
           {t("viz.reset_camera")}
+        </button>
+
+        <button
+          style={{ marginTop: 6, width: "100%" }}
+          onClick={() => snapshotCanvas()}
+        >
+          {t("viz.snapshot")}
         </button>
       </section>
 

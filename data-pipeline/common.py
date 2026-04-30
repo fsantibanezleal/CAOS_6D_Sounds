@@ -41,18 +41,30 @@ N_MFCC: Final[int] = 13
 # --------------------------------------------------------------------------- #
 
 # Order matters: the frontend treats the same indices as the same feature.
+# 18 scalar features per analysis frame.
 SCALAR_FEATURES: Final[tuple[str, ...]] = (
+    # Core energy / time domain
     "rms",
     "zero_crossing_rate",
+    # Spectral shape
     "spectral_centroid",
     "spectral_rolloff",
     "spectral_bandwidth",
     "spectral_flatness",
     "spectral_contrast_mean",
+    "spectral_entropy",  # Shannon entropy of the normalized spectrum
+    # Spectral sub-band energies (4 octave-spaced bands)
+    "energy_low",      # 0-250 Hz
+    "energy_mid_low",  # 250-1000 Hz
+    "energy_mid_high",  # 1-4 kHz
+    "energy_high",     # 4-22 kHz
+    # Pitch + harmonic content
     "dominant_pitch",
     "pitch_confidence",
-    "tempo_proxy",  # local energy-flux variance — coarse rhythmic indicator
     "chroma_dominant",  # index of the most active chroma bin (0..11) / 11
+    "harmonic_ratio",  # share of energy in the harmonic component (HPSS)
+    # Rhythm
+    "tempo_proxy",     # rolling std-dev of onset strength (per-frame)
     "onset_strength",
 )
 
@@ -65,6 +77,13 @@ DEFAULT_FEATURE_AXES: Final[tuple[str, ...]] = (
     "rms",
     "zero_crossing_rate",
     "spectral_flatness",
+)
+
+# Static-per-clip metadata derived from the whole signal (not per-frame).
+CLIP_LEVEL_FEATURES: Final[tuple[str, ...]] = (
+    "tempo_bpm",        # estimated tempo in beats per minute
+    "key_pitch_class",  # 0..11 (C..B)
+    "key_mode",         # 0 = minor, 1 = major
 )
 
 EMBEDDING_METHODS: Final[tuple[str, ...]] = ("pca", "tsne", "umap", "yamnet")
