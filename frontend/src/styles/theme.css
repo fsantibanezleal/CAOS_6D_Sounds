@@ -369,6 +369,19 @@ a:hover { text-decoration: underline; }
   min-width: 70px;
   text-align: right;
 }
+.player .loop-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 11px;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+.player .loop-toggle input { margin: 0; cursor: pointer; }
 
 .attribution {
   margin-top: 10px;

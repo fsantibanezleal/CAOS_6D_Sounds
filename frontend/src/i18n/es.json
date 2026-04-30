@@ -21,7 +21,9 @@
     "tags": "Etiquetas",
     "empty": "Aún no hay clips. Ejecuta el data pipeline (ver README) para cargar la biblioteca.",
     "play": "Reproducir",
-    "pause": "Pausar"
+    "pause": "Pausar",
+    "loop": "Repetir el clip cuando termine",
+    "loop_short": "Loop"
   },
   "viz": {
     "title": "Visualización 6D",

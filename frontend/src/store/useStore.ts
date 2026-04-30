@@ -46,6 +46,8 @@ interface StoreState {
   setIsPlaying: (b: boolean) => void;
   currentTime: number;
   setCurrentTime: (t: number) => void;
+  loopAudio: boolean;
+  setLoopAudio: (b: boolean) => void;
 
   viz: VizConfig;
   setViz: (patch: Partial<VizConfig>) => void;
@@ -98,6 +100,8 @@ export const useStore = create<StoreState>()(
       setIsPlaying: (b) => set({ isPlaying: b }),
       currentTime: 0,
       setCurrentTime: (t) => set({ currentTime: t }),
+      loopAudio: true,
+      setLoopAudio: (b) => set({ loopAudio: b }),
 
       viz: DEFAULT_VIZ,
       setViz: (patch) => set({ viz: { ...get().viz, ...patch } }),
@@ -110,7 +114,11 @@ export const useStore = create<StoreState>()(
     }),
     {
       name: "auralis-state",
-      partialize: (state) => ({ theme: state.theme, viz: state.viz })
+      partialize: (state) => ({
+        theme: state.theme,
+        viz: state.viz,
+        loopAudio: state.loopAudio
+      })
     }
   )
 );
