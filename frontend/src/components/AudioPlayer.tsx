@@ -23,6 +23,8 @@ export function AudioPlayer() {
   const currentTime = useStore((s) => s.currentTime);
   const setCurrentTime = useStore((s) => s.setCurrentTime);
   const setEmbedding = useStore((s) => s.setEmbedding);
+  const loopAudio = useStore((s) => s.loopAudio);
+  const setLoopAudio = useStore((s) => s.setLoopAudio);
 
   // Load embedding metadata whenever the clip changes.
   useEffect(() => {
@@ -85,12 +87,25 @@ export function AudioPlayer() {
       <span className="time">
         {formatTime(currentTime)} / {formatTime(dur)}
       </span>
+      <label
+        className="loop-toggle"
+        title={t("library.loop")}
+        aria-label={t("library.loop")}
+      >
+        <input
+          type="checkbox"
+          checked={loopAudio}
+          onChange={(e) => setLoopAudio(e.target.checked)}
+        />
+        <span>{t("library.loop_short")}</span>
+      </label>
       <audio
         ref={(el) => {
           audioRef.current = el;
           setSharedAudio(el);
         }}
         preload="metadata"
+        loop={loopAudio}
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
         onEnded={() => setIsPlaying(false)}

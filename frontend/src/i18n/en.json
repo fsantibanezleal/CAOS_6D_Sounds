@@ -21,7 +21,9 @@
     "tags": "Tags",
     "empty": "No clips loaded yet. Run the data pipeline (see README) to seed the library.",
     "play": "Play",
-    "pause": "Pause"
+    "pause": "Pause",
+    "loop": "Loop the clip when it ends",
+    "loop_short": "Loop"
   },
   "viz": {
     "title": "6D visualization",
