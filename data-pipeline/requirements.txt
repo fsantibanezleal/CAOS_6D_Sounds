@@ -13,3 +13,16 @@ matplotlib==3.9.2
 # Optional: faster non-linear projection (UMAP). Falls back gracefully when
 # missing; the pipeline always provides PCA and t-SNE via scikit-learn.
 umap-learn==0.5.6
+
+# Optional: deep pitch tracker. Heavy install (~134 MB model + tensorflow
+# ~350 MB), but dramatically more accurate than `librosa.piptrack` on
+# voiced / harmonic content. Fallback is automatic when missing.
+#
+# CREPE's setup.py uses `pkg_resources`, so install with setuptools<81
+# and pip's --no-build-isolation:
+#   pip install 'setuptools<81'
+#   pip install --no-build-isolation --no-deps crepe
+#   pip install hmmlearn imageio resampy tensorflow
+crepe==0.0.16
+hmmlearn==0.3.3
+tensorflow==2.21.0
