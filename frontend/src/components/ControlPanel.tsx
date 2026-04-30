@@ -58,6 +58,29 @@ export function ControlPanel() {
             {t("viz.mode_bursts")}
           </button>
         </div>
+        <div className="mode-toggle three" style={{ marginTop: 4 }}>
+          <button
+            className={viz.renderMode === "constellation" ? "active" : ""}
+            onClick={() => setViz({ renderMode: "constellation" })}
+            title={t("viz.mode_constellation_help")}
+          >
+            {t("viz.mode_constellation")}
+          </button>
+          <button
+            className={viz.renderMode === "aurora" ? "active" : ""}
+            onClick={() => setViz({ renderMode: "aurora" })}
+            title={t("viz.mode_aurora_help")}
+          >
+            {t("viz.mode_aurora")}
+          </button>
+          <button
+            className={viz.renderMode === "comet" ? "active" : ""}
+            onClick={() => setViz({ renderMode: "comet" })}
+            title={t("viz.mode_comet_help")}
+          >
+            {t("viz.mode_comet")}
+          </button>
+        </div>
 
         {viz.renderMode === "smoke" && (
           <div style={{ marginTop: 8 }}>
@@ -140,6 +163,117 @@ export function ControlPanel() {
               />
               <span className="value-readout">
                 {viz.burstSize.toFixed(2)}×
+              </span>
+            </div>
+          </div>
+        )}
+
+        {viz.renderMode === "constellation" && (
+          <div style={{ marginTop: 8 }}>
+            <div className="row">
+              <label>{t("viz.constellation_node")}</label>
+              <input
+                type="range"
+                min={0.2}
+                max={2.0}
+                step={0.05}
+                value={viz.constellationNodeScale}
+                onChange={(e) =>
+                  setViz({ constellationNodeScale: Number(e.target.value) })
+                }
+              />
+              <span className="value-readout">
+                {viz.constellationNodeScale.toFixed(2)}×
+              </span>
+            </div>
+            <div className="row">
+              <label>{t("viz.constellation_edges")}</label>
+              <input
+                type="range"
+                min={0}
+                max={1}
+                step={0.05}
+                value={viz.constellationEdgeAlpha}
+                onChange={(e) =>
+                  setViz({ constellationEdgeAlpha: Number(e.target.value) })
+                }
+              />
+              <span className="value-readout">
+                {viz.constellationEdgeAlpha.toFixed(2)}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {viz.renderMode === "aurora" && (
+          <div style={{ marginTop: 8 }}>
+            <div className="row">
+              <label>{t("viz.aurora_height")}</label>
+              <input
+                type="range"
+                min={0.1}
+                max={3.0}
+                step={0.05}
+                value={viz.auroraHeight}
+                onChange={(e) =>
+                  setViz({ auroraHeight: Number(e.target.value) })
+                }
+              />
+              <span className="value-readout">
+                {viz.auroraHeight.toFixed(2)}×
+              </span>
+            </div>
+            <div className="row">
+              <label>{t("viz.aurora_wobble")}</label>
+              <input
+                type="range"
+                min={0}
+                max={0.4}
+                step={0.005}
+                value={viz.auroraWobble}
+                onChange={(e) =>
+                  setViz({ auroraWobble: Number(e.target.value) })
+                }
+              />
+              <span className="value-readout">
+                {viz.auroraWobble.toFixed(2)}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {viz.renderMode === "comet" && (
+          <div style={{ marginTop: 8 }}>
+            <div className="row">
+              <label>{t("viz.comet_head")}</label>
+              <input
+                type="range"
+                min={1}
+                max={10}
+                step={0.5}
+                value={viz.cometHeadScale}
+                onChange={(e) =>
+                  setViz({ cometHeadScale: Number(e.target.value) })
+                }
+              />
+              <span className="value-readout">
+                {viz.cometHeadScale.toFixed(1)}×
+              </span>
+            </div>
+            <div className="row">
+              <label>{t("viz.comet_tail")}</label>
+              <input
+                type="range"
+                min={0.5}
+                max={4}
+                step={0.1}
+                value={viz.cometTailDecay}
+                onChange={(e) =>
+                  setViz({ cometTailDecay: Number(e.target.value) })
+                }
+              />
+              <span className="value-readout">
+                {viz.cometTailDecay.toFixed(2)}
               </span>
             </div>
           </div>

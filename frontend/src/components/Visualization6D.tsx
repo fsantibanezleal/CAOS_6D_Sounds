@@ -5,7 +5,10 @@ import * as THREE from "three";
 
 import { sampleColormap } from "../lib/colormaps";
 import { useStore } from "../store/useStore";
+import { AuroraTrail } from "./AuroraTrail";
 import { BurstsTrail } from "./BurstsTrail";
+import { CometTrail } from "./CometTrail";
+import { ConstellationTrail } from "./ConstellationTrail";
 import { SmokeTrail } from "./SmokeTrail";
 
 /**
@@ -115,6 +118,33 @@ function SceneContents() {
       {embedding && trackValues && viz.renderMode === "bursts" && (
         <BurstsTrail
           key={"bursts-" + embedding.id + "-" + viz.burstRays}
+          values={trackValues.values}
+          numFrames={embedding.num_frames}
+          hopSeconds={embedding.hop_seconds}
+        />
+      )}
+
+      {embedding && trackValues && viz.renderMode === "constellation" && (
+        <ConstellationTrail
+          key={"constellation-" + embedding.id}
+          values={trackValues.values}
+          numFrames={embedding.num_frames}
+          hopSeconds={embedding.hop_seconds}
+        />
+      )}
+
+      {embedding && trackValues && viz.renderMode === "aurora" && (
+        <AuroraTrail
+          key={"aurora-" + embedding.id}
+          values={trackValues.values}
+          numFrames={embedding.num_frames}
+          hopSeconds={embedding.hop_seconds}
+        />
+      )}
+
+      {embedding && trackValues && viz.renderMode === "comet" && (
+        <CometTrail
+          key={"comet-" + embedding.id}
           values={trackValues.values}
           numFrames={embedding.num_frames}
           hopSeconds={embedding.hop_seconds}
