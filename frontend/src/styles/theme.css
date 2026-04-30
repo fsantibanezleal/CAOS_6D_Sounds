@@ -441,6 +441,17 @@ a:hover { text-decoration: underline; }
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
+.clip-list li .meta .sub-badge {
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  color: var(--accent-strong);
+  padding: 0 6px;
+  border-radius: 3px;
+  font-size: 9px;
+  text-transform: lowercase;
+  letter-spacing: 0.02em;
+  margin-right: 6px;
+}
 
 .cat-pills {
   display: flex;

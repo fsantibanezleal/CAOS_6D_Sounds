@@ -35,7 +35,12 @@
     "expand_all": "Expand all categories",
     "collapse_all": "Collapse all categories",
     "expand_short": "Expand all",
-    "collapse_short": "Collapse all"
+    "collapse_short": "Collapse all",
+    "license_filter": "License",
+    "license_any": "Any",
+    "license_permissive": "Permissive (CC-BY, PD)",
+    "license_pd": "Public domain only",
+    "max_duration": "Max duration"
   },
   "viz": {
     "title": "6D visualization",

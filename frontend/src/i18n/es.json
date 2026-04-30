@@ -35,7 +35,12 @@
     "expand_all": "Expandir todas las categorías",
     "collapse_all": "Contraer todas las categorías",
     "expand_short": "Expandir",
-    "collapse_short": "Contraer"
+    "collapse_short": "Contraer",
+    "license_filter": "Licencia",
+    "license_any": "Cualquiera",
+    "license_permissive": "Permisiva (CC-BY, PD)",
+    "license_pd": "Solo dominio público",
+    "max_duration": "Duración máx"
   },
   "viz": {
     "title": "Visualización 6D",
