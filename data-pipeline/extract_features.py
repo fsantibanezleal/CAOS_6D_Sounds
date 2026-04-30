@@ -68,6 +68,7 @@ class ClipFeatures:
     num_frames: int
     scalar_features: dict[str, np.ndarray]  # name -> shape (num_frames,)
     mfcc: np.ndarray  # shape (num_frames, N_MFCC) — input to embeddings
+    raw_audio: np.ndarray  # shape (samples,) — kept around for YAMNet
 
 
 # --------------------------------------------------------------------------- #
@@ -188,6 +189,7 @@ def extract_clip(audio_path: Path, category: str) -> ClipFeatures:
         num_frames=n,
         scalar_features={k: scalar[k].astype(np.float32) for k in SCALAR_FEATURES},
         mfcc=mfcc[:n].astype(np.float32),
+        raw_audio=y.astype(np.float32),
     )
 
 

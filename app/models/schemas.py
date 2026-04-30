@@ -102,6 +102,7 @@ class EmbeddingTrack(BaseModel):
         "pca",
         "tsne",
         "umap",
+        "yamnet",
     ]
     description_en: str
     description_es: str

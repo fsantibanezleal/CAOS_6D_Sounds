@@ -67,4 +67,4 @@ DEFAULT_FEATURE_AXES: Final[tuple[str, ...]] = (
     "spectral_flatness",
 )
 
-EMBEDDING_METHODS: Final[tuple[str, ...]] = ("pca", "tsne", "umap")
+EMBEDDING_METHODS: Final[tuple[str, ...]] = ("pca", "tsne", "umap", "yamnet")

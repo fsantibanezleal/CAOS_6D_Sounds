@@ -48,7 +48,17 @@ techniques used by Auralis.
   Signal Analysis in Python*. Proceedings of the 14th Python in Science
   Conference. The library powering our feature extraction.
 
-## Deep audio embeddings (future work)
+## Deep audio embeddings
+
+- **YAMNet** — Hershey, S., et al. (2017). *CNN Architectures for
+  Large-Scale Audio Classification*. ICASSP. The model used by the
+  ``yamnet`` track in the data pipeline; pretrained on AudioSet,
+  exposes 1024-D embeddings every ~480 ms.
+  [TF Hub](https://tfhub.dev/google/yamnet/1)
+
+- **AudioSet** — Gemmeke, J. F., et al. (2017). *Audio Set: An
+  ontology and human-labeled dataset for audio events*. ICASSP. The
+  corpus YAMNet (and OpenL3 / PANNs) was trained on.
 
 - **OpenL3** — Cramer, J., Wu, H.-H., Salamon, J., & Bello, J. P. (2019).
   *Look, Listen, and Learn More: Design Choices for Deep Audio Embeddings*.
