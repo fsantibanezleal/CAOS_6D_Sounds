@@ -39,7 +39,7 @@ export interface SoundLibrary {
 }
 
 export interface EmbeddingTrack {
-  name: "features" | "pca" | "tsne" | "umap" | "yamnet";
+  name: "features" | "pca" | "tsne" | "umap" | "tonnetz" | "yamnet";
   description_en: string;
   description_es: string;
   dim_labels: string[];
@@ -70,6 +70,8 @@ export interface ClipEmbedding {
     energy_mid_low?: number[];
     energy_mid_high?: number[];
     energy_high?: number[];
+    loudness_db?: number[];
+    onset_density?: number[];
   } | null;
 }
 

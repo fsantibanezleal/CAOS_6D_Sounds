@@ -184,6 +184,25 @@ def fit_all(
     return out
 
 
+def fit_tonnetz(
+    tonnetz_matrices: Iterable[tuple[str, np.ndarray]],
+) -> dict[str, np.ndarray] | None:
+    """Per-clip min-max normalization of the already-6D Tonnetz vectors.
+
+    Tonnetz (Chew 2002 / Harte et al. 2006) is the 6D harmonic-network
+    space derived from chroma. Each clip's per-frame coordinates are
+    normalized to [0, 1] per axis so they share the same world cube
+    as the other 6D tracks.
+
+    Returns ``{clip_id: (frames, 6) matrix}`` or None when the input is
+    empty.
+    """
+    items = list(tonnetz_matrices)
+    if not items:
+        return None
+    return {cid: normalize01(m) for cid, m in items}
+
+
 def fit_yamnet(
     yamnet_matrices: Iterable[tuple[str, np.ndarray]],
 ) -> dict[str, np.ndarray] | None:

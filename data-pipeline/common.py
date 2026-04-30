@@ -41,11 +41,12 @@ N_MFCC: Final[int] = 13
 # --------------------------------------------------------------------------- #
 
 # Order matters: the frontend treats the same indices as the same feature.
-# 18 scalar features per analysis frame.
+# 22 scalar features per analysis frame.
 SCALAR_FEATURES: Final[tuple[str, ...]] = (
     # Core energy / time domain
     "rms",
     "zero_crossing_rate",
+    "loudness_db",  # 20*log10(RMS), clamped to [-80, 0] dB
     # Spectral shape
     "spectral_centroid",
     "spectral_rolloff",
@@ -53,6 +54,8 @@ SCALAR_FEATURES: Final[tuple[str, ...]] = (
     "spectral_flatness",
     "spectral_contrast_mean",
     "spectral_entropy",  # Shannon entropy of the normalized spectrum
+    "spectral_skewness",  # 3rd standardized moment of the spectrum
+    "spectral_kurtosis",  # 4th standardized moment, excess (Fisher) form
     # Spectral sub-band energies (4 octave-spaced bands)
     "energy_low",      # 0-250 Hz
     "energy_mid_low",  # 250-1000 Hz
@@ -66,6 +69,7 @@ SCALAR_FEATURES: Final[tuple[str, ...]] = (
     # Rhythm
     "tempo_proxy",     # rolling std-dev of onset strength (per-frame)
     "onset_strength",
+    "onset_density",   # local onset rate (peaks per second, smoothed window)
 )
 
 # The 6D 'features' track surfaces a curated subset of the scalar features so
@@ -86,4 +90,10 @@ CLIP_LEVEL_FEATURES: Final[tuple[str, ...]] = (
     "key_mode",         # 0 = minor, 1 = major
 )
 
-EMBEDDING_METHODS: Final[tuple[str, ...]] = ("pca", "tsne", "umap", "yamnet")
+EMBEDDING_METHODS: Final[tuple[str, ...]] = (
+    "pca",
+    "tsne",
+    "umap",
+    "tonnetz",  # 6D harmonic space (Chew 2002; librosa.feature.tonnetz)
+    "yamnet",
+)

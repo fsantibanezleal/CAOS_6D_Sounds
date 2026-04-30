@@ -5,6 +5,19 @@ import type { Category, SoundClip } from "../lib/api";
 import { useStore } from "../store/useStore";
 
 type SortKey = "title" | "duration" | "category";
+type LicenseFilter = "any" | "permissive" | "public-domain";
+
+function licensePermissive(license: string): boolean {
+  // CC-BY, CC-BY-SA, CC0, Public Domain — redistributable without NC
+  const lc = license.toUpperCase();
+  if (lc.includes("PUBLIC DOMAIN") || lc.startsWith("CC0")) return true;
+  if (lc.includes("CC-BY") && !lc.includes("NC")) return true;
+  return false;
+}
+function licensePublicDomain(license: string): boolean {
+  const lc = license.toUpperCase();
+  return lc.includes("PUBLIC DOMAIN") || lc.startsWith("CC0");
+}
 
 function categoryLabel(c: Category, lang: string): string {
   return lang.startsWith("en") ? c.name_en : c.name_es;
@@ -36,8 +49,10 @@ export function SoundLibrary() {
 
   const [sortKey, setSortKey] = useState<SortKey>("title");
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  const [licenseFilter, setLicenseFilter] = useState<LicenseFilter>("any");
+  const [maxDuration, setMaxDuration] = useState<number>(0); // 0 = no cap
 
-  // Filter clips by search query
+  // Filter clips by search query + license + duration
   const filteredClips = useMemo<SoundClip[]>(() => {
     if (!library) return [];
     const q = search.trim().toLowerCase();
@@ -56,8 +71,16 @@ export function SoundLibrary() {
         return hay.includes(q);
       });
     }
+    if (licenseFilter === "permissive") {
+      clips = clips.filter((c) => licensePermissive(c.license));
+    } else if (licenseFilter === "public-domain") {
+      clips = clips.filter((c) => licensePublicDomain(c.license));
+    }
+    if (maxDuration > 0) {
+      clips = clips.filter((c) => c.duration_seconds <= maxDuration);
+    }
     return clips;
-  }, [library, search]);
+  }, [library, search, licenseFilter, maxDuration]);
 
   // Group by category, then subcategory
   const grouped = useMemo(() => {
@@ -172,6 +195,33 @@ export function SoundLibrary() {
         </button>
       </div>
 
+      <div className="library-toolbar">
+        <label className="inline-label">{t("library.license_filter")}</label>
+        <select
+          value={licenseFilter}
+          onChange={(e) => setLicenseFilter(e.target.value as LicenseFilter)}
+        >
+          <option value="any">{t("library.license_any")}</option>
+          <option value="permissive">{t("library.license_permissive")}</option>
+          <option value="public-domain">{t("library.license_pd")}</option>
+        </select>
+      </div>
+
+      <div className="library-toolbar">
+        <label className="inline-label">{t("library.max_duration")}</label>
+        <input
+          type="range"
+          min={0}
+          max={180}
+          step={5}
+          value={maxDuration}
+          onChange={(e) => setMaxDuration(Number(e.target.value))}
+        />
+        <span className="value-readout" style={{ minWidth: 48 }}>
+          {maxDuration === 0 ? "∞" : `${maxDuration}s`}
+        </span>
+      </div>
+
       {totalClips === 0 && (
         <p style={{ color: "var(--text-muted)", fontSize: 12, marginTop: 12 }}>
           {t("library.empty")}
@@ -234,6 +284,12 @@ export function SoundLibrary() {
                                   {clipTitle(c, lang)}
                                 </div>
                                 <div className="meta">
+                                  {c.subcategory && (
+                                    <span className="sub-badge">
+                                      {c.subcategory.replace(/_/g, " ")}
+                                    </span>
+                                  )}
+                                  <span style={{ flex: 1 }} />
                                   <span>{durationLabel(c.duration_seconds)}</span>
                                   {c.license && (
                                     <span className="license-badge">

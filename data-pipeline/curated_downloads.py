@@ -610,18 +610,6 @@ CURATION: list[CurationEntry] = [
         wm_title="FDR's Speech to the Congress regarding the naval attack on Pearl Harbor.ogg",
         tags=("history",),
     ),
-    CurationEntry(
-        id="speech-churchill-valour",
-        category="speeches",
-        subcategory="historical",
-        title_en="Churchill — Be Ye Men of Valour",
-        title_es="Churchill — Sed hombres de valor",
-        source="Wikimedia Commons",
-        license="Public Domain",
-        attribution="Winston Churchill, 1940 (UK Crown copyright expired)",
-        wm_title="Winston Churchill - Be Ye Men of Valour.ogg",
-        tags=("history",),
-    ),
 
     # ===================================================================== #
     # MUSIC

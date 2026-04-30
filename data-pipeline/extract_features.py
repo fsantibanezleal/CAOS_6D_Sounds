@@ -71,7 +71,8 @@ class ClipFeatures:
     hop_seconds: float
     num_frames: int
     scalar_features: dict[str, np.ndarray]  # name -> shape (num_frames,)
-    mfcc: np.ndarray  # shape (num_frames, N_MFCC) — input to embeddings
+    mfcc: np.ndarray  # shape (num_frames, N_MFCC) — input to MFCC projections
+    tonnetz: np.ndarray  # shape (num_frames, 6) — already 6D harmonic space
     raw_audio: np.ndarray  # shape (samples,) — kept around for YAMNet
     # Whole-clip scalars derived from the full signal.
     tempo_bpm: float
@@ -144,11 +145,38 @@ def extract_clip(audio_path: Path, category: str) -> ClipFeatures:
     )
     tempo_proxy = _rolling_std(onset_env, window=8)
 
+    # Onset density — number of detected peaks in a sliding window,
+    # normalized to peaks per second.
+    onset_frames = librosa.onset.onset_detect(
+        onset_envelope=onset_env, sr=sr, hop_length=hop_length, units="frames"
+    )
+    onset_density = _onset_density_per_frame(
+        onset_frames, total_frames=onset_env.shape[0], hop_seconds=HOP_SECONDS
+    )
+
+    # Loudness in dB (perceptual proxy: 20*log10(RMS) clamped to [-80, 0]).
+    loudness_db = 20.0 * np.log10(np.maximum(rms, 1e-5))
+    loudness_db = np.clip(loudness_db, -80.0, 0.0).astype(np.float32)
+
+    # Spectral skewness + kurtosis (3rd and 4th standardised moments of the
+    # per-frame normalized magnitude spectrum). Distinguish symmetric vs.
+    # peaky spectra.
+    spec_skew, spec_kurt = _spectral_moments(stft)
+
     # Chroma — pick the strongest bin per frame as a 0..1 scalar.
     chroma = librosa.feature.chroma_stft(
         S=stft, sr=sr, n_fft=n_fft, hop_length=hop_length
     )
     chroma_dominant = chroma.argmax(axis=0).astype(np.float32) / 11.0
+
+    # Tonnetz — 6D harmonic space coordinates from chroma. We need the
+    # harmonic-only component for stability (HPSS already done above
+    # inside _harmonic_ratio, but redoing on y is cheap and gives us the
+    # time-domain harmonic signal librosa.tonnetz expects).
+    y_harm = librosa.effects.harmonic(y)
+    tonnetz = librosa.feature.tonnetz(
+        y=y_harm, sr=sr, chroma=chroma, hop_length=hop_length
+    ).T  # shape (num_frames, 6)
 
     # Spectral entropy — Shannon entropy over the per-frame normalized spectrum.
     # Distinguishes tonal (low entropy) from noisy (high entropy) frames.
@@ -177,19 +205,25 @@ def extract_clip(audio_path: Path, category: str) -> ClipFeatures:
         len(dominant_pitch), len(pitch_confidence),
         len(tempo_proxy), len(chroma_dominant), len(onset_env),
         len(spec_entropy), len(harmonic_ratio),
+        len(loudness_db), len(spec_skew), len(spec_kurt),
+        len(onset_density),
         energies["energy_low"].shape[0],
         mfcc.shape[0],
+        tonnetz.shape[0],
     )
 
     scalar = {
         "rms": rms[:n],
         "zero_crossing_rate": zcr[:n],
+        "loudness_db": loudness_db[:n],
         "spectral_centroid": centroid[:n],
         "spectral_rolloff": rolloff[:n],
         "spectral_bandwidth": bandwidth[:n],
         "spectral_flatness": flatness[:n],
         "spectral_contrast_mean": contrast[:n],
         "spectral_entropy": spec_entropy[:n],
+        "spectral_skewness": spec_skew[:n],
+        "spectral_kurtosis": spec_kurt[:n],
         "energy_low": energies["energy_low"][:n],
         "energy_mid_low": energies["energy_mid_low"][:n],
         "energy_mid_high": energies["energy_mid_high"][:n],
@@ -200,6 +234,7 @@ def extract_clip(audio_path: Path, category: str) -> ClipFeatures:
         "harmonic_ratio": harmonic_ratio[:n],
         "tempo_proxy": tempo_proxy[:n],
         "onset_strength": onset_env[:n],
+        "onset_density": onset_density[:n],
     }
 
     # Whole-clip scalars.
@@ -221,6 +256,7 @@ def extract_clip(audio_path: Path, category: str) -> ClipFeatures:
         num_frames=n,
         scalar_features={k: scalar[k].astype(np.float32) for k in SCALAR_FEATURES},
         mfcc=mfcc[:n].astype(np.float32),
+        tonnetz=tonnetz[:n].astype(np.float32),
         raw_audio=y.astype(np.float32),
         tempo_bpm=float(tempo_bpm),
         key_pitch_class=int(key_pitch_class),
@@ -331,6 +367,49 @@ def _sub_band_energies(stft: np.ndarray, sr: int) -> dict[str, np.ndarray]:
         i1 = min(n_bins, max(i0 + 1, int(hi / bin_hz)))
         out[name] = np.sqrt((stft[i0:i1] ** 2).mean(axis=0)).astype(np.float32)
     return out
+
+
+def _spectral_moments(stft: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """Per-frame spectral skewness + (excess) kurtosis.
+
+    Treats the bin index as the random variable weighted by the
+    normalized magnitude spectrum. Returns ``(skew, kurt)``, each shape
+    ``(num_frames,)``. Excess (Fisher) kurtosis: 0 for a Gaussian shape,
+    positive for peaky distributions.
+    """
+    eps = 1e-12
+    n_bins = stft.shape[0]
+    bin_idx = np.arange(n_bins, dtype=np.float64).reshape(-1, 1)
+    weights = stft.astype(np.float64) ** 2
+    total = weights.sum(axis=0, keepdims=True) + eps
+    p = weights / total
+    mu = (p * bin_idx).sum(axis=0)
+    var = (p * (bin_idx - mu) ** 2).sum(axis=0) + eps
+    sigma = np.sqrt(var)
+    m3 = (p * (bin_idx - mu) ** 3).sum(axis=0)
+    m4 = (p * (bin_idx - mu) ** 4).sum(axis=0)
+    skew = m3 / (sigma**3)
+    kurt = m4 / (sigma**4) - 3.0
+    return skew.astype(np.float32), kurt.astype(np.float32)
+
+
+def _onset_density_per_frame(
+    onset_frames: np.ndarray, total_frames: int, hop_seconds: float
+) -> np.ndarray:
+    """Smoothed per-frame onset rate (peaks per second).
+
+    Marks each detected onset frame as 1, then convolves with a one-second
+    rectangular window so the result reads as "onsets per second" at each
+    frame. Useful as a rhythmic-density proxy.
+    """
+    out = np.zeros(total_frames, dtype=np.float32)
+    if onset_frames.size == 0:
+        return out
+    out[onset_frames[onset_frames < total_frames]] = 1.0
+    win = max(1, int(round(1.0 / hop_seconds)))
+    kernel = np.ones(win, dtype=np.float32)
+    smoothed = np.convolve(out, kernel, mode="same")
+    return smoothed.astype(np.float32)
 
 
 def _harmonic_ratio(
