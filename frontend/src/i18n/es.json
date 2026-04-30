@@ -67,8 +67,10 @@
     "waveform": "Forma de onda",
     "live_features": "Características en vivo",
     "feature_rms": "Energía RMS",
+    "feature_loudness": "Volumen",
     "feature_centroid": "Centroide espectral",
     "feature_pitch": "Tono dominante",
+    "feature_onset_density": "Densidad de onsets",
     "feature_tempo": "Tempo (clip)",
     "feature_key": "Tonalidad (clip)"
   },

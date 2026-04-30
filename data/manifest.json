@@ -1,15 +1,18 @@
 {
   "version": "0.1.0",
-  "generated_at": "2026-04-30T11:51:52Z",
+  "generated_at": "2026-04-30T12:35:52Z",
   "feature_names": [
     "rms",
     "zero_crossing_rate",
+    "loudness_db",
     "spectral_centroid",
     "spectral_rolloff",
     "spectral_bandwidth",
     "spectral_flatness",
     "spectral_contrast_mean",
     "spectral_entropy",
+    "spectral_skewness",
+    "spectral_kurtosis",
     "energy_low",
     "energy_mid_low",
     "energy_mid_high",
@@ -19,21 +22,23 @@
     "chroma_dominant",
     "harmonic_ratio",
     "tempo_proxy",
-    "onset_strength"
+    "onset_strength",
+    "onset_density"
   ],
   "embedding_methods": [
     "pca",
     "tsne",
     "umap",
+    "tonnetz",
     "yamnet"
   ],
   "categories": [
     {
       "id": "synthetic",
       "name_en": "Synthetic",
-      "name_es": "Sintéticos",
+      "name_es": "Sint\u00e9ticos",
       "description_en": "Algorithmically generated calibration sounds",
-      "description_es": "Sonidos de calibración generados por algoritmo",
+      "description_es": "Sonidos de calibraci\u00f3n generados por algoritmo",
       "icon": "WAVE"
     },
     {
@@ -47,9 +52,9 @@
     {
       "id": "mammals",
       "name_en": "Mammals",
-      "name_es": "Mamíferos",
+      "name_es": "Mam\u00edferos",
       "description_en": "Calls and vocalisations of mammals",
-      "description_es": "Llamados y vocalizaciones de mamíferos",
+      "description_es": "Llamados y vocalizaciones de mam\u00edferos",
       "icon": "PAW"
     },
     {
@@ -81,15 +86,15 @@
       "name_en": "Famous speeches",
       "name_es": "Discursos famosos",
       "description_en": "Public-domain historical speeches",
-      "description_es": "Discursos históricos en dominio público",
+      "description_es": "Discursos hist\u00f3ricos en dominio p\u00fablico",
       "icon": "SPEAK"
     },
     {
       "id": "music",
       "name_en": "Music",
-      "name_es": "Música",
+      "name_es": "M\u00fasica",
       "description_en": "Public-domain or CC-licensed musical pieces",
-      "description_es": "Obras musicales en dominio público o con licencia CC",
+      "description_es": "Obras musicales en dominio p\u00fablico o con licencia CC",
       "icon": "MUSIC"
     },
     {
@@ -97,15 +102,15 @@
       "name_en": "Space",
       "name_es": "Espacio",
       "description_en": "NASA recordings and space-related public-domain audio",
-      "description_es": "Grabaciones de NASA y audio espacial en dominio público",
+      "description_es": "Grabaciones de NASA y audio espacial en dominio p\u00fablico",
       "icon": "STAR"
     },
     {
       "id": "mechanical",
       "name_en": "Mechanical",
-      "name_es": "Mecánicos",
+      "name_es": "Mec\u00e1nicos",
       "description_en": "Machines, engines, vehicles, industrial sounds",
-      "description_es": "Máquinas, motores, vehículos, sonidos industriales",
+      "description_es": "M\u00e1quinas, motores, veh\u00edculos, sonidos industriales",
       "icon": "GEAR"
     }
   ],
@@ -113,7 +118,7 @@
     {
       "id": "amphibian-common-toad",
       "title_en": "Common toad (Bufo bufo) call",
-      "title_es": "Llamado del sapo común",
+      "title_es": "Llamado del sapo com\u00fan",
       "category": "amphibians_reptiles",
       "subcategory": "toads",
       "duration_seconds": 53.619,
@@ -166,7 +171,7 @@
     {
       "id": "reptile-alligator",
       "title_en": "American alligator bellow",
-      "title_es": "Bramido de aligátor americano",
+      "title_es": "Bramido de alig\u00e1tor americano",
       "category": "amphibians_reptiles",
       "subcategory": "reptiles",
       "duration_seconds": 23.624,
@@ -183,7 +188,7 @@
     {
       "id": "bird-american-robin",
       "title_en": "American Robin (Turdus migratorius) song",
-      "title_es": "Canto del zorzal robín (Turdus migratorius)",
+      "title_es": "Canto del zorzal rob\u00edn (Turdus migratorius)",
       "category": "birds",
       "subcategory": "songbirds",
       "duration_seconds": 154.392,
@@ -192,16 +197,15 @@
       "embedding_path": "embeddings/bird-american-robin.json",
       "source": "Wikimedia Commons / Xeno-canto",
       "license": "CC-BY-NC-SA-3.0",
-      "attribution": "Xeno-canto contributor — see file page on Wikimedia Commons",
+      "attribution": "Xeno-canto contributor \u2014 see file page on Wikimedia Commons",
       "tags": [
-        "bird",
         "songbird"
       ]
     },
     {
       "id": "bird-blackbird",
       "title_en": "Common Blackbird (Turdus merula) song",
-      "title_es": "Canto del mirlo común (Turdus merula)",
+      "title_es": "Canto del mirlo com\u00fan (Turdus merula)",
       "category": "birds",
       "subcategory": "songbirds",
       "duration_seconds": 70.049,
@@ -218,7 +222,7 @@
     {
       "id": "bird-cuckoo",
       "title_en": "Cuckoo singing on a tree",
-      "title_es": "Cuco cantando en un árbol",
+      "title_es": "Cuco cantando en un \u00e1rbol",
       "category": "birds",
       "subcategory": "songbirds",
       "duration_seconds": 29.536,
@@ -235,7 +239,7 @@
     {
       "id": "bird-house-sparrow",
       "title_en": "House Sparrow chirping",
-      "title_es": "Gorrión común piando",
+      "title_es": "Gorri\u00f3n com\u00fan piando",
       "category": "birds",
       "subcategory": "songbirds",
       "duration_seconds": 9.609,
@@ -252,7 +256,7 @@
     {
       "id": "bird-kingfisher",
       "title_en": "Belted Kingfisher call",
-      "title_es": "Llamado del martín pescador norteño",
+      "title_es": "Llamado del mart\u00edn pescador norte\u00f1o",
       "category": "birds",
       "subcategory": "waterfowl",
       "duration_seconds": 35.16,
@@ -331,14 +335,13 @@
       "license": "CC-BY-SA-3.0",
       "attribution": "Wikimedia Commons contributors",
       "tags": [
-        "bird",
         "domestic"
       ]
     },
     {
       "id": "bird-tawny-owl",
       "title_en": "Tawny owl (Strix aluco) call",
-      "title_es": "Llamado del cárabo común (Strix aluco)",
+      "title_es": "Llamado del c\u00e1rabo com\u00fan (Strix aluco)",
       "category": "birds",
       "subcategory": "raptors",
       "duration_seconds": 8.261,
@@ -349,7 +352,6 @@
       "license": "CC-BY-SA-4.0",
       "attribution": "Wikimedia Commons contributors",
       "tags": [
-        "bird",
         "owl",
         "nocturnal"
       ]
@@ -357,7 +359,7 @@
     {
       "id": "bird-toco-toucan",
       "title_en": "Toco Toucan call",
-      "title_es": "Llamado del tucán toco",
+      "title_es": "Llamado del tuc\u00e1n toco",
       "category": "birds",
       "subcategory": "tropical",
       "duration_seconds": 10.637,
@@ -368,7 +370,6 @@
       "license": "CC-BY-SA-4.0",
       "attribution": "Wikimedia Commons contributors",
       "tags": [
-        "bird",
         "tropical"
       ]
     },
@@ -439,14 +440,13 @@
       "license": "CC-BY-SA-4.0",
       "attribution": "Wikimedia Commons contributors",
       "tags": [
-        "cricket",
-        "stridulation"
+        "cricket"
       ]
     },
     {
       "id": "mammal-bat-echolocation",
       "title_en": "Bat echolocation calls",
-      "title_es": "Ecolocalización de murciélagos",
+      "title_es": "Ecolocalizaci\u00f3n de murci\u00e9lagos",
       "category": "mammals",
       "subcategory": "wild",
       "duration_seconds": 55.405,
@@ -464,7 +464,7 @@
     {
       "id": "mammal-bear-growl",
       "title_en": "Bear growling",
-      "title_es": "Gruñido de oso",
+      "title_es": "Gru\u00f1ido de oso",
       "category": "mammals",
       "subcategory": "wild",
       "duration_seconds": 9.93,
@@ -481,7 +481,7 @@
     {
       "id": "mammal-cat-meow",
       "title_en": "Domestic cat meow",
-      "title_es": "Maullido de gato doméstico",
+      "title_es": "Maullido de gato dom\u00e9stico",
       "category": "mammals",
       "subcategory": "domestic",
       "duration_seconds": 0.779,
@@ -492,8 +492,8 @@
       "license": "CC-BY-SA-3.0",
       "attribution": "Wikimedia Commons contributors",
       "tags": [
-        "cat",
-        "domestic"
+        "domestic",
+        "cat"
       ]
     },
     {
@@ -510,14 +510,13 @@
       "license": "CC-BY-SA-3.0",
       "attribution": "Wikimedia Commons contributors",
       "tags": [
-        "cow",
         "livestock"
       ]
     },
     {
       "id": "mammal-deer-call",
       "title_en": "Red deer roaring (rut)",
-      "title_es": "Berreo del ciervo común",
+      "title_es": "Berreo del ciervo com\u00fan",
       "category": "mammals",
       "subcategory": "wild",
       "duration_seconds": 7.04,
@@ -545,8 +544,8 @@
       "license": "CC-BY-SA-3.0",
       "attribution": "Wikimedia Commons contributors",
       "tags": [
-        "dog",
-        "domestic"
+        "domestic",
+        "dog"
       ]
     },
     {
@@ -580,7 +579,7 @@
       "license": "CC-BY-SA-3.0",
       "attribution": "Wikimedia Commons contributors",
       "tags": [
-        "horse"
+        "livestock"
       ]
     },
     {
@@ -621,7 +620,7 @@
     {
       "id": "mammal-pig-grunt",
       "title_en": "Pig grunting",
-      "title_es": "Gruñido de cerdo",
+      "title_es": "Gru\u00f1ido de cerdo",
       "category": "mammals",
       "subcategory": "livestock",
       "duration_seconds": 0.655,
@@ -666,7 +665,7 @@
       "license": "CC-BY-SA-3.0",
       "attribution": "Wikimedia Commons contributors",
       "tags": [
-        "wolf"
+        "wild"
       ]
     },
     {
@@ -726,7 +725,7 @@
     {
       "id": "mechanical-lawnmower",
       "title_en": "Lawnmower",
-      "title_es": "Cortacésped",
+      "title_es": "Cortac\u00e9sped",
       "category": "mechanical",
       "subcategory": "vehicles",
       "duration_seconds": 67.854,
@@ -781,7 +780,7 @@
     {
       "id": "mechanical-typewriter",
       "title_en": "Typewriter",
-      "title_es": "Máquina de escribir",
+      "title_es": "M\u00e1quina de escribir",
       "category": "mechanical",
       "subcategory": "office",
       "duration_seconds": 25.898,
@@ -798,8 +797,8 @@
     },
     {
       "id": "music-bach-cello-prelude",
-      "title_en": "Bach — Cello Suite No.1 (Prelude)",
-      "title_es": "Bach — Suite para violonchelo Nº1 (Preludio)",
+      "title_en": "Bach \u2014 Cello Suite No.1 (Prelude)",
+      "title_es": "Bach \u2014 Suite para violonchelo N\u00ba1 (Preludio)",
       "category": "music",
       "subcategory": "classical",
       "duration_seconds": 130.273,
@@ -817,8 +816,8 @@
     },
     {
       "id": "music-bach-violin-allemanda",
-      "title_en": "Bach — Partita No.2 (Allemanda)",
-      "title_es": "Bach — Partita Nº2 (Allemanda)",
+      "title_en": "Bach \u2014 Partita No.2 (Allemanda)",
+      "title_es": "Bach \u2014 Partita N\u00ba2 (Allemanda)",
       "category": "music",
       "subcategory": "classical",
       "duration_seconds": 134.972,
@@ -836,8 +835,8 @@
     },
     {
       "id": "music-darkies-dream-banjo",
-      "title_en": "Banjo — The Darkies Dream (1898, public domain)",
-      "title_es": "Banjo — The Darkies Dream (1898, dominio público)",
+      "title_en": "Banjo \u2014 The Darkies Dream (1898, public domain)",
+      "title_es": "Banjo \u2014 The Darkies Dream (1898, dominio p\u00fablico)",
       "category": "music",
       "subcategory": "vintage",
       "duration_seconds": 144.51,
@@ -873,8 +872,8 @@
     },
     {
       "id": "music-gregorian-chant",
-      "title_en": "Gregorian chant — Rorate Caeli",
-      "title_es": "Canto gregoriano — Rorate Caeli",
+      "title_en": "Gregorian chant \u2014 Rorate Caeli",
+      "title_es": "Canto gregoriano \u2014 Rorate Caeli",
       "category": "music",
       "subcategory": "vocal",
       "duration_seconds": 142.06,
@@ -892,7 +891,7 @@
     {
       "id": "music-jazz-violin-solo",
       "title_en": "Jazz violin solo",
-      "title_es": "Solo de violín jazz",
+      "title_es": "Solo de viol\u00edn jazz",
       "category": "music",
       "subcategory": "jazz",
       "duration_seconds": 30.0,
@@ -909,8 +908,8 @@
     },
     {
       "id": "music-music-box-rag",
-      "title_en": "Luckey Roberts — The Music Box Rag (1914)",
-      "title_es": "Luckey Roberts — The Music Box Rag (1914)",
+      "title_en": "Luckey Roberts \u2014 The Music Box Rag (1914)",
+      "title_es": "Luckey Roberts \u2014 The Music Box Rag (1914)",
       "category": "music",
       "subcategory": "vintage",
       "duration_seconds": 183.631,
@@ -928,7 +927,7 @@
     {
       "id": "music-pentatonic-c",
       "title_en": "Pentatonic scale (C major)",
-      "title_es": "Escala pentatónica (Do mayor)",
+      "title_es": "Escala pentat\u00f3nica (Do mayor)",
       "category": "music",
       "subcategory": "reference",
       "duration_seconds": 20.872,
@@ -946,7 +945,7 @@
     {
       "id": "music-rock-drum-beat",
       "title_en": "Rock drum beat (hi-hat)",
-      "title_es": "Patrón de batería rock (hi-hat)",
+      "title_es": "Patr\u00f3n de bater\u00eda rock (hi-hat)",
       "category": "music",
       "subcategory": "modern",
       "duration_seconds": 9.167,
@@ -963,8 +962,8 @@
     },
     {
       "id": "music-vivaldi-spring-allegro",
-      "title_en": "Vivaldi — Four Seasons, Spring (Allegro)",
-      "title_es": "Vivaldi — Las Cuatro Estaciones, Primavera (Allegro)",
+      "title_en": "Vivaldi \u2014 Four Seasons, Spring (Allegro)",
+      "title_es": "Vivaldi \u2014 Las Cuatro Estaciones, Primavera (Allegro)",
       "category": "music",
       "subcategory": "classical",
       "duration_seconds": 215.28,
@@ -982,8 +981,8 @@
     },
     {
       "id": "music-vivaldi-summer-presto",
-      "title_en": "Vivaldi — Four Seasons, Summer (Presto)",
-      "title_es": "Vivaldi — Las Cuatro Estaciones, Verano (Presto)",
+      "title_en": "Vivaldi \u2014 Four Seasons, Summer (Presto)",
+      "title_es": "Vivaldi \u2014 Las Cuatro Estaciones, Verano (Presto)",
       "category": "music",
       "subcategory": "classical",
       "duration_seconds": 158.96,
@@ -1050,14 +1049,13 @@
       "attribution": "Wikimedia Commons contributors",
       "tags": [
         "wind",
-        "forest",
-        "ambience"
+        "forest"
       ]
     },
     {
       "id": "space-apollo-13-problem",
-      "title_en": "Apollo 13 — \"We've had a problem\"",
-      "title_es": "Apollo 13 — \"Hemos tenido un problema\"",
+      "title_en": "Apollo 13 \u2014 \"We've had a problem\"",
+      "title_es": "Apollo 13 \u2014 \"Hemos tenido un problema\"",
       "category": "space",
       "subcategory": "apollo",
       "duration_seconds": 16.55,
@@ -1074,8 +1072,8 @@
     },
     {
       "id": "space-apollo-17-strolling",
-      "title_en": "Apollo 17 — Strolling on the Moon",
-      "title_es": "Apollo 17 — Paseando por la Luna",
+      "title_en": "Apollo 17 \u2014 Strolling on the Moon",
+      "title_es": "Apollo 17 \u2014 Paseando por la Luna",
       "category": "space",
       "subcategory": "apollo",
       "duration_seconds": 13.312,
@@ -1092,8 +1090,8 @@
     },
     {
       "id": "space-apollo-8-genesis",
-      "title_en": "Apollo 8 — Genesis reading",
-      "title_es": "Apollo 8 — Lectura del Génesis",
+      "title_en": "Apollo 8 \u2014 Genesis reading",
+      "title_es": "Apollo 8 \u2014 Lectura del G\u00e9nesis",
       "category": "space",
       "subcategory": "apollo",
       "duration_seconds": 115.644,
@@ -1110,8 +1108,8 @@
     },
     {
       "id": "speech-armstrong-step",
-      "title_en": "Armstrong — One small step",
-      "title_es": "Armstrong — Un pequeño paso",
+      "title_en": "Armstrong \u2014 One small step",
+      "title_es": "Armstrong \u2014 Un peque\u00f1o paso",
       "category": "speeches",
       "subcategory": "us-historical",
       "duration_seconds": 24.113,
@@ -1120,17 +1118,16 @@
       "embedding_path": "embeddings/speech-armstrong-step.json",
       "source": "NASA",
       "license": "Public Domain",
-      "attribution": "Neil Armstrong / NASA, 1969 (U.S. Government work, public domain)",
+      "attribution": "Neil Armstrong / NASA, 1969 (U.S. Government work)",
       "tags": [
-        "speech",
         "history",
         "nasa"
       ]
     },
     {
       "id": "speech-fdr-pearl-harbor",
-      "title_en": "FDR — Day of Infamy (Pearl Harbor)",
-      "title_es": "FDR — Día de la Infamia (Pearl Harbor)",
+      "title_en": "FDR \u2014 Day of Infamy (Pearl Harbor)",
+      "title_es": "FDR \u2014 D\u00eda de la Infamia (Pearl Harbor)",
       "category": "speeches",
       "subcategory": "us-historical",
       "duration_seconds": 258.972,
@@ -1146,8 +1143,8 @@
     },
     {
       "id": "speech-jfk-berlin",
-      "title_en": "JFK — Ich bin ein Berliner",
-      "title_es": "JFK — Ich bin ein Berliner",
+      "title_en": "JFK \u2014 Ich bin ein Berliner",
+      "title_es": "JFK \u2014 Ich bin ein Berliner",
       "category": "speeches",
       "subcategory": "us-historical",
       "duration_seconds": 2.204,
@@ -1156,11 +1153,9 @@
       "embedding_path": "embeddings/speech-jfk-berlin.json",
       "source": "Wikimedia Commons / John F. Kennedy",
       "license": "Public Domain",
-      "attribution": "John F. Kennedy, 1963 (U.S. Government work, public domain)",
+      "attribution": "John F. Kennedy, 1963 (U.S. Government work)",
       "tags": [
-        "speech",
-        "history",
-        "english"
+        "history"
       ]
     },
     {

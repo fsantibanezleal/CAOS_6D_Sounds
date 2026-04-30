@@ -76,6 +76,16 @@ spectrum. For frame `i` we keep the bin index with the largest magnitude as
   8-frame window. Coarse but cheap per-frame rhythmic indicator.
 * **Tempo BPM (clip-level)** — global tempo estimate via
   ``librosa.feature.tempo`` on the onset envelope. One number per clip.
+* **Onset density** — number of detected onset peaks in a 1-second
+  rectangular window centered on the current frame, in onsets/s.
+  Useful as a "rhythmic activity" axis.
+
+### 1.5b Loudness in dB
+
+A perceptual proxy for "how loud" the frame sounds, computed as
+``20·log10(RMS)`` clamped to ``[-80, 0]`` dB. Not a full ITU-R BS.1770
+LUFS implementation, but enough to drive a perceptual axis without
+adding the full integration window machinery.
 
 ### 1.6 Spectral entropy
 
@@ -88,6 +98,22 @@ $$
 normalized by `log2(K)` to live in `[0, 1]`. Tonal frames have low
 entropy (energy concentrated in a few bins); noise-like frames approach
 1.
+
+### 1.6b Spectral skewness + kurtosis
+
+The 3rd and 4th standardised moments of the per-frame normalized
+spectrum, treating bin index as the random variable weighted by
+``S²``:
+
+$$
+\mathrm{skew}_i = \frac{m_3}{\sigma^3}, \quad
+\mathrm{kurt}_i = \frac{m_4}{\sigma^4} - 3
+$$
+
+Skewness < 0 means energy is concentrated in higher bins (tilt-down
+spectrum); skewness > 0 means lower bins dominate. Excess kurtosis > 0
+indicates a peakier-than-Gaussian distribution (tonal content with a
+clear formant or fundamental).
 
 ### 1.7 Sub-band energies
 
@@ -196,7 +222,27 @@ preserves global topology better, and supports out-of-sample inference.
 including 6 directly. **Weaknesses**: slightly more parameters to tune
 (`n_neighbors`, `min_dist`).
 
-### 2.4 YAMNet (deep, pretrained)
+### 2.4 Tonnetz (Tonal Centroid Features)
+
+The Tonnetz embedding (Harte, Sandler & Gasser, 2006, building on
+Chew's 2002 spiral-array model) maps each chroma vector to a
+**6-dimensional tonal-centroid space** designed so that
+*harmonically related pitches* land close together. The six axes pair
+into three orthogonal circles encoding fifths, minor thirds and major
+thirds:
+
+$$
+T(c) = \Phi \cdot c
+$$
+
+where `c ∈ R^12` is the chroma vector and `Φ ∈ R^{6×12}` projects to
+the three circular subspaces. We min-max normalize the output per
+axis so it lives alongside the other 6D tracks. This track is
+*dim_labels = ["fifth-x", "fifth-y", "minor3-x", "minor3-y",
+"major3-x", "major3-y"]*; clips with similar harmonic content trace
+nearby paths in this space.
+
+### 2.5 YAMNet (deep, pretrained)
 
 YAMNet (Hershey et al., 2017) is a pretrained CNN trained on AudioSet
 to classify 521 sound classes. Its penultimate layer produces 1024-D

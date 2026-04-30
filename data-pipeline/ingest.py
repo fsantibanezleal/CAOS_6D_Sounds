@@ -24,7 +24,12 @@ import numpy as np  # noqa: F401  (re-exported via type hints in modules)
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from build_manifest import write_clip_embedding, write_manifest
-from compute_embeddings import available_methods, fit_all, fit_yamnet
+from compute_embeddings import (
+    available_methods,
+    fit_all,
+    fit_tonnetz,
+    fit_yamnet,
+)
 from extract_features import discover_clips, extract_clip
 from synthetic_seeds import write_seeds
 from yamnet_embeddings import (
@@ -68,10 +73,16 @@ def main() -> int:
             f"duration={feats.duration_seconds:.1f}s"
         )
 
-    print("[4/6] Fitting MFCC projections (PCA / t-SNE / UMAP)...")
+    print("[4/7] Fitting MFCC projections (PCA / t-SNE / UMAP)...")
     projections_by_method = fit_all([(f.clip_id, f.mfcc) for f in feature_set])
 
-    print("[5/6] Computing YAMNet deep embeddings (optional)...")
+    print("[5/7] Normalizing Tonnetz tracks (already 6D)...")
+    tonnetz_per_clip = fit_tonnetz([(f.clip_id, f.tonnetz) for f in feature_set])
+    if tonnetz_per_clip is not None:
+        projections_by_method["tonnetz"] = tonnetz_per_clip
+    print(f"  produced tonnetz for {len(tonnetz_per_clip or {})} clip(s)")
+
+    print("[6/7] Computing YAMNet deep embeddings (optional)...")
     yamnet_model = try_yamnet()
     yamnet_per_clip: dict[str, np.ndarray] | None = None
     if yamnet_model is not None:
@@ -90,7 +101,7 @@ def main() -> int:
     methods = available_methods(projections_by_method)
     print(f"  methods produced: {', '.join(methods) if methods else '(none)'}")
 
-    print("[6/6] Writing manifest + per-clip embedding JSONs...")
+    print("[7/7] Writing manifest + per-clip embedding JSONs...")
     for f in feature_set:
         per_clip = {m: projections_by_method[m][f.clip_id] for m in methods}
         target = write_clip_embedding(f, per_clip)

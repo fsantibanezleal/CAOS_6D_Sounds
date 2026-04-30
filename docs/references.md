@@ -48,6 +48,17 @@ techniques used by Auralis.
   Signal Analysis in Python*. Proceedings of the 14th Python in Science
   Conference. The library powering our feature extraction.
 
+## Tonal / harmonic spaces
+
+- **Tonnetz / Tonal Centroid** — Harte, C., Sandler, M., & Gasser, M.
+  (2006). *Detecting Harmonic Change in Musical Audio*. AMCMM '06.
+  Defines the 6-component tonal-centroid embedding from chroma that
+  the ``tonnetz`` track in Auralis uses.
+
+- **Spiral Array** — Chew, E. (2002). *The Spiral Array: An Algorithm
+  for Determining Key Boundaries*. ICMAI. The geometric foundation for
+  the Tonnetz model.
+
 ## Deep audio embeddings
 
 - **YAMNet** — Hershey, S., et al. (2017). *CNN Architectures for
