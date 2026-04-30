@@ -37,13 +37,16 @@ embedding space.
   drives X / Y / Z position, which drives color (4D), which drives
   sphere size (5D). Time is the implicit 6th axis (past frames fade
   out into a trail).
-* **Six render modes**, switchable from the control panel:
+* **Eight render modes**, switchable from the control panel:
   * **Spheres** — discrete coloured spheres connected by a polyline.
-  * **Smoke** (default) — diffuse coloured clouds with additive blending and outward drift.
+  * **Smoke** — diffuse coloured clouds with additive blending and outward drift.
   * **Bursts** — each frame is a tiny explosion of coloured rays radiating from its centre.
   * **Constellation** — minimal star-map: tiny pulsing nodes joined by glowing edges.
   * **Aurora** — vertical curtains of light rising from each frame with a gentle sway.
-  * **Comet** — a bright glowing head at the cursor + a stretched fading tail.
+  * **Comet** (default) — a bright glowing head at the cursor + a stretched fading tail.
+  * **Tube** — a thick camera-aligned ribbon flowing along the trail.
+  * **Galaxy** — permanent twinkling star-clusters at every frame; the whole 6D path stays visible.
+* **Export** any frame as a PNG snapshot, or **record** the canvas as a webm video.
 * **Five 6D embedding tracks**, all min-max normalized to `[0, 1]`:
   * **Features** — six interpretable spectral scalars.
   * **PCA / t-SNE / UMAP** — corpus-wide projections of MFCC frames.
