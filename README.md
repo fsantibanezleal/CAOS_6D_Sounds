@@ -37,11 +37,13 @@ embedding space.
   drives X / Y / Z position, which drives color (4D), which drives
   sphere size (5D). Time is the implicit 6th axis (past frames fade
   out into a trail).
-* **Three projection methods, plus interpretable features.** Choose
-  from PCA, t-SNE, UMAP, or a hand-curated set of six spectral
-  features (RMS, ZCR, spectral centroid / rolloff / bandwidth /
-  flatness). All produce the same 6D shape, all are min-max
-  normalized to `[0, 1]` so any feature can drive any axis.
+* **Five 6D embedding tracks**, all min-max normalized to `[0, 1]`:
+  * **Features** — six interpretable spectral scalars.
+  * **PCA / t-SNE / UMAP** — corpus-wide projections of MFCC frames.
+  * **Tonnetz** — natural 6D harmonic space (Harte et al. 2006), with
+    axes encoding fifths, minor thirds and major thirds.
+  * **YAMNet** — 1024-D deep AudioSet embeddings (Hershey et al.
+    2017) projected to 6D via PCA.
 * **Live spectrogram + waveform side panels.** Wired up via the Web
   Audio API and colored with the active colormap.
 * **Seven perceptually-uniform colormaps.** viridis, magma, plasma,

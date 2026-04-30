@@ -3,6 +3,30 @@
 Newest-first log of the design decisions that shaped Auralis. Each entry
 records what changed, why, and the alternative we considered.
 
+## v0.3.0 — features deep-dive + tonal axes (2026-04-30)
+
+**More features.** SCALAR_FEATURES grew from 18 to 22 with:
+* `loudness_db` — 20·log10(RMS), clamped to [-80, 0] dB
+* `spectral_skewness` — 3rd standardised moment of the spectrum
+* `spectral_kurtosis` — 4th standardised moment (excess form)
+* `onset_density` — onsets per second over a 1 s sliding window
+
+**New 6D embedding track: Tonnetz.** The natural 6-dim harmonic space
+of chroma (Harte, Sandler & Gasser, 2006). Axes pair as fifths,
+minor thirds, major thirds. Per-clip min-max normalized so it shares
+the same world cube as PCA / t-SNE / UMAP / YAMNet. This track shows
+its strengths on the music + speech clips (clear chord-progression
+trajectories that are invisible in MFCC space).
+
+**Library polish.** Selector now shows a small "subcategory" pill on
+each clip row, plus license + max-duration filter dropdowns. Dropped
+the 10-min Churchill clip whose particular Vorbis encoding crashed
+libsndfile on Windows.
+
+**Live features panel.** Now also shows loudness (dB) and onset
+density (/s) per current frame, in addition to RMS / centroid / pitch
++ clip-level tempo and key.
+
 ## v0.2.0 — library + UX expansion (2026-04-30)
 
 **Library tripled.** Curation list grew from ~17 verified Wikimedia

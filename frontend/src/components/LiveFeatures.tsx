@@ -34,6 +34,8 @@ export function LiveFeatures() {
   const rms = embedding.raw.rms[idx] ?? 0;
   const centroid = embedding.raw.spectral_centroid_hz[idx] ?? 0;
   const pitch = embedding.raw.dominant_pitch_hz[idx] ?? 0;
+  const loudness = embedding.raw.loudness_db?.[idx];
+  const onsetDensity = embedding.raw.onset_density?.[idx];
 
   const cl = embedding.clip_level;
   const keyLabel = cl
@@ -45,6 +47,12 @@ export function LiveFeatures() {
     <div className="aux-card">
       <h3>{t("panels.live_features")}</h3>
       <Row label={t("panels.feature_rms")} value={rms.toFixed(4)} />
+      {loudness !== undefined && (
+        <Row
+          label={t("panels.feature_loudness")}
+          value={`${loudness.toFixed(1)} dB`}
+        />
+      )}
       <Row
         label={t("panels.feature_centroid")}
         value={`${centroid.toFixed(0)} Hz`}
@@ -53,6 +61,12 @@ export function LiveFeatures() {
         label={t("panels.feature_pitch")}
         value={pitch > 0 ? `${pitch.toFixed(0)} Hz` : "—"}
       />
+      {onsetDensity !== undefined && (
+        <Row
+          label={t("panels.feature_onset_density")}
+          value={`${onsetDensity.toFixed(1)} /s`}
+        />
+      )}
       {tempoLabel && <Row label={t("panels.feature_tempo")} value={tempoLabel} />}
       {keyLabel && <Row label={t("panels.feature_key")} value={keyLabel} />}
     </div>

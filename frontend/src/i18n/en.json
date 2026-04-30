@@ -67,8 +67,10 @@
     "waveform": "Waveform",
     "live_features": "Live features",
     "feature_rms": "RMS energy",
+    "feature_loudness": "Loudness",
     "feature_centroid": "Spectral centroid",
     "feature_pitch": "Dominant pitch",
+    "feature_onset_density": "Onset density",
     "feature_tempo": "Tempo (clip)",
     "feature_key": "Key (clip)"
   },

@@ -194,21 +194,40 @@ def write_clip_embedding(
         if method == "yamnet":
             desc_en = "6D PCA projection of YAMNet's pretrained 1024-D embeddings (deep CNN trained on AudioSet)"
             desc_es = "Proyección PCA 6D de los embeddings preentrenados YAMNet de 1024-D (CNN profunda entrenada con AudioSet)"
+            dim_labels = [f"D{i + 1}" for i in range(matrix.shape[1])]
+        elif method == "tonnetz":
+            desc_en = (
+                "Tonal Centroid Features (Tonnetz, Harte et al. 2006) — the natural "
+                "6D harmonic space of chroma vectors. Axes encode major thirds, "
+                "minor thirds and perfect fifths."
+            )
+            desc_es = (
+                "Centroides tonales (Tonnetz, Harte et al. 2006) — el espacio armónico "
+                "natural 6D de los vectores cromáticos. Los ejes codifican terceras "
+                "mayores, terceras menores y quintas justas."
+            )
+            dim_labels = [
+                "fifth-x", "fifth-y",
+                "minor3-x", "minor3-y",
+                "major3-x", "major3-y",
+            ]
         else:
             desc_en = f"6-dimensional {method.upper()} projection of MFCC frames"
             desc_es = f"Proyección {method.upper()} de 6 dimensiones de los cuadros MFCC"
+            dim_labels = [f"D{i + 1}" for i in range(matrix.shape[1])]
         tracks.append(
             {
                 "name": method,
                 "description_en": desc_en,
                 "description_es": desc_es,
-                "dim_labels": [f"D{i + 1}" for i in range(matrix.shape[1])],
+                "dim_labels": dim_labels,
                 "values": matrix.round(4).tolist(),
             }
         )
 
     raw = {
         "rms": features.scalar_features["rms"].round(5).tolist(),
+        "loudness_db": features.scalar_features["loudness_db"].round(2).tolist(),
         "spectral_centroid_hz": features.scalar_features["spectral_centroid"]
         .round(2)
         .tolist(),
@@ -229,6 +248,9 @@ def write_clip_embedding(
         .round(5)
         .tolist(),
         "energy_high": features.scalar_features["energy_high"].round(5).tolist(),
+        "onset_density": features.scalar_features["onset_density"]
+        .round(3)
+        .tolist(),
     }
 
     payload = {
