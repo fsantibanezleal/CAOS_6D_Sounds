@@ -5,6 +5,7 @@ import * as THREE from "three";
 
 import { sampleColormap } from "../lib/colormaps";
 import { useStore } from "../store/useStore";
+import { BurstsTrail } from "./BurstsTrail";
 import { SmokeTrail } from "./SmokeTrail";
 
 /**
@@ -105,6 +106,15 @@ function SceneContents() {
       {embedding && trackValues && viz.renderMode === "smoke" && (
         <SmokeTrail
           key={"smoke-" + embedding.id + "-" + viz.smokeDensity}
+          values={trackValues.values}
+          numFrames={embedding.num_frames}
+          hopSeconds={embedding.hop_seconds}
+        />
+      )}
+
+      {embedding && trackValues && viz.renderMode === "bursts" && (
+        <BurstsTrail
+          key={"bursts-" + embedding.id + "-" + viz.burstRays}
           values={trackValues.values}
           numFrames={embedding.num_frames}
           hopSeconds={embedding.hop_seconds}

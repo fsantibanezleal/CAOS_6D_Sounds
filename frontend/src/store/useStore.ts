@@ -6,7 +6,7 @@ import { type ColormapName } from "../lib/colormaps";
 
 export type Theme = "dark" | "light";
 export type AxisRole = "x" | "y" | "z" | "color" | "size";
-export type RenderMode = "spheres" | "smoke";
+export type RenderMode = "spheres" | "smoke" | "bursts";
 
 export interface VizConfig {
   /** Which embedding track to use (features / pca / tsne / umap / tonnetz / yamnet). */
@@ -24,10 +24,13 @@ export interface VizConfig {
   showGrid: boolean;
   /** Visualization mode — geometric spheres or diffuse smoke clouds. */
   renderMode: RenderMode;
-  /** Smoke-mode parameters (ignored when renderMode === "spheres"). */
+  /** Smoke-mode parameters (ignored when renderMode !== "smoke"). */
   smokeDensity: number;  // 1..16 particles per frame
   smokeSpread: number;   // initial offset radius in world units
   smokeDrift: number;    // outward drift speed in world units / second
+  /** Bursts-mode parameters (ignored when renderMode !== "bursts"). */
+  burstRays: number;     // 4..32 rays per frame
+  burstSize: number;     // global multiplier for ray length (0..2)
 }
 
 interface StoreState {
@@ -93,7 +96,9 @@ const DEFAULT_VIZ: VizConfig = {
   renderMode: "smoke",
   smokeDensity: 8,
   smokeSpread: 0.05,
-  smokeDrift: 0.08
+  smokeDrift: 0.08,
+  burstRays: 12,
+  burstSize: 1.0
 };
 
 /** Stable id of the clip that loads automatically when the library
