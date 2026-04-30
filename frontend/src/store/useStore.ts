@@ -42,6 +42,14 @@ interface StoreState {
   embedding: ClipEmbedding | null;
   setEmbedding: (e: ClipEmbedding | null) => void;
 
+  comparisonClip: SoundClip | null;
+  setComparisonClip: (clip: SoundClip | null) => void;
+
+  comparisonEmbedding: ClipEmbedding | null;
+  setComparisonEmbedding: (e: ClipEmbedding | null) => void;
+
+  swapWithComparison: () => void;
+
   isPlaying: boolean;
   setIsPlaying: (b: boolean) => void;
   currentTime: number;
@@ -95,6 +103,26 @@ export const useStore = create<StoreState>()(
 
       embedding: null,
       setEmbedding: (e) => set({ embedding: e }),
+
+      comparisonClip: null,
+      setComparisonClip: (clip) =>
+        set({ comparisonClip: clip, comparisonEmbedding: null }),
+
+      comparisonEmbedding: null,
+      setComparisonEmbedding: (e) => set({ comparisonEmbedding: e }),
+
+      swapWithComparison: () => {
+        const s = get();
+        if (!s.comparisonClip) return;
+        set({
+          selectedClip: s.comparisonClip,
+          embedding: s.comparisonEmbedding,
+          comparisonClip: s.selectedClip,
+          comparisonEmbedding: s.embedding,
+          currentTime: 0,
+          isPlaying: false
+        });
+      },
 
       isPlaying: false,
       setIsPlaying: (b) => set({ isPlaying: b }),

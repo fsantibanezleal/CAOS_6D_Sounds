@@ -23,6 +23,9 @@ export function SoundLibrary() {
   const setSearch = useStore((s) => s.setSearch);
   const selectedClip = useStore((s) => s.selectedClip);
   const setSelectedClip = useStore((s) => s.setSelectedClip);
+  const comparisonClip = useStore((s) => s.comparisonClip);
+  const setComparisonClip = useStore((s) => s.setComparisonClip);
+  const swapWithComparison = useStore((s) => s.swapWithComparison);
 
   const filteredClips = useMemo(() => {
     if (!library) return [];
@@ -77,20 +80,66 @@ export function SoundLibrary() {
       )}
 
       <ul className="clip-list">
-        {filteredClips.map((c) => (
-          <li
-            key={c.id}
-            className={selectedClip?.id === c.id ? "active" : ""}
-            onClick={() => setSelectedClip(c)}
-          >
-            <div className="title">{clipTitle(c, lang)}</div>
-            <div className="meta">
-              <span>{c.category}</span>
-              <span>{c.duration_seconds.toFixed(1)} s</span>
-            </div>
-          </li>
-        ))}
+        {filteredClips.map((c) => {
+          const isPrimary = selectedClip?.id === c.id;
+          const isComparison = comparisonClip?.id === c.id;
+          const cls = [
+            isPrimary ? "active" : "",
+            isComparison ? "comparison" : ""
+          ]
+            .filter(Boolean)
+            .join(" ");
+          return (
+            <li
+              key={c.id}
+              className={cls}
+              onClick={() => setSelectedClip(c)}
+            >
+              <div className="title">{clipTitle(c, lang)}</div>
+              <div className="meta">
+                <span>{c.category}</span>
+                <span>{c.duration_seconds.toFixed(1)} s</span>
+              </div>
+              <button
+                className="compare-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (isPrimary) return; // can't compare with itself
+                  setComparisonClip(isComparison ? null : c);
+                }}
+                disabled={isPrimary}
+                title={
+                  isPrimary
+                    ? t("library.compare_self")
+                    : isComparison
+                      ? t("library.compare_remove")
+                      : t("library.compare_add")
+                }
+              >
+                {isComparison ? "+ active" : "+ compare"}
+              </button>
+            </li>
+          );
+        })}
       </ul>
+
+      {comparisonClip && (
+        <div className="compare-bar">
+          <span>
+            {t("library.comparing_with")}:{" "}
+            <strong>{clipTitle(comparisonClip, lang)}</strong>
+          </span>
+          <button onClick={swapWithComparison} title={t("library.swap")}>
+            ⇄
+          </button>
+          <button
+            onClick={() => setComparisonClip(null)}
+            title={t("library.compare_remove")}
+          >
+            ×
+          </button>
+        </div>
+      )}
 
       {selectedClip && (
         <div className="attribution">

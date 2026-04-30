@@ -46,6 +46,7 @@ export function Visualization6D() {
 function SceneContents() {
   const viz = useStore((s) => s.viz);
   const embedding = useStore((s) => s.embedding);
+  const comparisonEmbedding = useStore((s) => s.comparisonEmbedding);
   const showAxes = viz.showAxes;
   const showGrid = viz.showGrid;
 
@@ -55,6 +56,13 @@ function SceneContents() {
     if (!tr) return null;
     return tr;
   }, [embedding, viz.trackName]);
+
+  const comparisonTrackValues = useMemo(() => {
+    if (!comparisonEmbedding) return null;
+    const tr = comparisonEmbedding.tracks.find((t) => t.name === viz.trackName);
+    if (!tr) return null;
+    return tr;
+  }, [comparisonEmbedding, viz.trackName]);
 
   return (
     <>
@@ -77,11 +85,23 @@ function SceneContents() {
 
       {showAxes && <AxesGuide />}
 
+      {comparisonEmbedding && comparisonTrackValues && (
+        <Trail6D
+          key={"cmp-" + comparisonEmbedding.id}
+          values={comparisonTrackValues.values}
+          numFrames={comparisonEmbedding.num_frames}
+          hopSeconds={comparisonEmbedding.hop_seconds}
+          mode="silhouette"
+        />
+      )}
+
       {embedding && trackValues && (
         <Trail6D
+          key={"primary-" + embedding.id}
           values={trackValues.values}
           numFrames={embedding.num_frames}
           hopSeconds={embedding.hop_seconds}
+          mode="animated"
         />
       )}
 
@@ -185,17 +205,24 @@ function makeSphereMaterial(): THREE.ShaderMaterial {
  * play-position window: instances inside the window are visible with
  * decreasing alpha from front to tail; instances outside are hidden.
  */
+type TrailMode = "animated" | "silhouette";
+
 function Trail6D({
   values,
   numFrames,
-  hopSeconds
+  hopSeconds,
+  mode = "animated"
 }: {
   values: number[][];
   numFrames: number;
   hopSeconds: number;
+  mode?: TrailMode;
 }) {
   const viz = useStore((s) => s.viz);
   const currentTime = useStore((s) => s.currentTime);
+  const isSilhouette = mode === "silhouette";
+  const SILHOUETTE_ALPHA = 0.18;
+  const SILHOUETTE_SIZE_SCALE = 0.55;
 
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const lineGeomRef = useRef<THREE.BufferGeometry>(null);
@@ -293,6 +320,58 @@ function Trail6D({
     const inst = meshRef.current;
     if (!inst) return;
 
+    const rgbaArr = instanceRgba.array as Float32Array;
+    const geo = lineGeomRef.current;
+
+    if (isSilhouette) {
+      // Static "ghost" rendering: every frame is shown, with a constant
+      // low alpha. Useful as a comparison overlay behind the animated
+      // primary clip.
+      for (let i = 0; i < numFrames; i++) {
+        const px = frames.positions[3 * i];
+        const py = frames.positions[3 * i + 1];
+        const pz = frames.positions[3 * i + 2];
+        const s = frames.sizes[i] * SILHOUETTE_SIZE_SCALE;
+        matrixObj.position.set(px, py, pz);
+        matrixObj.scale.setScalar(s);
+        matrixObj.updateMatrix();
+        inst.setMatrixAt(i, matrixObj.matrix);
+        rgbaArr[4 * i] = frames.colors[3 * i];
+        rgbaArr[4 * i + 1] = frames.colors[3 * i + 1];
+        rgbaArr[4 * i + 2] = frames.colors[3 * i + 2];
+        rgbaArr[4 * i + 3] = SILHOUETTE_ALPHA;
+      }
+      inst.instanceMatrix.needsUpdate = true;
+      instanceRgba.needsUpdate = true;
+
+      if (geo && viz.showTrailLine) {
+        const positionAttr = geo.getAttribute("position") as THREE.BufferAttribute;
+        const colorAttr = geo.getAttribute("color") as THREE.BufferAttribute;
+        for (let i = 0; i < numFrames; i++) {
+          positionAttr.setXYZ(
+            i,
+            frames.positions[3 * i],
+            frames.positions[3 * i + 1],
+            frames.positions[3 * i + 2]
+          );
+          colorAttr.setXYZW(
+            i,
+            frames.colors[3 * i],
+            frames.colors[3 * i + 1],
+            frames.colors[3 * i + 2],
+            SILHOUETTE_ALPHA * 0.7
+          );
+        }
+        positionAttr.needsUpdate = true;
+        colorAttr.needsUpdate = true;
+        geo.setDrawRange(0, numFrames);
+      } else if (geo) {
+        geo.setDrawRange(0, 0);
+      }
+      return;
+    }
+
+    // Animated mode: only the active visibility window is drawn.
     const trailFrames = Math.max(
       MIN_TRAIL_FRAMES,
       Math.round(viz.trailSeconds / hopSeconds)
@@ -300,18 +379,13 @@ function Trail6D({
     const cursor = Math.min(numFrames - 1, Math.floor(currentTime / hopSeconds));
     const start = Math.max(0, cursor - trailFrames + 1);
 
-    // Walk every instance to update visibility + color. We could
-    // restrict ourselves to the changing boundaries, but the total cost
-    // at 6 000 instances is sub-millisecond and the simpler loop is
-    // less bug-prone.
-    const rgbaArr = instanceRgba.array as Float32Array;
     for (let i = 0; i < numFrames; i++) {
       if (i < start || i > cursor) {
         matrixObj.position.set(0, 0, 0);
         matrixObj.scale.setScalar(0.0001);
         matrixObj.updateMatrix();
         inst.setMatrixAt(i, matrixObj.matrix);
-        rgbaArr[4 * i + 3] = 0; // fully transparent
+        rgbaArr[4 * i + 3] = 0;
         continue;
       }
       const px = frames.positions[3 * i];
@@ -323,7 +397,6 @@ function Trail6D({
       matrixObj.updateMatrix();
       inst.setMatrixAt(i, matrixObj.matrix);
 
-      // Linear age fade: head = 1.0, tail = 0.0
       const age = (cursor - i) / Math.max(1, trailFrames);
       const alpha = 1 - age;
       rgbaArr[4 * i] = frames.colors[3 * i];
@@ -334,8 +407,6 @@ function Trail6D({
     inst.instanceMatrix.needsUpdate = true;
     instanceRgba.needsUpdate = true;
 
-    // Update line geometry — same active window.
-    const geo = lineGeomRef.current;
     if (geo && viz.showTrailLine) {
       const positionAttr = geo.getAttribute("position") as THREE.BufferAttribute;
       const colorAttr = geo.getAttribute("color") as THREE.BufferAttribute;
