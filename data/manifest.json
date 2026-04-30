@@ -1128,23 +1128,6 @@
       ]
     },
     {
-      "id": "speech-churchill-valour",
-      "title_en": "Churchill — Be Ye Men of Valour",
-      "title_es": "Churchill — Sed hombres de valor",
-      "category": "speeches",
-      "subcategory": "historical",
-      "duration_seconds": 610.406,
-      "sample_rate": 22050,
-      "audio_path": "sounds/speeches/speech-churchill-valour.ogg",
-      "embedding_path": "embeddings/speech-churchill-valour.json",
-      "source": "Wikimedia Commons",
-      "license": "Public Domain",
-      "attribution": "Winston Churchill, 1940 (UK Crown copyright expired)",
-      "tags": [
-        "history"
-      ]
-    },
-    {
       "id": "speech-fdr-pearl-harbor",
       "title_en": "FDR — Day of Infamy (Pearl Harbor)",
       "title_es": "FDR — Día de la Infamia (Pearl Harbor)",
