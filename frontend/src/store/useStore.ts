@@ -6,9 +6,10 @@ import { type ColormapName } from "../lib/colormaps";
 
 export type Theme = "dark" | "light";
 export type AxisRole = "x" | "y" | "z" | "color" | "size";
+export type RenderMode = "spheres" | "smoke";
 
 export interface VizConfig {
-  /** Which embedding track to use (features / pca / tsne / umap). */
+  /** Which embedding track to use (features / pca / tsne / umap / tonnetz / yamnet). */
   trackName: string;
   /** Index in the track's dim_labels array assigned to each role. */
   axes: Record<AxisRole, number>;
@@ -21,6 +22,12 @@ export interface VizConfig {
   showTrailLine: boolean;
   showAxes: boolean;
   showGrid: boolean;
+  /** Visualization mode — geometric spheres or diffuse smoke clouds. */
+  renderMode: RenderMode;
+  /** Smoke-mode parameters (ignored when renderMode === "spheres"). */
+  smokeDensity: number;  // 1..16 particles per frame
+  smokeSpread: number;   // initial offset radius in world units
+  smokeDrift: number;    // outward drift speed in world units / second
 }
 
 interface StoreState {
@@ -76,7 +83,11 @@ const DEFAULT_VIZ: VizConfig = {
   trailSeconds: 4,
   showTrailLine: true,
   showAxes: true,
-  showGrid: true
+  showGrid: true,
+  renderMode: "spheres",
+  smokeDensity: 8,
+  smokeSpread: 0.05,
+  smokeDrift: 0.08
 };
 
 export const useStore = create<StoreState>()(

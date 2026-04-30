@@ -3,6 +3,33 @@
 Newest-first log of the design decisions that shaped Auralis. Each entry
 records what changed, why, and the alternative we considered.
 
+## v0.4.0 — Smoke render mode (2026-04-30)
+
+**New visualisation mode: Smoke.** Each frame in the active visibility
+window emits a small cluster of camera-aligned quads, each textured
+with a soft gaussian and blended additively. The puffs drift outward
+over time so the cloud disperses with age. Per-particle alpha decays
+linearly with frame age. The polyline is not drawn in Smoke mode —
+overlapping clouds fill the gap between consecutive frames naturally.
+
+Implementation:
+
+- New `lib/smokeMaterial.ts` builds the gaussian texture (one-time
+  64×64 RGBA) and the `THREE.ShaderMaterial` (custom vertex + fragment
+  with billboard math, additive blending, depthWrite disabled).
+- New `components/SmokeTrail.tsx` renders an `InstancedMesh` of
+  ``numFrames * smokeDensity`` particles. The default density is 8
+  particles per audio frame.
+- `Visualization6D` branches on `viz.renderMode` between Spheres
+  (existing) and Smoke (new).
+- `ControlPanel` gains a 2-button toggle for the mode + three
+  smoke-specific sliders (density 2..16, spread 0..0.4, drift 0..0.4).
+- Persistent in zustand alongside the rest of `viz`.
+
+Performance: ~50 K particles at 60 fps in a single instanced draw
+call. The full corpus (67 clips × ~6 K frames × 8 particles) fits
+inside a single InstancedMesh per scene.
+
 ## v0.3.0 — features deep-dive + tonal axes (2026-04-30)
 
 **More features.** SCALAR_FEATURES grew from 18 to 22 with:
