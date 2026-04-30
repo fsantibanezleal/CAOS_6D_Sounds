@@ -34,6 +34,77 @@ export function ControlPanel() {
       <h2>{t("viz.title")}</h2>
 
       <section>
+        <label>{t("viz.render_mode")}</label>
+        <div className="mode-toggle">
+          <button
+            className={viz.renderMode === "spheres" ? "active" : ""}
+            onClick={() => setViz({ renderMode: "spheres" })}
+            title={t("viz.mode_spheres_help")}
+          >
+            {t("viz.mode_spheres")}
+          </button>
+          <button
+            className={viz.renderMode === "smoke" ? "active" : ""}
+            onClick={() => setViz({ renderMode: "smoke" })}
+            title={t("viz.mode_smoke_help")}
+          >
+            {t("viz.mode_smoke")}
+          </button>
+        </div>
+
+        {viz.renderMode === "smoke" && (
+          <div style={{ marginTop: 8 }}>
+            <div className="row">
+              <label>{t("viz.smoke_density")}</label>
+              <input
+                type="range"
+                min={2}
+                max={16}
+                step={1}
+                value={viz.smokeDensity}
+                onChange={(e) =>
+                  setViz({ smokeDensity: Number(e.target.value) })
+                }
+              />
+              <span className="value-readout">{viz.smokeDensity}</span>
+            </div>
+            <div className="row">
+              <label>{t("viz.smoke_spread")}</label>
+              <input
+                type="range"
+                min={0}
+                max={0.4}
+                step={0.005}
+                value={viz.smokeSpread}
+                onChange={(e) =>
+                  setViz({ smokeSpread: Number(e.target.value) })
+                }
+              />
+              <span className="value-readout">
+                {viz.smokeSpread.toFixed(2)}
+              </span>
+            </div>
+            <div className="row">
+              <label>{t("viz.smoke_drift")}</label>
+              <input
+                type="range"
+                min={0}
+                max={0.4}
+                step={0.005}
+                value={viz.smokeDrift}
+                onChange={(e) =>
+                  setViz({ smokeDrift: Number(e.target.value) })
+                }
+              />
+              <span className="value-readout">
+                {viz.smokeDrift.toFixed(2)}
+              </span>
+            </div>
+          </div>
+        )}
+      </section>
+
+      <section>
         <div className="row">
           <label>{t("viz.track")}</label>
           <select

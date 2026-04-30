@@ -282,6 +282,29 @@ a:hover { text-decoration: underline; }
 
 /* Library — collapsible category tree */
 
+.mode-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+.mode-toggle button {
+  padding: 6px 10px;
+  font-size: 12px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+.mode-toggle button:hover { border-color: var(--accent); }
+.mode-toggle button.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent-strong);
+  font-weight: 600;
+}
+
 .cat-tree { display: flex; flex-direction: column; gap: 2px; }
 
 .cat-group {}
