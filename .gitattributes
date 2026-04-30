@@ -1,0 +1,14 @@
+# Treat audio assets as binary; do not LF-normalize
+*.ogg binary
+*.mp3 binary
+*.wav binary
+*.flac binary
+*.m4a binary
+*.opus binary
+
+# Force LF on shell scripts (server-side scripts run on Linux VPS)
+*.sh text eol=lf
+deploy/setup.sh text eol=lf
+
+# PowerShell can be either, but pin to CRLF for Windows native consumption
+*.ps1 text eol=crlf

@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 460" font-family="-apple-system, Segoe UI, Roboto, sans-serif">
+  <defs>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#22d3ee"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#8b949e"/>
+    </marker>
+  </defs>
+
+  <rect width="900" height="460" fill="#0d1117"/>
+
+  <!-- Title -->
+  <text x="450" y="36" text-anchor="middle" fill="url(#accent)" font-size="20" font-weight="600">
+    Auralis — system architecture
+  </text>
+
+  <!-- Layer labels -->
+  <text x="40" y="100" fill="#8b949e" font-size="11" letter-spacing="2">OFFLINE</text>
+  <text x="40" y="240" fill="#8b949e" font-size="11" letter-spacing="2">RUNTIME</text>
+  <text x="40" y="380" fill="#8b949e" font-size="11" letter-spacing="2">CLIENT</text>
+
+  <!-- Offline pipeline -->
+  <g>
+    <rect x="120" y="78" width="170" height="64" rx="6" fill="#161b22" stroke="#30363d"/>
+    <text x="205" y="105" text-anchor="middle" fill="#e6edf3" font-size="13" font-weight="500">data/sounds/</text>
+    <text x="205" y="124" text-anchor="middle" fill="#8b949e" font-size="11">audio clips by category</text>
+
+    <rect x="320" y="78" width="180" height="64" rx="6" fill="#161b22" stroke="#7c3aed"/>
+    <text x="410" y="105" text-anchor="middle" fill="#a78bfa" font-size="13" font-weight="500">data-pipeline/</text>
+    <text x="410" y="124" text-anchor="middle" fill="#8b949e" font-size="11">librosa + sklearn + umap</text>
+
+    <rect x="530" y="78" width="170" height="64" rx="6" fill="#161b22" stroke="#30363d"/>
+    <text x="615" y="105" text-anchor="middle" fill="#e6edf3" font-size="13" font-weight="500">manifest.json +</text>
+    <text x="615" y="124" text-anchor="middle" fill="#8b949e" font-size="11">embeddings/&lt;id&gt;.json</text>
+
+    <line x1="290" y1="110" x2="320" y2="110" stroke="#8b949e" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <line x1="500" y1="110" x2="530" y2="110" stroke="#8b949e" stroke-width="1.5" marker-end="url(#arrow)"/>
+  </g>
+
+  <!-- Runtime backend -->
+  <g>
+    <rect x="120" y="218" width="170" height="64" rx="6" fill="#161b22" stroke="#30363d"/>
+    <text x="205" y="245" text-anchor="middle" fill="#e6edf3" font-size="13" font-weight="500">FastAPI</text>
+    <text x="205" y="264" text-anchor="middle" fill="#8b949e" font-size="11">uvicorn :8104</text>
+
+    <rect x="320" y="218" width="180" height="64" rx="6" fill="#161b22" stroke="#06b6d4"/>
+    <text x="410" y="240" text-anchor="middle" fill="#06b6d4" font-size="13" font-weight="500">/api/library</text>
+    <text x="410" y="258" text-anchor="middle" fill="#06b6d4" font-size="13" font-weight="500">/api/clip/{id}/embedding</text>
+    <text x="410" y="276" text-anchor="middle" fill="#06b6d4" font-size="13" font-weight="500">/audio/{id}</text>
+
+    <rect x="530" y="218" width="170" height="64" rx="6" fill="#161b22" stroke="#30363d"/>
+    <text x="615" y="245" text-anchor="middle" fill="#e6edf3" font-size="13" font-weight="500">nginx + TLS</text>
+    <text x="615" y="264" text-anchor="middle" fill="#8b949e" font-size="11">auralis.fasl-work.com</text>
+
+    <line x1="290" y1="250" x2="320" y2="250" stroke="#8b949e" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <line x1="500" y1="250" x2="530" y2="250" stroke="#8b949e" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+    <line x1="615" y1="142" x2="615" y2="218" stroke="#8b949e" stroke-width="1.5" marker-end="url(#arrow)" stroke-dasharray="4 3"/>
+    <text x="630" y="186" fill="#8b949e" font-size="10">read static</text>
+  </g>
+
+  <!-- Frontend -->
+  <g>
+    <rect x="120" y="358" width="170" height="64" rx="6" fill="#161b22" stroke="#30363d"/>
+    <text x="205" y="385" text-anchor="middle" fill="#e6edf3" font-size="13" font-weight="500">React + Vite</text>
+    <text x="205" y="404" text-anchor="middle" fill="#8b949e" font-size="11">i18next, zustand</text>
+
+    <rect x="320" y="358" width="180" height="64" rx="6" fill="#161b22" stroke="#22d3ee"/>
+    <text x="410" y="385" text-anchor="middle" fill="#22d3ee" font-size="13" font-weight="500">@react-three/fiber</text>
+    <text x="410" y="404" text-anchor="middle" fill="#8b949e" font-size="11">6D viz + InstancedMesh</text>
+
+    <rect x="530" y="358" width="170" height="64" rx="6" fill="#161b22" stroke="#30363d"/>
+    <text x="615" y="385" text-anchor="middle" fill="#e6edf3" font-size="13" font-weight="500">Web Audio</text>
+    <text x="615" y="404" text-anchor="middle" fill="#8b949e" font-size="11">spectrogram + analyser</text>
+
+    <line x1="290" y1="390" x2="320" y2="390" stroke="#8b949e" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <line x1="500" y1="390" x2="530" y2="390" stroke="#8b949e" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+    <line x1="615" y1="282" x2="615" y2="358" stroke="#8b949e" stroke-width="1.5" marker-end="url(#arrow)" stroke-dasharray="4 3"/>
+    <text x="630" y="326" fill="#8b949e" font-size="10">SPA build</text>
+  </g>
+</svg>

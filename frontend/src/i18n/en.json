@@ -1,0 +1,79 @@
+{
+  "app": {
+    "title": "Auralis",
+    "tagline": "Real-time 6D visualization of audio"
+  },
+  "header": {
+    "language": "Language",
+    "theme": "Theme",
+    "theme_light": "Light",
+    "theme_dark": "Dark",
+    "help": "Help",
+    "github": "Source"
+  },
+  "library": {
+    "title": "Sound library",
+    "search": "Search clips...",
+    "all": "All categories",
+    "duration": "Duration",
+    "license": "License",
+    "source": "Source",
+    "tags": "Tags",
+    "empty": "No clips loaded yet. Run the data pipeline (see README) to seed the library.",
+    "play": "Play",
+    "pause": "Pause"
+  },
+  "viz": {
+    "title": "6D visualization",
+    "track": "Embedding track",
+    "track_help": "Pick the underlying space — interpretable spectral features, or a learned projection (PCA / t-SNE / UMAP).",
+    "axis_x": "X axis",
+    "axis_y": "Y axis",
+    "axis_z": "Z axis",
+    "axis_color": "Color (4D)",
+    "axis_size": "Size (5D)",
+    "colormap": "Colormap",
+    "size_min": "Min sphere radius",
+    "size_max": "Max sphere radius",
+    "trail_length": "Trail length",
+    "trail_seconds": "{{n}} s",
+    "show_trail_line": "Connect points with a line",
+    "show_axes": "Show axes",
+    "show_grid": "Show grid",
+    "reset_camera": "Reset camera",
+    "snapshot": "Snapshot"
+  },
+  "panels": {
+    "spectrogram": "Spectrogram",
+    "waveform": "Waveform",
+    "live_features": "Live features",
+    "feature_rms": "RMS energy",
+    "feature_centroid": "Spectral centroid",
+    "feature_pitch": "Dominant pitch"
+  },
+  "help": {
+    "title": "How to use Auralis",
+    "intro": "Auralis turns each audio clip into a moving point in a six-dimensional space and projects it onto your screen as a 3D trail with color and size encoding the remaining dimensions.",
+    "steps": [
+      "Pick a clip from the library on the left.",
+      "Press play. The visualization advances in lock-step with the audio.",
+      "Use the panel on the right to choose which 6D track to use (interpretable features, PCA, t-SNE, UMAP).",
+      "Map any dimension to X / Y / Z, the colormap, or the sphere size. The mapping is live — change it while the audio plays.",
+      "Adjust the trail length to control how long past frames remain visible."
+    ],
+    "shortcuts": "Keyboard shortcuts",
+    "shortcut_space": "Space — play / pause",
+    "shortcut_1": "1..9 — load the Nth clip in the current category",
+    "shortcut_t": "T — toggle theme",
+    "shortcut_g": "G — toggle grid",
+    "shortcut_a": "A — toggle axes",
+    "close": "Close"
+  },
+  "audio": {
+    "loading": "Loading clip...",
+    "error": "Could not load this clip"
+  },
+  "license": {
+    "audio_note": "Audio assets retain their original licenses. See ATTRIBUTION.md for per-clip credits."
+  }
+}

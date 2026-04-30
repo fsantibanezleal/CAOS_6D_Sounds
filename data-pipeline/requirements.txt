@@ -1,0 +1,15 @@
+# Auralis — data-pipeline-only requirements
+# These are NOT installed on the production server. The pipeline runs on the
+# developer workstation; its outputs (data/manifest.json + per-clip embedding
+# JSONs) are committed to the repo and served as static assets in production.
+
+numpy==1.26.4
+scipy==1.14.1
+scikit-learn==1.5.2
+librosa==0.10.2.post1
+soundfile==0.12.1
+matplotlib==3.9.2
+
+# Optional: faster non-linear projection (UMAP). Falls back gracefully when
+# missing; the pipeline always provides PCA and t-SNE via scikit-learn.
+umap-learn==0.5.6

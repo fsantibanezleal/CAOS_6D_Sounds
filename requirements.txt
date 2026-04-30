@@ -1,0 +1,11 @@
+# Auralis — backend (FastAPI) runtime requirements
+# Pinned to versions known to install cleanly on the production VPS
+# (Ubuntu 24.04, Python 3.12). Data-pipeline-only dependencies live in
+# data-pipeline/requirements.txt to keep the production install slim.
+
+fastapi==0.115.0
+uvicorn[standard]==0.32.0
+pydantic==2.9.2
+pydantic-settings==2.6.0
+python-dotenv==1.0.1
+orjson==3.10.11

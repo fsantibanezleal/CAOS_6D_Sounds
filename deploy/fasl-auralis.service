@@ -1,0 +1,19 @@
+[Unit]
+Description=FASL auralis (6D audio visualization — FastAPI)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/opt/fasl-apps/CAOS_6D_Sounds
+EnvironmentFile=-/etc/fasl-auralis.env
+ExecStart=/opt/fasl-apps/CAOS_6D_Sounds/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8104 --workers 2 --proxy-headers --forwarded-allow-ips="*"
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

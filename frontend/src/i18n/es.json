@@ -1,0 +1,79 @@
+{
+  "app": {
+    "title": "Auralis",
+    "tagline": "Visualización 6D del sonido en tiempo real"
+  },
+  "header": {
+    "language": "Idioma",
+    "theme": "Tema",
+    "theme_light": "Claro",
+    "theme_dark": "Oscuro",
+    "help": "Ayuda",
+    "github": "Código"
+  },
+  "library": {
+    "title": "Biblioteca de sonidos",
+    "search": "Buscar clips...",
+    "all": "Todas las categorías",
+    "duration": "Duración",
+    "license": "Licencia",
+    "source": "Fuente",
+    "tags": "Etiquetas",
+    "empty": "Aún no hay clips. Ejecuta el data pipeline (ver README) para cargar la biblioteca.",
+    "play": "Reproducir",
+    "pause": "Pausar"
+  },
+  "viz": {
+    "title": "Visualización 6D",
+    "track": "Pista de embedding",
+    "track_help": "Elige el espacio subyacente — características espectrales interpretables o una proyección aprendida (PCA / t-SNE / UMAP).",
+    "axis_x": "Eje X",
+    "axis_y": "Eje Y",
+    "axis_z": "Eje Z",
+    "axis_color": "Color (4D)",
+    "axis_size": "Tamaño (5D)",
+    "colormap": "Mapa de color",
+    "size_min": "Radio mínimo",
+    "size_max": "Radio máximo",
+    "trail_length": "Largo de estela",
+    "trail_seconds": "{{n}} s",
+    "show_trail_line": "Conectar puntos con línea",
+    "show_axes": "Mostrar ejes",
+    "show_grid": "Mostrar grilla",
+    "reset_camera": "Reiniciar cámara",
+    "snapshot": "Captura"
+  },
+  "panels": {
+    "spectrogram": "Espectrograma",
+    "waveform": "Forma de onda",
+    "live_features": "Características en vivo",
+    "feature_rms": "Energía RMS",
+    "feature_centroid": "Centroide espectral",
+    "feature_pitch": "Tono dominante"
+  },
+  "help": {
+    "title": "Cómo usar Auralis",
+    "intro": "Auralis convierte cada clip de audio en un punto que se mueve por un espacio de seis dimensiones, y lo proyecta en pantalla como una estela 3D donde el color y el tamaño codifican las dimensiones restantes.",
+    "steps": [
+      "Elige un clip en la biblioteca de la izquierda.",
+      "Presiona reproducir. La visualización avanza en sincronía con el audio.",
+      "En el panel derecho elige la pista 6D (características interpretables, PCA, t-SNE o UMAP).",
+      "Asocia cualquier dimensión a X / Y / Z, al mapa de color o al tamaño. El mapeo es en vivo — cámbialo mientras suena.",
+      "Ajusta el largo de la estela para controlar cuánto persiste el rastro."
+    ],
+    "shortcuts": "Atajos de teclado",
+    "shortcut_space": "Espacio — reproducir / pausar",
+    "shortcut_1": "1..9 — cargar el N-ésimo clip de la categoría actual",
+    "shortcut_t": "T — cambiar tema",
+    "shortcut_g": "G — mostrar/ocultar grilla",
+    "shortcut_a": "A — mostrar/ocultar ejes",
+    "close": "Cerrar"
+  },
+  "audio": {
+    "loading": "Cargando clip...",
+    "error": "No se pudo cargar este clip"
+  },
+  "license": {
+    "audio_note": "Los sonidos conservan sus licencias originales. Ver ATTRIBUTION.md para créditos por clip."
+  }
+}

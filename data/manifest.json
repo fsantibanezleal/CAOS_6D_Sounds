@@ -1,0 +1,510 @@
+{
+  "version": "0.1.0",
+  "generated_at": "2026-04-30T04:22:51Z",
+  "feature_names": [
+    "rms",
+    "zero_crossing_rate",
+    "spectral_centroid",
+    "spectral_rolloff",
+    "spectral_bandwidth",
+    "spectral_flatness",
+    "spectral_contrast_mean",
+    "dominant_pitch",
+    "pitch_confidence",
+    "tempo_proxy",
+    "chroma_dominant",
+    "onset_strength"
+  ],
+  "embedding_methods": [
+    "pca",
+    "tsne",
+    "umap"
+  ],
+  "categories": [
+    {
+      "id": "synthetic",
+      "name_en": "Synthetic",
+      "name_es": "Sint\u00e9ticos",
+      "description_en": "Algorithmically generated calibration sounds",
+      "description_es": "Sonidos de calibraci\u00f3n generados por algoritmo",
+      "icon": "WAVE"
+    },
+    {
+      "id": "birds",
+      "name_en": "Birds",
+      "name_es": "Aves",
+      "description_en": "Bird songs and calls",
+      "description_es": "Cantos y llamados de aves",
+      "icon": "BIRD"
+    },
+    {
+      "id": "mammals",
+      "name_en": "Mammals",
+      "name_es": "Mam\u00edferos",
+      "description_en": "Calls and vocalisations of mammals",
+      "description_es": "Llamados y vocalizaciones de mam\u00edferos",
+      "icon": "PAW"
+    },
+    {
+      "id": "insects",
+      "name_en": "Insects",
+      "name_es": "Insectos",
+      "description_en": "Stridulations and insect calls",
+      "description_es": "Estridulaciones y llamados de insectos",
+      "icon": "BUG"
+    },
+    {
+      "id": "nature",
+      "name_en": "Nature ambience",
+      "name_es": "Ambientes naturales",
+      "description_en": "Rain, wind, water, fire and other ambiences",
+      "description_es": "Lluvia, viento, agua, fuego y otros ambientes",
+      "icon": "LEAF"
+    },
+    {
+      "id": "speeches",
+      "name_en": "Famous speeches",
+      "name_es": "Discursos famosos",
+      "description_en": "Public-domain historical speeches",
+      "description_es": "Discursos hist\u00f3ricos en dominio p\u00fablico",
+      "icon": "SPEAK"
+    },
+    {
+      "id": "mechanical",
+      "name_en": "Mechanical",
+      "name_es": "Mec\u00e1nicos",
+      "description_en": "Machines, engines, vehicles, industrial sounds",
+      "description_es": "M\u00e1quinas, motores, veh\u00edculos, sonidos industriales",
+      "icon": "GEAR"
+    }
+  ],
+  "clips": [
+    {
+      "id": "bird-american-robin",
+      "title_en": "American Robin (Turdus migratorius) song",
+      "title_es": "Canto del zorzal rob\u00edn (Turdus migratorius)",
+      "category": "birds",
+      "duration_seconds": 154.392,
+      "sample_rate": 22050,
+      "audio_path": "sounds/birds/bird-american-robin.ogg",
+      "embedding_path": "embeddings/bird-american-robin.json",
+      "source": "Wikimedia Commons / Xeno-canto",
+      "license": "CC-BY-NC-SA-3.0",
+      "attribution": "Xeno-canto contributor \u2014 see file page on Wikimedia Commons",
+      "tags": [
+        "bird",
+        "songbird"
+      ]
+    },
+    {
+      "id": "bird-rooster",
+      "title_en": "Rooster crowing",
+      "title_es": "Canto de gallo",
+      "category": "birds",
+      "duration_seconds": 3.841,
+      "sample_rate": 22050,
+      "audio_path": "sounds/birds/bird-rooster.ogg",
+      "embedding_path": "embeddings/bird-rooster.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "bird",
+        "domestic"
+      ]
+    },
+    {
+      "id": "bird-tawny-owl",
+      "title_en": "Tawny owl (Strix aluco) call",
+      "title_es": "Llamado del c\u00e1rabo com\u00fan (Strix aluco)",
+      "category": "birds",
+      "duration_seconds": 8.261,
+      "sample_rate": 22050,
+      "audio_path": "sounds/birds/bird-tawny-owl.oga",
+      "embedding_path": "embeddings/bird-tawny-owl.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "bird",
+        "owl",
+        "nocturnal"
+      ]
+    },
+    {
+      "id": "bird-toco-toucan",
+      "title_en": "Toco Toucan call",
+      "title_es": "Llamado del tuc\u00e1n toco",
+      "category": "birds",
+      "duration_seconds": 10.637,
+      "sample_rate": 22050,
+      "audio_path": "sounds/birds/bird-toco-toucan.ogg",
+      "embedding_path": "embeddings/bird-toco-toucan.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "bird",
+        "tropical"
+      ]
+    },
+    {
+      "id": "insect-cicada",
+      "title_en": "Cicada (Cicada orni) singing",
+      "title_es": "Canto de cigarra (Cicada orni)",
+      "category": "insects",
+      "duration_seconds": 28.841,
+      "sample_rate": 22050,
+      "audio_path": "sounds/insects/insect-cicada.ogg",
+      "embedding_path": "embeddings/insect-cicada.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "cicada"
+      ]
+    },
+    {
+      "id": "insect-cricket",
+      "title_en": "Field cricket chirping",
+      "title_es": "Chirrido de grillo de campo",
+      "category": "insects",
+      "duration_seconds": 10.453,
+      "sample_rate": 22050,
+      "audio_path": "sounds/insects/insect-cricket.ogg",
+      "embedding_path": "embeddings/insect-cricket.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "cricket",
+        "stridulation"
+      ]
+    },
+    {
+      "id": "mammal-cat-meow",
+      "title_en": "Domestic cat meow",
+      "title_es": "Maullido de gato dom\u00e9stico",
+      "category": "mammals",
+      "duration_seconds": 0.779,
+      "sample_rate": 22050,
+      "audio_path": "sounds/mammals/mammal-cat-meow.ogg",
+      "embedding_path": "embeddings/mammal-cat-meow.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "cat",
+        "domestic"
+      ]
+    },
+    {
+      "id": "mammal-cow-moo",
+      "title_en": "Cow mooing",
+      "title_es": "Mugido de vaca",
+      "category": "mammals",
+      "duration_seconds": 3.768,
+      "sample_rate": 22050,
+      "audio_path": "sounds/mammals/mammal-cow-moo.ogg",
+      "embedding_path": "embeddings/mammal-cow-moo.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "cow",
+        "livestock"
+      ]
+    },
+    {
+      "id": "mammal-dog-bark",
+      "title_en": "Dog barking",
+      "title_es": "Ladrido de perro",
+      "category": "mammals",
+      "duration_seconds": 2.61,
+      "sample_rate": 22050,
+      "audio_path": "sounds/mammals/mammal-dog-bark.ogg",
+      "embedding_path": "embeddings/mammal-dog-bark.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "dog",
+        "domestic"
+      ]
+    },
+    {
+      "id": "mammal-horse-neigh",
+      "title_en": "Horse neighing",
+      "title_es": "Relincho de caballo",
+      "category": "mammals",
+      "duration_seconds": 2.273,
+      "sample_rate": 22050,
+      "audio_path": "sounds/mammals/mammal-horse-neigh.ogg",
+      "embedding_path": "embeddings/mammal-horse-neigh.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "horse"
+      ]
+    },
+    {
+      "id": "mammal-wolf-howl",
+      "title_en": "Wolf howls",
+      "title_es": "Aullido de lobo",
+      "category": "mammals",
+      "duration_seconds": 28.32,
+      "sample_rate": 22050,
+      "audio_path": "sounds/mammals/mammal-wolf-howl.ogg",
+      "embedding_path": "embeddings/mammal-wolf-howl.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "wolf"
+      ]
+    },
+    {
+      "id": "mechanical-steam-whistle",
+      "title_en": "Steam train whistle",
+      "title_es": "Silbato de tren a vapor",
+      "category": "mechanical",
+      "duration_seconds": 11.019,
+      "sample_rate": 22050,
+      "audio_path": "sounds/mechanical/mechanical-steam-whistle.ogg",
+      "embedding_path": "embeddings/mechanical-steam-whistle.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "train",
+        "steam"
+      ]
+    },
+    {
+      "id": "mechanical-train-engine",
+      "title_en": "Steam locomotive sound",
+      "title_es": "Sonido de locomotora a vapor",
+      "category": "mechanical",
+      "duration_seconds": 3.411,
+      "sample_rate": 22050,
+      "audio_path": "sounds/mechanical/mechanical-train-engine.ogg",
+      "embedding_path": "embeddings/mechanical-train-engine.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "train",
+        "steam",
+        "engine"
+      ]
+    },
+    {
+      "id": "nature-thunder",
+      "title_en": "Thunder",
+      "title_es": "Trueno",
+      "category": "nature",
+      "duration_seconds": 9.044,
+      "sample_rate": 22050,
+      "audio_path": "sounds/nature/nature-thunder.ogg",
+      "embedding_path": "embeddings/nature-thunder.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-3.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "thunder",
+        "storm"
+      ]
+    },
+    {
+      "id": "nature-wind-pine",
+      "title_en": "Wind in a Swedish pine forest",
+      "title_es": "Viento en un bosque sueco de pinos",
+      "category": "nature",
+      "duration_seconds": 60.459,
+      "sample_rate": 22050,
+      "audio_path": "sounds/nature/nature-wind-pine.ogg",
+      "embedding_path": "embeddings/nature-wind-pine.json",
+      "source": "Wikimedia Commons",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "Wikimedia Commons contributors",
+      "tags": [
+        "wind",
+        "forest",
+        "ambience"
+      ]
+    },
+    {
+      "id": "speech-armstrong-step",
+      "title_en": "Armstrong \u2014 One small step",
+      "title_es": "Armstrong \u2014 Un peque\u00f1o paso",
+      "category": "speeches",
+      "duration_seconds": 24.113,
+      "sample_rate": 22050,
+      "audio_path": "sounds/speeches/speech-armstrong-step.ogg",
+      "embedding_path": "embeddings/speech-armstrong-step.json",
+      "source": "NASA",
+      "license": "Public Domain",
+      "attribution": "Neil Armstrong / NASA, 1969 (U.S. Government work, public domain)",
+      "tags": [
+        "speech",
+        "history",
+        "nasa"
+      ]
+    },
+    {
+      "id": "speech-jfk-berlin",
+      "title_en": "JFK \u2014 Ich bin ein Berliner",
+      "title_es": "JFK \u2014 Ich bin ein Berliner",
+      "category": "speeches",
+      "duration_seconds": 2.204,
+      "sample_rate": 22050,
+      "audio_path": "sounds/speeches/speech-jfk-berlin.ogg",
+      "embedding_path": "embeddings/speech-jfk-berlin.json",
+      "source": "Wikimedia Commons / John F. Kennedy",
+      "license": "Public Domain",
+      "attribution": "John F. Kennedy, 1963 (U.S. Government work, public domain)",
+      "tags": [
+        "speech",
+        "history",
+        "english"
+      ]
+    },
+    {
+      "id": "synth-am-noise",
+      "title_en": "Synth am noise",
+      "title_es": "Synth am noise",
+      "category": "synthetic",
+      "duration_seconds": 6.0,
+      "sample_rate": 22050,
+      "audio_path": "sounds/synthetic/synth-am-noise.ogg",
+      "embedding_path": "embeddings/synth-am-noise.json",
+      "source": "Synthetic (generated by data-pipeline/synthetic_seeds.py)",
+      "license": "CC0-1.0",
+      "attribution": "Auralis project (public domain)",
+      "tags": [
+        "synthetic",
+        "calibration"
+      ]
+    },
+    {
+      "id": "synth-chirp-falling",
+      "title_en": "Synth chirp falling",
+      "title_es": "Synth chirp falling",
+      "category": "synthetic",
+      "duration_seconds": 6.0,
+      "sample_rate": 22050,
+      "audio_path": "sounds/synthetic/synth-chirp-falling.ogg",
+      "embedding_path": "embeddings/synth-chirp-falling.json",
+      "source": "Synthetic (generated by data-pipeline/synthetic_seeds.py)",
+      "license": "CC0-1.0",
+      "attribution": "Auralis project (public domain)",
+      "tags": [
+        "synthetic",
+        "calibration"
+      ]
+    },
+    {
+      "id": "synth-chirp-rising",
+      "title_en": "Synth chirp rising",
+      "title_es": "Synth chirp rising",
+      "category": "synthetic",
+      "duration_seconds": 6.0,
+      "sample_rate": 22050,
+      "audio_path": "sounds/synthetic/synth-chirp-rising.ogg",
+      "embedding_path": "embeddings/synth-chirp-rising.json",
+      "source": "Synthetic (generated by data-pipeline/synthetic_seeds.py)",
+      "license": "CC0-1.0",
+      "attribution": "Auralis project (public domain)",
+      "tags": [
+        "synthetic",
+        "calibration"
+      ]
+    },
+    {
+      "id": "synth-fm-drone",
+      "title_en": "Synth fm drone",
+      "title_es": "Synth fm drone",
+      "category": "synthetic",
+      "duration_seconds": 6.0,
+      "sample_rate": 22050,
+      "audio_path": "sounds/synthetic/synth-fm-drone.ogg",
+      "embedding_path": "embeddings/synth-fm-drone.json",
+      "source": "Synthetic (generated by data-pipeline/synthetic_seeds.py)",
+      "license": "CC0-1.0",
+      "attribution": "Auralis project (public domain)",
+      "tags": [
+        "synthetic",
+        "calibration"
+      ]
+    },
+    {
+      "id": "synth-harmonic-arpeggio",
+      "title_en": "Synth harmonic arpeggio",
+      "title_es": "Synth harmonic arpeggio",
+      "category": "synthetic",
+      "duration_seconds": 6.0,
+      "sample_rate": 22050,
+      "audio_path": "sounds/synthetic/synth-harmonic-arpeggio.ogg",
+      "embedding_path": "embeddings/synth-harmonic-arpeggio.json",
+      "source": "Synthetic (generated by data-pipeline/synthetic_seeds.py)",
+      "license": "CC0-1.0",
+      "attribution": "Auralis project (public domain)",
+      "tags": [
+        "synthetic",
+        "calibration"
+      ]
+    },
+    {
+      "id": "synth-organ-chord",
+      "title_en": "Synth organ chord",
+      "title_es": "Synth organ chord",
+      "category": "synthetic",
+      "duration_seconds": 6.0,
+      "sample_rate": 22050,
+      "audio_path": "sounds/synthetic/synth-organ-chord.ogg",
+      "embedding_path": "embeddings/synth-organ-chord.json",
+      "source": "Synthetic (generated by data-pipeline/synthetic_seeds.py)",
+      "license": "CC0-1.0",
+      "attribution": "Auralis project (public domain)",
+      "tags": [
+        "synthetic",
+        "calibration"
+      ]
+    },
+    {
+      "id": "synth-pink-noise",
+      "title_en": "Synth pink noise",
+      "title_es": "Synth pink noise",
+      "category": "synthetic",
+      "duration_seconds": 6.0,
+      "sample_rate": 22050,
+      "audio_path": "sounds/synthetic/synth-pink-noise.ogg",
+      "embedding_path": "embeddings/synth-pink-noise.json",
+      "source": "Synthetic (generated by data-pipeline/synthetic_seeds.py)",
+      "license": "CC0-1.0",
+      "attribution": "Auralis project (public domain)",
+      "tags": [
+        "synthetic",
+        "calibration"
+      ]
+    },
+    {
+      "id": "synth-pure-tone-440",
+      "title_en": "Synth pure tone 440",
+      "title_es": "Synth pure tone 440",
+      "category": "synthetic",
+      "duration_seconds": 6.0,
+      "sample_rate": 22050,
+      "audio_path": "sounds/synthetic/synth-pure-tone-440.ogg",
+      "embedding_path": "embeddings/synth-pure-tone-440.json",
+      "source": "Synthetic (generated by data-pipeline/synthetic_seeds.py)",
+      "license": "CC0-1.0",
+      "attribution": "Auralis project (public domain)",
+      "tags": [
+        "synthetic",
+        "calibration"
+      ]
+    }
+  ]
+}
