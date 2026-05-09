@@ -103,7 +103,9 @@
     "record_start": "Record video",
     "record_stop": "Stop ({{n}}s)",
     "record_saving": "Saving...",
-    "record_help": "Capture the canvas as a webm video. Plays back the trail exactly as you saw it."
+    "record_help": "Capture the canvas as a webm video. Plays back the trail exactly as you saw it.",
+    "record_with_audio": "Include audio",
+    "record_with_audio_help": "Mux the playing audio track into the recording. Uncheck for a video-only export."
   },
   "panels": {
     "spectrogram": "Spectrogram",

@@ -11,6 +11,7 @@ let audio: HTMLAudioElement | null = null;
 let ctx: AudioContext | null = null;
 let analyser: AnalyserNode | null = null;
 let source: MediaElementAudioSourceNode | null = null;
+let recordingDest: MediaStreamAudioDestinationNode | null = null;
 
 export function setSharedAudio(el: HTMLAudioElement | null): void {
   audio = el;
@@ -55,4 +56,29 @@ export function getAnalyser(fftSize = 1024): AnalyserNode | null {
 /** Resume the shared AudioContext (must run inside a user gesture). */
 export async function ensureRunning(): Promise<void> {
   if (ctx && ctx.state === "suspended") await ctx.resume();
+}
+
+/**
+ * Return a MediaStream that mirrors the audio playing through the
+ * shared element, suitable for handing to MediaRecorder alongside the
+ * canvas video stream. Returns null until the audio element is mounted.
+ *
+ * The destination node is created lazily and reused, and the source
+ * stays connected to it for the lifetime of the page. A Web Audio
+ * source can drive multiple destinations in parallel, so feeding the
+ * recording destination does NOT silence the speakers — the existing
+ * source.connect(analyser).connect(ctx.destination) graph keeps
+ * working untouched.
+ */
+export function getRecordingStream(): MediaStream | null {
+  // Force-init the analyser graph so `source` exists. We pass the same
+  // default fftSize the spectrogram uses; if the analyser already
+  // exists this call is cheap and idempotent.
+  getAnalyser();
+  if (!ctx || !source) return null;
+  if (recordingDest === null) {
+    recordingDest = ctx.createMediaStreamDestination();
+    source.connect(recordingDest);
+  }
+  return recordingDest.stream;
 }
