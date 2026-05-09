@@ -38,6 +38,12 @@ export interface CanvasRecording {
 export interface CanvasRecordingOptions {
   fps?: number;
   videoBitsPerSecond?: number;
+  audioBitsPerSecond?: number;
+  // Optional audio MediaStream to mux into the recording (e.g. one
+  // produced by audioBus.getRecordingStream()). When omitted, the
+  // recording is video-only — same behaviour as before this option
+  // existed.
+  audioStream?: MediaStream | null;
   // Hard cap on cumulative chunk bytes. When exceeded, the recorder
   // stops itself and onAutoStop fires with reason "size_cap". The
   // resolved Blob still contains everything captured up to that point.
@@ -63,8 +69,10 @@ export function startCanvasRecording(
     typeof optionsOrFps === "number" ? { fps: optionsOrFps } : optionsOrFps;
   const fps = opts.fps ?? 30;
   const videoBitsPerSecond = opts.videoBitsPerSecond ?? 8_000_000;
+  const audioBitsPerSecond = opts.audioBitsPerSecond ?? 128_000;
   const maxBytes = opts.maxBytes ?? 500 * 1024 * 1024;
   const onAutoStop = opts.onAutoStop;
+  const audioStream = opts.audioStream ?? null;
 
   const mimeType = pickMimeType();
   if (!mimeType) {
@@ -72,14 +80,21 @@ export function startCanvasRecording(
       "MediaRecorder is not available in this browser, or no supported video MIME type was found."
     );
   }
-  const stream = canvas.captureStream(fps);
+  const videoStream = canvas.captureStream(fps);
+  const tracks: MediaStreamTrack[] = [...videoStream.getVideoTracks()];
+  if (audioStream) {
+    for (const t of audioStream.getAudioTracks()) tracks.push(t);
+  }
+  const stream = new MediaStream(tracks);
   const chunks: BlobPart[] = [];
   let totalBytes = 0;
   let stopped = false;
-  const recorder = new MediaRecorder(stream, {
+  const recorderOptions: MediaRecorderOptions = {
     mimeType,
     videoBitsPerSecond
-  });
+  };
+  if (audioStream) recorderOptions.audioBitsPerSecond = audioBitsPerSecond;
+  const recorder = new MediaRecorder(stream, recorderOptions);
 
   // Wire onstop/onerror up front so an early auto-stop (size_cap fires
   // from inside ondataavailable) cannot race past the listener.

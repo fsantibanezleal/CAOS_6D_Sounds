@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { ensureRunning, getRecordingStream } from "../lib/audioBus";
 import {
   downloadBlob,
   isVideoRecordingSupported,
@@ -8,6 +9,7 @@ import {
   timestampSlug,
   type CanvasRecording
 } from "../lib/videoRecorder";
+import { useStore } from "../store/useStore";
 
 /**
  * Toggle button that records the 6D viz canvas as a webm video.
@@ -31,6 +33,8 @@ const MAX_BYTES = 500 * 1024 * 1024;
 
 export function RecordButton() {
   const { t } = useTranslation();
+  const recordWithAudio = useStore((s) => s.viz.recordWithAudio);
+  const setViz = useStore((s) => s.setViz);
   const [supported] = useState(() => isVideoRecordingSupported());
   const [state, setState] = useState<"idle" | "recording" | "finalising">("idle");
   const [elapsed, setElapsed] = useState(0);
@@ -68,9 +72,19 @@ export function RecordButton() {
       const canvas = document.querySelector<HTMLCanvasElement>(".viz-canvas canvas");
       if (!canvas) return;
       try {
+        let audioStream: MediaStream | null = null;
+        if (recordWithAudio) {
+          // The AudioContext must be in `running` state for the
+          // MediaStreamDestination to actually carry samples — most
+          // browsers create it `suspended` until a user gesture. The
+          // record click counts, so we resume here.
+          await ensureRunning();
+          audioStream = getRecordingStream();
+        }
         const rec = startCanvasRecording(canvas, {
           fps: FPS,
           maxBytes: MAX_BYTES,
+          audioStream,
           onAutoStop: () => {
             void finishRecording();
           }
@@ -126,15 +140,37 @@ export function RecordButton() {
         : t("viz.record_start");
 
   return (
-    <button
-      onClick={startOrStop}
-      disabled={state === "finalising"}
-      className={state === "recording" ? "primary recording" : ""}
-      style={{ marginTop: 6, width: "100%" }}
-      title={t("viz.record_help")}
-    >
-      {state === "recording" && <span className="rec-dot" />}
-      {label}
-    </button>
+    <>
+      <label
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 6,
+          marginTop: 6,
+          fontSize: "0.85em",
+          opacity: state === "recording" ? 0.5 : 1,
+          cursor: state === "recording" ? "not-allowed" : "pointer"
+        }}
+        title={t("viz.record_with_audio_help")}
+      >
+        <input
+          type="checkbox"
+          checked={recordWithAudio}
+          disabled={state !== "idle"}
+          onChange={(e) => setViz({ recordWithAudio: e.target.checked })}
+        />
+        {t("viz.record_with_audio")}
+      </label>
+      <button
+        onClick={startOrStop}
+        disabled={state === "finalising"}
+        className={state === "recording" ? "primary recording" : ""}
+        style={{ marginTop: 4, width: "100%" }}
+        title={t("viz.record_help")}
+      >
+        {state === "recording" && <span className="rec-dot" />}
+        {label}
+      </button>
+    </>
   );
 }

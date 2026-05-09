@@ -59,6 +59,8 @@ export interface VizConfig {
   flowfieldParticles: number; // 32..800 particles in the swarm
   flowfieldSpeed: number;     // 0.05..1 advection speed (world units / s)
   flowfieldLifetime: number;  // 0.5..6 seconds before respawn
+  /** Recording: include the playing audio track in the captured webm. */
+  recordWithAudio: boolean;
 }
 
 interface StoreState {
@@ -139,7 +141,8 @@ const DEFAULT_VIZ: VizConfig = {
   galaxyTwinkle: 0.35,
   flowfieldParticles: 240,
   flowfieldSpeed: 0.35,
-  flowfieldLifetime: 2.5
+  flowfieldLifetime: 2.5,
+  recordWithAudio: true
 };
 
 /** Stable id of the clip that loads automatically when the library
@@ -217,7 +220,8 @@ export const useStore = create<StoreState>()(
       //   v2 — added Constellation + Aurora + Comet fields (release 0.5.1)
       //   v3 — added Tube + Galaxy fields (release 0.6.0)
       //   v4 — added Flowfield fields (release 0.7.0)
-      version: 4,
+      //   v5 — added recordWithAudio (release 0.7.2)
+      version: 5,
       partialize: (state) => ({
         theme: state.theme,
         viz: state.viz,
