@@ -28,9 +28,22 @@ function pickMimeType(): string {
   return "";
 }
 
+export type AutoStopReason = "size_cap";
+
 export interface CanvasRecording {
   stop(): Promise<{ blob: Blob; mimeType: string }>;
   cancel(): void;
+}
+
+export interface CanvasRecordingOptions {
+  fps?: number;
+  videoBitsPerSecond?: number;
+  // Hard cap on cumulative chunk bytes. When exceeded, the recorder
+  // stops itself and onAutoStop fires with reason "size_cap". The
+  // resolved Blob still contains everything captured up to that point.
+  // Defaults to 500 MB.
+  maxBytes?: number;
+  onAutoStop?: (reason: AutoStopReason) => void;
 }
 
 export function isVideoRecordingSupported(): boolean {
@@ -44,8 +57,15 @@ export function isVideoRecordingSupported(): boolean {
 
 export function startCanvasRecording(
   canvas: HTMLCanvasElement,
-  fps = 30
+  optionsOrFps: CanvasRecordingOptions | number = {}
 ): CanvasRecording {
+  const opts: CanvasRecordingOptions =
+    typeof optionsOrFps === "number" ? { fps: optionsOrFps } : optionsOrFps;
+  const fps = opts.fps ?? 30;
+  const videoBitsPerSecond = opts.videoBitsPerSecond ?? 8_000_000;
+  const maxBytes = opts.maxBytes ?? 500 * 1024 * 1024;
+  const onAutoStop = opts.onAutoStop;
+
   const mimeType = pickMimeType();
   if (!mimeType) {
     throw new Error(
@@ -54,42 +74,62 @@ export function startCanvasRecording(
   }
   const stream = canvas.captureStream(fps);
   const chunks: BlobPart[] = [];
-  // Bias videoBitsPerSecond on the higher side so the recording captures the
-  // colour gradients (additive blending) without smearing.
+  let totalBytes = 0;
+  let stopped = false;
   const recorder = new MediaRecorder(stream, {
     mimeType,
-    videoBitsPerSecond: 8_000_000
+    videoBitsPerSecond
   });
-  recorder.ondataavailable = (event) => {
-    if (event.data && event.data.size > 0) chunks.push(event.data);
-  };
-  let finished: Promise<{ blob: Blob; mimeType: string }> | null = null;
 
-  function makePromise(): Promise<{ blob: Blob; mimeType: string }> {
-    return new Promise((resolve, reject) => {
+  // Wire onstop/onerror up front so an early auto-stop (size_cap fires
+  // from inside ondataavailable) cannot race past the listener.
+  const finished = new Promise<{ blob: Blob; mimeType: string }>(
+    (resolve, reject) => {
       recorder.onstop = () => {
         const blob = new Blob(chunks, { type: mimeType });
         resolve({ blob, mimeType });
       };
       recorder.onerror = (e) => reject(e);
-    });
-  }
+    }
+  );
+
+  recorder.ondataavailable = (event) => {
+    if (!event.data || event.data.size === 0) return;
+    chunks.push(event.data);
+    totalBytes += event.data.size;
+    if (!stopped && totalBytes >= maxBytes) {
+      stopped = true;
+      try {
+        recorder.stop();
+      } catch {
+        // Already inactive — fine.
+      }
+      if (onAutoStop) onAutoStop("size_cap");
+    }
+  };
 
   recorder.start();
 
   return {
     stop(): Promise<{ blob: Blob; mimeType: string }> {
-      if (!finished) {
-        finished = makePromise();
-        recorder.stop();
+      if (!stopped) {
+        stopped = true;
+        try {
+          recorder.stop();
+        } catch {
+          // Already inactive (e.g. error path) — the promise still resolves.
+        }
       }
       return finished;
     },
     cancel(): void {
-      try {
-        recorder.stop();
-      } catch {
-        // Ignore — MediaRecorder may already be inactive.
+      if (!stopped) {
+        stopped = true;
+        try {
+          recorder.stop();
+        } catch {
+          // Ignore — MediaRecorder may already be inactive.
+        }
       }
     }
   };
