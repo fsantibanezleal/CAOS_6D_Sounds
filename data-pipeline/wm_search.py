@@ -9,15 +9,20 @@ Stays small so it can be invoked ad-hoc during library curation.
 from __future__ import annotations
 
 import json
+import os
 import sys
 import time
 import urllib.parse
 import urllib.request
 
 API = "https://commons.wikimedia.org/w/api.php"
+
+# See curated_downloads.USER_AGENT for the policy / env-var rationale.
+_contact = os.environ.get("AURALIS_MAINTAINER_EMAIL", "").strip()
 USER_AGENT = (
-    "Auralis/0.1 (https://github.com/fsantibanezleal/CAOS_6D_Sounds; "
-    "fsantibanez@gmail.com)"
+    "Auralis/0.1 (https://github.com/fsantibanezleal/CAOS_6D_Sounds"
+    + (f"; {_contact}" if _contact else "")
+    + ")"
 )
 
 
