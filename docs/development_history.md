@@ -3,6 +3,69 @@
 Newest-first log of the design decisions that shaped Auralis. Each entry
 records what changed, why, and the alternative we considered.
 
+## v0.7.2 — Optional audio in canvas recordings (2026-05-09)
+
+Recordings can now mux the playing audio track into the webm output.
+
+### How
+`audioBus.getRecordingStream()` lazily creates a
+`MediaStreamAudioDestinationNode` from the shared `AudioContext` and
+connects the existing `MediaElementAudioSourceNode` to it. A Web Audio
+source can drive multiple destinations in parallel, so the speakers
+keep working untouched. The recorder then receives a combined
+`MediaStream` (`new MediaStream([videoTrack, audioTrack])`) and muxes
+both into the same webm container at 128 kbps audio.
+
+### UI
+A single **Include audio** checkbox sits above the existing **Record
+video** button. Default on; persisted in zustand (persist v5). While a
+recording is in progress the checkbox is disabled to prevent
+mid-stream changes. Considered two side-by-side buttons; rejected
+because it duplicated the state machine and broke the single-action
+visual hierarchy of the right control panel.
+
+### Notes
+- `ensureRunning()` is awaited before grabbing the recording stream,
+  because most browsers create the `AudioContext` `suspended` until a
+  user gesture; the record click counts as one.
+- Licensing reminder added in the wiki: a few clips are CC-BY-NC-SA;
+  for commercial reuse, filter to *Permissive* or *Public domain only*
+  before recording (or untick **Include audio**).
+
+## v0.7.1 — Recording guardrails + nginx rate-limit + cache fix (2026-05-09)
+
+Hardening pass on top of 0.7.0 after observing two issues in
+production: (1) a stale `index.html` from a previous deploy was being
+served from browser cache, leaving the page white because the
+hash-named bundles it referenced no longer existed on disk; (2) no
+limits on how long or how big a client-side recording could grow.
+
+### Recording guardrails (client-side)
+`videoRecorder.startCanvasRecording` now takes a `maxBytes` option +
+`onAutoStop` callback. The cumulative chunk size is tracked in
+`ondataavailable`; when the cap is hit the recorder stops itself and
+the consumer is notified. `RecordButton` wires both: 20 minutes of wall
+clock OR 500 MB of cumulative chunks, whichever comes first. The
+20-minute cap is generous on purpose — the user owns their machine.
+
+A race condition in the original code was fixed at the same time:
+`recorder.onstop` is now wired *before* `recorder.start()`, so the
+size-cap path (which calls `recorder.stop()` from inside
+`ondataavailable`) cannot resolve before the listener exists.
+
+### nginx rate-limit + Cache-Control: no-cache
+The vhost (`deploy/auralis.fasl-work.com.conf`) gained:
+- Per-IP `limit_req_zone` for `/api/` (20 r/s burst 40) and `/audio/`
+  (10 r/s burst 20), to absorb prefetching while blocking scrapers.
+- `Cache-Control: no-cache, must-revalidate` on the SPA shell. The
+  hash-named `/assets/` bundles stay `public, immutable`. This kills
+  the white-page-after-deploy symptom permanently.
+
+### deploy/update.sh sync
+`update.sh` now copies `deploy/auralis.fasl-work.com.conf` to
+`/etc/nginx/sites-available/` on each deploy when it differs, runs
+`nginx -t`, then reloads. Aborts on bad config.
+
 ## v0.7.0 — Flowfield mode + library expansion + new features (2026-04-30)
 
 The 9th and final render mode of the original roadmap, plus library
