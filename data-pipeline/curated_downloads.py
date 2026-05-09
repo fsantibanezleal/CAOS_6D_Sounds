@@ -27,6 +27,7 @@ import sys
 import time
 import urllib.parse
 import urllib.request
+import os
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -34,9 +35,17 @@ from common import SOUNDS_DIR
 
 
 MAX_BYTES = 24 * 1024 * 1024  # 24 MB per clip (well under GitHub's 100 MB hard limit)
+
+# Wikimedia's User-Agent policy asks for a project URL and a contact, so
+# downstream operators can reach the maintainer if a script misbehaves.
+# The repo URL satisfies the policy on its own (issues are a valid contact
+# channel); set AURALIS_MAINTAINER_EMAIL to attach a personal email if you
+# want to be paged directly.
+_contact = os.environ.get("AURALIS_MAINTAINER_EMAIL", "").strip()
 USER_AGENT = (
-    "Auralis/0.1 (https://github.com/fsantibanezleal/CAOS_6D_Sounds; "
-    "fsantibanez@gmail.com)"
+    "Auralis/0.1 (https://github.com/fsantibanezleal/CAOS_6D_Sounds"
+    + (f"; {_contact}" if _contact else "")
+    + ")"
 )
 
 
