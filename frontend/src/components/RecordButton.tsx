@@ -23,7 +23,11 @@ import {
  */
 
 const FPS = 30;
-const MAX_SECONDS = 60; // safety cap
+// Hard caps so a forgotten/abandoned recording can't exhaust the browser's
+// memory. The user owns their machine, but 20 min @ 8 Mbps ≈ 1.2 GB of Blob
+// in RAM is already aggressive — anything beyond that auto-stops cleanly.
+const MAX_SECONDS = 20 * 60;
+const MAX_BYTES = 500 * 1024 * 1024;
 
 export function RecordButton() {
   const { t } = useTranslation();
@@ -64,13 +68,21 @@ export function RecordButton() {
       const canvas = document.querySelector<HTMLCanvasElement>(".viz-canvas canvas");
       if (!canvas) return;
       try {
-        const rec = startCanvasRecording(canvas, FPS);
+        const rec = startCanvasRecording(canvas, {
+          fps: FPS,
+          maxBytes: MAX_BYTES,
+          onAutoStop: () => {
+            void finishRecording();
+          }
+        });
         recordingRef.current = rec;
         startedAtRef.current = performance.now();
         setElapsed(0);
         setState("recording");
         // Safety cap: auto-stop after MAX_SECONDS so we never hang on
-        // an infinite-record state.
+        // an infinite-record state. A second guardrail (maxBytes above)
+        // covers the case of high-bitrate captures that hit a memory
+        // limit before the time cap.
         stopTimerRef.current = window.setTimeout(() => {
           void finishRecording();
         }, MAX_SECONDS * 1000);
