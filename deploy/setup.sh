@@ -77,8 +77,16 @@ EOF
   nginx -t && systemctl reload nginx
 
   echo "[7/8] Issue Let's Encrypt cert..."
+  # Let's Encrypt registers this email for renewal / expiry notifications,
+  # so it must be a real address. Required only on first-time cert issuance;
+  # later runs of this script skip the certbot block entirely.
+  if [ -z "${MAINTAINER_EMAIL:-}" ]; then
+    echo "ERROR: MAINTAINER_EMAIL must be set for Let's Encrypt registration." >&2
+    echo "       e.g. MAINTAINER_EMAIL=you@example.com bash deploy/setup.sh" >&2
+    exit 1
+  fi
   certbot --nginx -d "${DOMAIN}" \
-    --non-interactive --agree-tos -m fsantibanez@gmail.com --redirect
+    --non-interactive --agree-tos -m "${MAINTAINER_EMAIL}" --redirect
 
   # Replace certbot's generated config with our hardened version.
   cp deploy/${DOMAIN}.conf /etc/nginx/sites-available/${DOMAIN}.conf
