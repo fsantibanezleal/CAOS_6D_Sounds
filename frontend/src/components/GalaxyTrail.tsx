@@ -213,8 +213,8 @@ export function GalaxyTrail({
 
   return (
     <instancedMesh
-      ref={meshRef as any}
-      args={[undefined as any, material as any, totalStars]}
+      ref={meshRef}
+      args={[undefined, material, totalStars]}
       frustumCulled={false}
     >
       <planeGeometry args={[STAR_GEOMETRY_SIZE, STAR_GEOMETRY_SIZE]} />
