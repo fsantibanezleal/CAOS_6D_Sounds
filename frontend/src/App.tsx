@@ -21,6 +21,9 @@ export default function App() {
   const setViz = useStore((s) => s.setViz);
   const selectedClip = useStore((s) => s.selectedClip);
   const isPlaying = useStore((s) => s.isPlaying);
+  const comparisonClip = useStore((s) => s.comparisonClip);
+  const comparisonClipId = useStore((s) => s.comparisonClipId);
+  const setComparisonClip = useStore((s) => s.setComparisonClip);
 
   useEffect(() => {
     void api
@@ -40,6 +43,16 @@ export default function App() {
       library.clips.find((c) => c.id === DEFAULT_CLIP_ID) ?? library.clips[0];
     if (fallback) setSelectedClip(fallback);
   }, [library, selectedClip, setSelectedClip]);
+
+  // Re-hydrate the comparison clip from its persisted id after the
+  // library arrives. If the clip was removed from the library since
+  // the user last set it, silently drop the comparison.
+  useEffect(() => {
+    if (!library || comparisonClip || !comparisonClipId) return;
+    const restored = library.clips.find((c) => c.id === comparisonClipId);
+    if (restored) setComparisonClip(restored);
+    else setComparisonClip(null);
+  }, [library, comparisonClip, comparisonClipId, setComparisonClip]);
 
   // Keyboard shortcuts.
   useEffect(() => {
