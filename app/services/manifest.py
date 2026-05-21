@@ -12,11 +12,15 @@ clone).
 """
 from __future__ import annotations
 
+import asyncio
 import json
+import logging
 import time
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 from app.config import Settings, get_settings
 from app.models.schemas import Category, SoundLibrary
@@ -78,12 +82,16 @@ class ManifestService:
                 return clip
         return None
 
-    def load_embedding(self, clip_id: str) -> dict[str, Any] | None:
+    async def load_embedding(self, clip_id: str) -> dict[str, Any] | None:
         path = self._settings.embeddings_path / f"{clip_id}.json"
         if not path.is_file():
             return None
-        with path.open("r", encoding="utf-8") as fh:
-            return json.load(fh)
+        # Embedding JSONs are 100s of KB; run the read+parse on a worker
+        # thread so async-def callers (the API route) don't stall the
+        # event loop while the disk is slow or another request is in
+        # flight. The cache for the manifest itself stays sync because
+        # it's hit at most once per TTL window.
+        return await asyncio.to_thread(_read_json, path)
 
     # ------------------------------------------------------------------ #
 
@@ -98,10 +106,17 @@ class ManifestService:
             with path.open("r", encoding="utf-8") as fh:
                 payload = json.load(fh)
             return SoundLibrary.model_validate(payload)
-        except (json.JSONDecodeError, ValueError):
+        except (json.JSONDecodeError, ValueError) as exc:
             # Corrupted manifest: behave like an empty library so the API
-            # stays up. The pipeline owner sees the issue at next regen.
+            # stays up, but log loudly — the pipeline owner needs to see
+            # this at next regen, not silently get an empty catalogue.
+            logger.exception("Manifest at %s is corrupted: %s", path, exc)
             return _empty_library()
+
+
+def _read_json(path: Path) -> dict[str, Any]:
+    with path.open("r", encoding="utf-8") as fh:
+        return json.load(fh)
 
 
 @lru_cache
