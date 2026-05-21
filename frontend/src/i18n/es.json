@@ -1,4 +1,10 @@
 {
+  "error": {
+    "library_title": "No se pudo cargar la biblioteca",
+    "audio_title": "Error de audio",
+    "retry": "Reintentar",
+    "dismiss": "Cerrar"
+  },
   "app": {
     "title": "Auralis",
     "tagline": "Visualización 6D del sonido en tiempo real"

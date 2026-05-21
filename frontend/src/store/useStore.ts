@@ -117,6 +117,14 @@ interface StoreState {
 
   helpOpen: boolean;
   setHelpOpen: (b: boolean) => void;
+
+  /** User-visible error state. Library errors block the whole app;
+   *  audio errors only affect playback. Both surface through the
+   *  Toasts component. Reset to null on dismiss or on retry success. */
+  libraryError: string | null;
+  setLibraryError: (msg: string | null) => void;
+  audioError: string | null;
+  setAudioError: (msg: string | null) => void;
 }
 
 // Defaults tuned for first-time visitors — landing on the House Sparrow
@@ -229,7 +237,12 @@ export const useStore = create<StoreState>()(
       resetViz: () => set({ viz: DEFAULT_VIZ }),
 
       helpOpen: false,
-      setHelpOpen: (b) => set({ helpOpen: b })
+      setHelpOpen: (b) => set({ helpOpen: b }),
+
+      libraryError: null,
+      setLibraryError: (msg) => set({ libraryError: msg }),
+      audioError: null,
+      setAudioError: (msg) => set({ audioError: msg })
     }),
     {
       name: "auralis-state",
