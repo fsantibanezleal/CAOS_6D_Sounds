@@ -91,6 +91,13 @@ interface StoreState {
   comparisonClip: SoundClip | null;
   setComparisonClip: (clip: SoundClip | null) => void;
 
+  /** Persisted alongside `comparisonClip` so a reload can restore the
+   *  comparison pair once the library finishes loading. Stays in sync
+   *  with `comparisonClip?.id` via setComparisonClip / swapWith
+   *  Comparison; the full clip object is hydrated by App.tsx after the
+   *  library arrives. */
+  comparisonClipId: string | null;
+
   comparisonEmbedding: ClipEmbedding | null;
   setComparisonEmbedding: (e: ClipEmbedding | null) => void;
 
@@ -183,8 +190,13 @@ export const useStore = create<StoreState>()(
       setEmbedding: (e) => set({ embedding: e }),
 
       comparisonClip: null,
+      comparisonClipId: null,
       setComparisonClip: (clip) =>
-        set({ comparisonClip: clip, comparisonEmbedding: null }),
+        set({
+          comparisonClip: clip,
+          comparisonClipId: clip?.id ?? null,
+          comparisonEmbedding: null
+        }),
 
       comparisonEmbedding: null,
       setComparisonEmbedding: (e) => set({ comparisonEmbedding: e }),
@@ -196,6 +208,7 @@ export const useStore = create<StoreState>()(
           selectedClip: s.comparisonClip,
           embedding: s.comparisonEmbedding,
           comparisonClip: s.selectedClip,
+          comparisonClipId: s.selectedClip?.id ?? null,
           comparisonEmbedding: s.embedding,
           currentTime: 0,
           isPlaying: false
@@ -230,11 +243,13 @@ export const useStore = create<StoreState>()(
       //   v4 — added Flowfield fields (release 0.7.0)
       //   v5 — added recordWithAudio (release 0.7.2)
       //   v6 — added bloomIntensity + bloomLuminanceThreshold (release 0.7.6)
-      version: 6,
+      //   v7 — added comparisonClipId (release 0.7.7)
+      version: 7,
       partialize: (state) => ({
         theme: state.theme,
         viz: state.viz,
-        loopAudio: state.loopAudio
+        loopAudio: state.loopAudio,
+        comparisonClipId: state.comparisonClipId
       }),
       // Defensive merger: even when the version matches, we deep-merge
       // the persisted `viz` over the current defaults so any missing

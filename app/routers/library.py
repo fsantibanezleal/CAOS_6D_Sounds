@@ -29,9 +29,14 @@ def get_clip(clip_id: str) -> SoundClip:
 
 
 @router.get("/clip/{clip_id}/embedding")
-def get_clip_embedding(clip_id: str):
-    """Per-clip embedding payload — frame-major, normalized to [0, 1]."""
-    payload = get_manifest_service().load_embedding(clip_id)
+async def get_clip_embedding(clip_id: str):
+    """Per-clip embedding payload — frame-major, normalized to [0, 1].
+
+    Async-def + asyncio.to_thread inside the service: the JSON file is
+    100s of KB, and reading it on a worker thread keeps the uvicorn
+    event loop free for other requests while the disk is busy.
+    """
+    payload = await get_manifest_service().load_embedding(clip_id)
     if payload is None:
         raise HTTPException(
             status_code=404,

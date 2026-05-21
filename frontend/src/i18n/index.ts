@@ -18,7 +18,12 @@ void i18n
       en: { translation: en },
       es: { translation: es }
     },
-    fallbackLng: "es",
+    // English is the safer global fallback. The LanguageDetector still
+    // tries localStorage first, then navigator.language, so a returning
+    // Spanish user keeps Spanish and a first-time visitor on `es-*`
+    // gets Spanish detected explicitly. Only visitors on locales the
+    // app doesn't translate (fr, de, pt, ...) land on this fallback.
+    fallbackLng: "en",
     supportedLngs: SUPPORTED_LANGS as unknown as string[],
     nonExplicitSupportedLngs: true,
     interpolation: { escapeValue: false },
