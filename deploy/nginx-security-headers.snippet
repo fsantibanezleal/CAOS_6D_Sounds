@@ -1,0 +1,17 @@
+# Auralis — security headers snippet
+#
+# Why a separate file: nginx's `add_header` inheritance is broken — any
+# `add_header` inside a location block silently discards every
+# `add_header` defined at the server level. We work around that by
+# including this snippet in EVERY location that sets its own header
+# (i.e. anywhere we override Cache-Control), so the security headers
+# always ship regardless of which location served the response.
+#
+# Keep this file in sync with the audit findings in
+# CAOS_MANAGE/wip/auralis/audit-2026-05-09-internal.md (F-01, F-02).
+
+add_header X-Content-Type-Options nosniff always;
+add_header X-Frame-Options SAMEORIGIN always;
+add_header Referrer-Policy strict-origin-when-cross-origin always;
+add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; worker-src blob:; connect-src 'self'; media-src 'self' blob:; object-src 'none'; base-uri 'self'; frame-ancestors 'self';" always;
