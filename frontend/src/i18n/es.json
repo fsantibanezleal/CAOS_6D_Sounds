@@ -98,6 +98,8 @@
     "show_trail_line": "Conectar puntos con línea",
     "show_axes": "Mostrar ejes",
     "show_grid": "Mostrar grilla",
+    "bloom_intensity": "Resplandor",
+    "bloom_help": "Brillo agregado a los modos emisivos (Humo, Aurora, Cometa, Galaxia, Flujo, Estallidos). Pon 0 para desactivar.",
     "reset_camera": "Reiniciar cámara",
     "snapshot": "Captura",
     "record_start": "Grabar video",
