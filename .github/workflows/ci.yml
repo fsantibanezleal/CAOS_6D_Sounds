@@ -29,7 +29,9 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install pytest
+          # pytest + httpx — the latter is required by fastapi.testclient.
+          # Both are kept out of requirements.txt to stay slim on prod.
+          pip install pytest httpx
 
       - name: Run pytest
         run: pytest tests/ -q
