@@ -3,6 +3,58 @@
 Newest-first log of the design decisions that shaped Auralis. Each entry
 records what changed, why, and the alternative we considered.
 
+## v0.7.6 — Bloom post-processing (2026-05-21)
+
+Added a single bloom pass on top of the additive-blend render modes
+(Smoke, Aurora, Comet, Galaxy, Flowfield, Bursts). They now visibly
+glow at the default `bloomIntensity = 0.6`. The non-emissive modes
+(Spheres, Tube, Constellation) stay sharp because the BloomPass
+component returns null when intensity hits zero — no perf cost for
+those modes.
+
+Dependencies: `@react-three/postprocessing` + `postprocessing`. Bundle
+delta: +17 KB gzipped on the three.js chunk (192 → 209 KB).
+
+Configurable via a new "Bloom" slider in the right control panel.
+Persist version bumped 5 → 6. Closes audit issue #47.
+
+## v0.7.5 — Fix dropped security headers (2026-05-21)
+
+Hotfix on top of 0.7.4. PR #53 added HSTS + CSP at the server level,
+but nginx silently discards every server-level `add_header` whenever
+a location block sets its own. All four of our locations override
+Cache-Control, so the headers never reached the wire.
+
+Extract the headers to `deploy/nginx-security-headers.snippet` and
+`include` the snippet inside every location that has its own
+`add_header` (plus at server level for any future location with no
+overrides). Verified post-deploy that both headers ship on `/`,
+`/assets/...` and `/api/library`. Closes #37 cleanly.
+
+## v0.7.4 — HSTS + Content-Security-Policy headers (2026-05-21)
+
+Two standard hardening headers that the audit flagged (F-01, F-02).
+
+HSTS: `max-age=31536000; includeSubDomains`. No `preload` flag yet —
+that requires a week of running without surprises, then registering
+with hstspreload.org.
+
+CSP: `default-src 'self'` with explicit carve-outs for `data:`
+(gaussian textures), `blob:` (workers + recording), and inline R3F
+styles. Locks down `object-src`, `base-uri`, `frame-ancestors`.
+
+(See 0.7.5 for the immediate follow-up that made this actually ship.)
+
+## v0.7.3 — Drop hardcoded maintainer email (2026-05-09)
+
+Personal email pulled out of public source. `AURALIS_MAINTAINER_EMAIL`
+env var attaches it to the Wikimedia / Freesound User-Agent at
+ingest time if set; without it, the User-Agent carries only the repo
+URL (Wikimedia accepts that as a contact channel via GitHub issues).
+`MAINTAINER_EMAIL` env var required for first-time Let's Encrypt cert
+issuance in `setup.sh`; subsequent runs skip the certbot block and
+don't need it.
+
 ## v0.7.2 — Optional audio in canvas recordings (2026-05-09)
 
 Recordings can now mux the playing audio track into the webm output.
