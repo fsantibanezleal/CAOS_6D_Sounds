@@ -528,8 +528,8 @@ function Trail6D({
   return (
     <group>
       <instancedMesh
-        ref={meshRef as any}
-        args={[undefined as any, sphereMaterial as any, numFrames]}
+        ref={meshRef}
+        args={[undefined, sphereMaterial, numFrames]}
         frustumCulled={false}
       >
         <sphereGeometry args={[1, 16, 16]} />
@@ -537,16 +537,16 @@ function Trail6D({
 
       {viz.showTrailLine && (
         <line>
-          <bufferGeometry ref={lineGeomRef as any} />
+          <bufferGeometry ref={lineGeomRef} />
           {/* 4-component vertex colors + vertexAlphas = real per-vertex alpha.
-              `vertexAlphas` is not declared on R3F's typed LineBasicMaterial
-              props, so we set it via the spread cast — Three.js reads it at
-              runtime from material.vertexAlphas. */}
+              `vertexAlphas` is declared on Three.js's LineBasicMaterial and
+              works as an R3F prop — older R3F type defs missed it, which is
+              why earlier revisions of this file used a spread cast. */}
           <lineBasicMaterial
             vertexColors
             transparent
             depthWrite={false}
-            {...({ vertexAlphas: true } as any)}
+            {...({ vertexAlphas: true } as Record<string, unknown>)}
           />
         </line>
       )}
