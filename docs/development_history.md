@@ -3,6 +3,72 @@
 Newest-first log of the design decisions that shaped Auralis. Each entry
 records what changed, why, and the alternative we considered.
 
+## v0.7.9 — Shareable URL state + refactor cleanup (2026-05-21)
+
+Three audit follow-ups landed together as a single release:
+
+### #35 — URL-based state persistence
+The selected clip, comparison clip, render mode, embedding track and
+axis mapping now round-trip through `location.hash`. A copy-pasted
+URL reproduces the exact view the sender was looking at.
+
+Schema deliberately minimal (clipId / comparisonClipId / renderMode /
+trackName / axes) — anything else (colormap, bloom, per-mode sliders)
+stays in localStorage so URLs stay short and slider drags don't
+thrash history. Encoding: JSON → base64url (~200 chars typical, no
+gzip needed). Hydration via a ref-stashed snapshot consumed once
+after `/api/library` resolves. Write-back debounced 300 ms with an
+idempotency guard against the hydrate→write→hydrate loop.
+
+### #42 — Drop `as any` casts in render-mode components
+25 of 27 casts removed (typecheck still clean). The remaining 4 are
+`vertexAlphas` spreads on `lineBasicMaterial` / `meshBasicMaterial`
+(R3F's JSX typings don't expose the prop) — tightened from `as any`
+to `as Record<string, unknown>`. The legacy Safari
+`webkitAudioContext` cast in audioBus.ts stays.
+
+### #41 — De-duplicate frame-mapping logic
+SmokeTrail, BurstsTrail and the Trail6D inside Visualization6D
+migrated to the shared `lib/frameMap` helpers. ~80 LOC removed
+across three files; AXIS_HALF and MIN_TRAIL_FRAMES no longer
+duplicated. No on-screen change.
+
+## v0.7.8 — Surface library + audio errors via toast UI (2026-05-21)
+
+Closes #36. Two silent failure paths get user-visible feedback:
+
+- `/api/library` failure → top-right red toast with a Retry (window.
+  location.reload) and a Dismiss. Auto-clears on a successful refetch.
+- `<audio>` element `onError` → top-right amber toast with the parsed
+  error reason (network / decode / unsupported / unknown). Auto-clears
+  on the next successful `onPlay`.
+
+Per-clip embedding fetch failures piggyback on the audio toast since
+the user-facing symptom is the same. Two zustand slices (`library
+Error` + `audioError`) + a single `<Toasts />` component mounted
+globally in App.tsx. `aria-live="polite"` so screen readers announce
+the error without yanking focus.
+
+## v0.7.7 — CI + comparison persist + async I/O + language fallback (2026-05-21)
+
+Four follow-ups landed together:
+
+- **#39**: GitHub Actions workflow on push + PR. Two jobs: backend
+  pytest, frontend typecheck+build. Concurrency group cancels
+  superseded runs. pip + pnpm caches.
+- **#38**: comparison clip survives reload via persisted `comparison
+  ClipId` (just the id, not the full clip + embedding). Hydrated
+  after the library arrives. Persist v6 → v7.
+- **#40**: `/api/clip/{id}/embedding` is now async + asyncio.to_thread
+  for the file read. Embedding JSONs are 100s of KB; on the event
+  loop they used to stall other requests during a slow read.
+  Also: corrupted-manifest fallback now `logger.exception(...)` so
+  the operator sees it in journalctl (F-13).
+- **#52**: i18n `fallbackLng: 'en'`. Detection order unchanged
+  (localStorage → navigator.language → fallback); only first-time
+  visitors on locales we don't translate (fr/de/pt/...) see English
+  instead of Spanish.
+
 ## v0.7.6 — Bloom post-processing (2026-05-21)
 
 Added a single bloom pass on top of the additive-blend render modes
