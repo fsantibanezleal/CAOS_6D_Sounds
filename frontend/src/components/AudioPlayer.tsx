@@ -27,18 +27,31 @@ export function AudioPlayer() {
   const setLoopAudio = useStore((s) => s.setLoopAudio);
   const comparisonClip = useStore((s) => s.comparisonClip);
   const setComparisonEmbedding = useStore((s) => s.setComparisonEmbedding);
+  const setAudioError = useStore((s) => s.setAudioError);
 
   // Load embedding metadata whenever the clip changes.
   useEffect(() => {
     if (!selectedClip) return;
     let cancelled = false;
-    void api.getClipEmbedding(selectedClip.id).then((e) => {
-      if (!cancelled) setEmbedding(e);
-    });
+    void api
+      .getClipEmbedding(selectedClip.id)
+      .then((e) => {
+        if (!cancelled) setEmbedding(e);
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          console.error("Failed to load embedding", err);
+          setAudioError(
+            err instanceof Error
+              ? `Embedding load failed: ${err.message}`
+              : "Could not load the clip's embedding."
+          );
+        }
+      });
     return () => {
       cancelled = true;
     };
-  }, [selectedClip, setEmbedding]);
+  }, [selectedClip, setEmbedding, setAudioError]);
 
   // Load embedding metadata for the comparison clip too (silhouette only —
   // the comparison clip's audio is not played).
@@ -124,9 +137,28 @@ export function AudioPlayer() {
         }}
         preload="metadata"
         loop={loopAudio}
-        onPlay={() => setIsPlaying(true)}
+        onPlay={() => {
+          setIsPlaying(true);
+          setAudioError(null);
+        }}
         onPause={() => setIsPlaying(false)}
         onEnded={() => setIsPlaying(false)}
+        onError={(e) => {
+          const err = (e.currentTarget as HTMLAudioElement).error;
+          const code = err?.code;
+          // MediaError codes: 1=ABORTED, 2=NETWORK, 3=DECODE, 4=SRC_NOT_SUPPORTED
+          const reason =
+            code === 2
+              ? "network error"
+              : code === 3
+                ? "audio decode error"
+                : code === 4
+                  ? "unsupported audio format"
+                  : err?.message || "unknown error";
+          console.error("[Auralis] audio element error:", err);
+          setAudioError(`Playback failed (${reason}).`);
+          setIsPlaying(false);
+        }}
         crossOrigin="anonymous"
       />
     </div>

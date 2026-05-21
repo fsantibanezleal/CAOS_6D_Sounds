@@ -3,6 +3,12 @@
     "title": "Auralis",
     "tagline": "Real-time 6D visualization of audio"
   },
+  "error": {
+    "library_title": "Library failed to load",
+    "audio_title": "Audio error",
+    "retry": "Retry",
+    "dismiss": "Dismiss"
+  },
   "header": {
     "language": "Language",
     "theme": "Theme",

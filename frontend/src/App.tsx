@@ -7,6 +7,7 @@ import { HelpModal } from "./components/HelpModal";
 import { LiveFeatures } from "./components/LiveFeatures";
 import { SoundLibrary } from "./components/SoundLibrary";
 import { Spectrogram } from "./components/Spectrogram";
+import { Toasts } from "./components/Toasts";
 import { Visualization6D } from "./components/Visualization6D";
 import { api } from "./lib/api";
 import { DEFAULT_CLIP_ID, useStore } from "./store/useStore";
@@ -24,15 +25,22 @@ export default function App() {
   const comparisonClip = useStore((s) => s.comparisonClip);
   const comparisonClipId = useStore((s) => s.comparisonClipId);
   const setComparisonClip = useStore((s) => s.setComparisonClip);
+  const setLibraryError = useStore((s) => s.setLibraryError);
 
   useEffect(() => {
     void api
       .getLibrary()
-      .then(setLibrary)
+      .then((lib) => {
+        setLibrary(lib);
+        setLibraryError(null);
+      })
       .catch((err) => {
         console.error("Failed to load library", err);
+        const msg =
+          err instanceof Error ? err.message : "Could not load the library.";
+        setLibraryError(msg);
       });
-  }, [setLibrary]);
+  }, [setLibrary, setLibraryError]);
 
   // Auto-select the default clip on first load (when nothing is yet
   // chosen). This gives first-time visitors something immediate to
@@ -122,6 +130,7 @@ export default function App() {
         <ControlPanel />
       </main>
       <HelpModal />
+      <Toasts />
     </div>
   );
 }
