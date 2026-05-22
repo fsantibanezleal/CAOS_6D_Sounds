@@ -113,6 +113,14 @@ DEFAULT_CATEGORIES: list[dict] = [
         "description_es": "Máquinas, motores, vehículos, sonidos industriales",
         "icon": "GEAR",
     },
+    {
+        "id": "underwater",
+        "name_en": "Underwater",
+        "name_es": "Submarinos",
+        "description_en": "Marine mammals, hydrophone ambience, ice — public-domain catalogue from NOAA Fisheries",
+        "description_es": "Mamíferos marinos, ambiente de hidrófono, hielo — catálogo en dominio público de NOAA Fisheries",
+        "icon": "WAVE",
+    },
 ]
 
 
