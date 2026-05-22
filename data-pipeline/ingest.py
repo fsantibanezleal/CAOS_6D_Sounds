@@ -15,6 +15,7 @@ per-clip JSON files, but never touches the audio.
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 from pathlib import Path
 
@@ -24,9 +25,15 @@ import numpy as np  # noqa: F401  (re-exported via type hints in modules)
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from build_manifest import write_clip_embedding, write_manifest
+from clap_embeddings import (
+    broadcast_to_frames as clap_broadcast,
+    clap_audio_embedding,
+    try_clap,
+)
 from compute_embeddings import (
     available_methods,
     fit_all,
+    fit_clap,
     fit_tonnetz,
     fit_yamnet,
 )
@@ -82,7 +89,7 @@ def main() -> int:
         projections_by_method["tonnetz"] = tonnetz_per_clip
     print(f"  produced tonnetz for {len(tonnetz_per_clip or {})} clip(s)")
 
-    print("[6/7] Computing YAMNet deep embeddings (optional)...")
+    print("[6/8] Computing YAMNet deep embeddings (optional)...")
     yamnet_model = try_yamnet()
     yamnet_per_clip: dict[str, np.ndarray] | None = None
     if yamnet_model is not None:
@@ -98,10 +105,31 @@ def main() -> int:
     else:
         print("  yamnet skipped (tensorflow_hub unavailable or model load failed)")
 
+    print("[7/8] Computing CLAP language-audio embeddings (optional)...")
+    # AURALIS_SKIP_CLAP=1 lets the operator opt out of the heavy
+    # transformers+torch path during a quick rebuild.
+    if os.environ.get("AURALIS_SKIP_CLAP", "").strip() == "1":
+        clap_loaded = None
+        print("  clap skipped (AURALIS_SKIP_CLAP=1)")
+    else:
+        clap_loaded = try_clap()
+    if clap_loaded is not None:
+        clap_matrices: list[tuple[str, np.ndarray]] = []
+        for f in feature_set:
+            clip_vec = clap_audio_embedding(clap_loaded, f.raw_audio, f.sample_rate)
+            framed = clap_broadcast(clip_vec, f.num_frames)
+            clap_matrices.append((f.clip_id, framed))
+            print(f"  [{f.category}] {f.clip_id}  clap dim={clip_vec.shape[0]} broadcast={framed.shape[0]}")
+        clap_per_clip = fit_clap(clap_matrices)
+        if clap_per_clip is not None:
+            projections_by_method["clap"] = clap_per_clip
+    else:
+        print("  clap skipped (transformers/torch unavailable or model load failed)")
+
     methods = available_methods(projections_by_method)
     print(f"  methods produced: {', '.join(methods) if methods else '(none)'}")
 
-    print("[7/7] Writing manifest + per-clip embedding JSONs...")
+    print("[8/8] Writing manifest + per-clip embedding JSONs...")
     for f in feature_set:
         per_clip = {m: projections_by_method[m][f.clip_id] for m in methods}
         target = write_clip_embedding(f, per_clip)

@@ -39,7 +39,7 @@ export interface SoundLibrary {
 }
 
 export interface EmbeddingTrack {
-  name: "features" | "pca" | "tsne" | "umap" | "tonnetz" | "yamnet";
+  name: "features" | "pca" | "tsne" | "umap" | "tonnetz" | "yamnet" | "clap";
   description_en: string;
   description_es: string;
   dim_labels: string[];

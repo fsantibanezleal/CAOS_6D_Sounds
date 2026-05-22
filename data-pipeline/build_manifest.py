@@ -195,6 +195,20 @@ def write_clip_embedding(
             desc_en = "6D PCA projection of YAMNet's pretrained 1024-D embeddings (deep CNN trained on AudioSet)"
             desc_es = "Proyección PCA 6D de los embeddings preentrenados YAMNet de 1024-D (CNN profunda entrenada con AudioSet)"
             dim_labels = [f"D{i + 1}" for i in range(matrix.shape[1])]
+        elif method == "clap":
+            desc_en = (
+                "6D PCA projection of LAION-CLAP's 512-D language-audio embeddings "
+                "(Wu et al. 2023). CLAP is a global per-clip embedding, so every "
+                "frame of the same clip lands at the same point — useful for "
+                "comparing clips' positions in semantic space."
+            )
+            desc_es = (
+                "Proyección PCA 6D de los embeddings lengua-audio CLAP de LAION (512-D, "
+                "Wu et al. 2023). CLAP es un embedding global por clip; todos los cuadros "
+                "del mismo clip caen en el mismo punto — útil para comparar la posición "
+                "semántica entre clips."
+            )
+            dim_labels = [f"D{i + 1}" for i in range(matrix.shape[1])]
         elif method == "tonnetz":
             desc_en = (
                 "Tonal Centroid Features (Tonnetz, Harte et al. 2006) — the natural "
