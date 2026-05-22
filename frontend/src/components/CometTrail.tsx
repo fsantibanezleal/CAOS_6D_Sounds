@@ -211,15 +211,15 @@ export function CometTrail({
   return (
     <group>
       <instancedMesh
-        ref={trailMeshRef}
-        args={[undefined, sharedMaterial, numFrames]}
+        ref={trailMeshRef as any}
+        args={[undefined as any, sharedMaterial as any, numFrames]}
         frustumCulled={false}
       >
         <planeGeometry args={[2, 2]} />
       </instancedMesh>
       <instancedMesh
-        ref={headMeshRef}
-        args={[undefined, sharedMaterial, 1]}
+        ref={headMeshRef as any}
+        args={[undefined as any, sharedMaterial as any, 1]}
         frustumCulled={false}
       >
         <planeGeometry args={[2, 2]} />

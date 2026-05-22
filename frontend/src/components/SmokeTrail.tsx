@@ -2,7 +2,7 @@ import { useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 
-import { buildFrameMap, computeWindow } from "../lib/frameMap";
+import { sampleColormap } from "../lib/colormaps";
 import { makeGaussianTexture, makeSmokeMaterial } from "../lib/smokeMaterial";
 import { useStore } from "../store/useStore";
 
@@ -18,6 +18,9 @@ import { useStore } from "../store/useStore";
  * The visible window is identical to the spheres mode: only frames in
  * ``[start, cursor]`` are drawn, with linear age-fade.
  */
+
+const AXIS_HALF = 1.5;
+const MIN_TRAIL_FRAMES = 8;
 
 export function SmokeTrail({
   values,
@@ -89,35 +92,44 @@ export function SmokeTrail({
     return { offsets, velocities, colorJitter };
   }, [totalParticles]);
 
-  const frames = useMemo(
-    () =>
-      buildFrameMap({
-        values,
-        numFrames,
-        axisX: viz.axes.x,
-        axisY: viz.axes.y,
-        axisZ: viz.axes.z,
-        axisColor: viz.axes.color,
-        axisSize: viz.axes.size,
-        colormap: viz.colormap,
-        reverseColormap: viz.reverseColormap,
-        sphereMin: viz.sphereMin,
-        sphereMax: viz.sphereMax
-      }),
-    [
-      values,
-      numFrames,
-      viz.axes.x,
-      viz.axes.y,
-      viz.axes.z,
-      viz.axes.color,
-      viz.axes.size,
-      viz.colormap,
-      viz.reverseColormap,
-      viz.sphereMin,
-      viz.sphereMax
-    ]
-  );
+  // Per-frame static map of (parent_pos, parent_color, parent_size). This is
+  // the same computation as Trail6D's `frames` memo — recomputed when the
+  // axis mapping or colormap changes.
+  const frames = useMemo(() => {
+    const xi = viz.axes.x;
+    const yi = viz.axes.y;
+    const zi = viz.axes.z;
+    const ci = viz.axes.color;
+    const si = viz.axes.size;
+    const positions = new Float32Array(numFrames * 3);
+    const colors = new Float32Array(numFrames * 3);
+    const sizes = new Float32Array(numFrames);
+    for (let i = 0; i < numFrames; i++) {
+      const v = values[i] ?? [];
+      positions[3 * i] = ((v[xi] ?? 0.5) * 2 - 1) * AXIS_HALF;
+      positions[3 * i + 1] = ((v[yi] ?? 0.5) * 2 - 1) * AXIS_HALF;
+      positions[3 * i + 2] = ((v[zi] ?? 0.5) * 2 - 1) * AXIS_HALF;
+      const tColor = viz.reverseColormap ? 1 - (v[ci] ?? 0.5) : v[ci] ?? 0.5;
+      const [r, g, b] = sampleColormap(viz.colormap, tColor);
+      colors[3 * i] = r;
+      colors[3 * i + 1] = g;
+      colors[3 * i + 2] = b;
+      sizes[i] = viz.sphereMin + (viz.sphereMax - viz.sphereMin) * (v[si] ?? 0.5);
+    }
+    return { positions, colors, sizes };
+  }, [
+    values,
+    numFrames,
+    viz.axes.x,
+    viz.axes.y,
+    viz.axes.z,
+    viz.axes.color,
+    viz.axes.size,
+    viz.colormap,
+    viz.reverseColormap,
+    viz.sphereMin,
+    viz.sphereMax
+  ]);
 
   // Allocate per-instance custom attributes once; reused each frame.
   const instanceRgba = useMemo(
@@ -148,12 +160,12 @@ export function SmokeTrail({
     const inst = meshRef.current;
     if (!inst) return;
 
-    const { cursor, start, trailFrames } = computeWindow(
-      currentTime,
-      hopSeconds,
-      viz.trailSeconds,
-      numFrames
+    const trailFrames = Math.max(
+      MIN_TRAIL_FRAMES,
+      Math.round(viz.trailSeconds / hopSeconds)
     );
+    const cursor = Math.min(numFrames - 1, Math.floor(currentTime / hopSeconds));
+    const start = Math.max(0, cursor - trailFrames + 1);
 
     const rgbaArr = instanceRgba.array as Float32Array;
     const sizeArr = instanceSize.array as Float32Array;
@@ -223,8 +235,8 @@ export function SmokeTrail({
 
   return (
     <instancedMesh
-      ref={meshRef}
-      args={[undefined, material, totalParticles]}
+      ref={meshRef as any}
+      args={[undefined as any, material as any, totalParticles]}
       frustumCulled={false}
     >
       <planeGeometry args={[2, 2]} />
