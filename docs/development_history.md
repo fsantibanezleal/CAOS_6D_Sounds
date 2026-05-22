@@ -3,6 +3,43 @@
 Newest-first log of the design decisions that shaped Auralis. Each entry
 records what changed, why, and the alternative we considered.
 
+## v0.8.0 — Light-painting render mode + NASA clips (2026-05-22)
+
+Two audit follow-ups in one release.
+
+### #50 — Light-painting (10th render mode)
+
+Long-exposure photography in 3D. The whole path stays visible from
+frame 0 to the cursor with additive blending — pixels where the trail
+revisits itself glow brighter, so time density reads visually. The
+cursor's recent `trailFrames` window decays linearly from alpha 1.0
+down to a 0.15 floor, and a 5-layer halo of additive billboards at
+the cursor position reinforces the write-head.
+
+This closes the original 9-mode roadmap (the audit's external
+research listed light-painting as the highest effort-to-impact
+candidate). Implementation is ~210 LOC in `LightPaintingTrail.tsx`,
+no new viz fields, persist version unchanged at v7.
+
+### #43 — NASA Audio Collection (partial)
+
+Added 4 NASA clips to the `space` category, expanding from 3 to 7:
+
+- `space-mars-supercam-wind` — Perseverance SuperCam wind on Mars.
+- `space-mars-microphone` — Perseverance mic raw ambient.
+- `space-mars-microphone-clean` — same with rover fan noise removed.
+- `space-voyager-greetings` — Voyager Golden Record 1977 greeting.
+
+All four Wikimedia Commons titles were verified live against the API
+on 2026-05-22. The remaining clips suggested by the external audit
+(Cassini Saturn radio, InSight Marsquake, Juno Jupiter chorus) live
+on NASA's PR sites rather than Wikimedia, so they're deferred until
+a direct-URL ingest path exists.
+
+Operator needs to run `scripts/local.ps1 ingest` locally to actually
+download + featurize the new entries — the code commit alone doesn't
+materialise the files.
+
 ## v0.7.9 — Shareable URL state + refactor cleanup (2026-05-21)
 
 Three audit follow-ups landed together as a single release:
