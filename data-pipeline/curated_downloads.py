@@ -916,6 +916,57 @@ CURATION: list[CurationEntry] = [
         tags=("nasa", "apollo"),
     ),
 
+    # Mars Perseverance microphones (added 2026-05-22, issue #43).
+    # Titles verified live against Commons API on 2026-05-22.
+    CurationEntry(
+        id="space-mars-supercam-wind",
+        category="space",
+        subcategory="mars",
+        title_en="Perseverance SuperCam — wind on Mars",
+        title_es="Perseverance SuperCam — viento en Marte",
+        source="NASA",
+        license="Public Domain",
+        attribution="NASA/JPL-Caltech (U.S. Government work)",
+        wm_title="Perseverance rover's SuperCam records wind on Mars.oga",
+        tags=("nasa", "mars", "perseverance", "wind"),
+    ),
+    CurationEntry(
+        id="space-mars-microphone",
+        category="space",
+        subcategory="mars",
+        title_en="Perseverance microphone — first sounds from Mars",
+        title_es="Micrófono de Perseverance — primeros sonidos de Marte",
+        source="NASA",
+        license="Public Domain",
+        attribution="NASA/JPL-Caltech (U.S. Government work)",
+        wm_title="NASA's Perseverance Rover Microphone Captures Sounds from Mars.ogg",
+        tags=("nasa", "mars", "perseverance"),
+    ),
+    CurationEntry(
+        id="space-mars-microphone-clean",
+        category="space",
+        subcategory="mars",
+        title_en="Perseverance microphone — Mars sounds (rover noise removed)",
+        title_es="Micrófono de Perseverance — sonidos marcianos sin ruido del rover",
+        source="NASA",
+        license="Public Domain",
+        attribution="NASA/JPL-Caltech (U.S. Government work)",
+        wm_title="NASA's Perseverance Rover Microphone Captures Sounds from Mars without rover noise.ogg",
+        tags=("nasa", "mars", "perseverance", "denoised"),
+    ),
+    CurationEntry(
+        id="space-voyager-greetings",
+        category="space",
+        subcategory="voyager",
+        title_en="Voyager Golden Record — Greetings in 55 languages",
+        title_es="Disco Dorado de Voyager — Saludos en 55 idiomas",
+        source="NASA",
+        license="Public Domain",
+        attribution="NASA, 1977 (U.S. Government work)",
+        wm_title="Voyager Golden Record - Greetings In 55 Languages.mp3",
+        tags=("nasa", "voyager", "golden-record", "human-voice"),
+    ),
+
     # ===================================================================== #
     # MECHANICAL
     # ===================================================================== #
