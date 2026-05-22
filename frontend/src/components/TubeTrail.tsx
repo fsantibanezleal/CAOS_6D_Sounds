@@ -210,15 +210,15 @@ export function TubeTrail({
   });
 
   return (
-    <mesh ref={meshRef}>
-      <bufferGeometry ref={geomRef} />
+    <mesh ref={meshRef as any}>
+      <bufferGeometry ref={geomRef as any} />
       {/* Double-sided so the ribbon is visible from any camera angle. */}
       <meshBasicMaterial
         vertexColors
         transparent
         depthWrite={false}
         side={THREE.DoubleSide}
-        {...({ vertexAlphas: true } as Record<string, unknown>)}
+        {...({ vertexAlphas: true } as any)}
       />
     </mesh>
   );

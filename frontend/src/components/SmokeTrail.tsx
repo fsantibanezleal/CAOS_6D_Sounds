@@ -235,8 +235,8 @@ export function SmokeTrail({
 
   return (
     <instancedMesh
-      ref={meshRef}
-      args={[undefined, material, totalParticles]}
+      ref={meshRef as any}
+      args={[undefined as any, material as any, totalParticles]}
       frustumCulled={false}
     >
       <planeGeometry args={[2, 2]} />

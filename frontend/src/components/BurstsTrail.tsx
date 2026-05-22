@@ -221,17 +221,14 @@ export function BurstsTrail({
   });
 
   return (
-    <lineSegments ref={linesRef}>
-      <bufferGeometry ref={geomRef} />
+    <lineSegments ref={linesRef as any}>
+      <bufferGeometry ref={geomRef as any} />
       <lineBasicMaterial
         vertexColors
         transparent
         depthWrite={false}
         blending={THREE.AdditiveBlending}
-        // vertexAlphas is set at runtime by three.js but missing from
-        // R3F's JSX prop types — spread cast is the documented escape
-        // hatch until the upstream types catch up.
-        {...({ vertexAlphas: true } as Record<string, unknown>)}
+        {...({ vertexAlphas: true } as any)}
       />
     </lineSegments>
   );
