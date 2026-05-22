@@ -233,6 +233,39 @@ def fit_yamnet(
     return {cid: normalize01(pca_full[a:b]) for cid, a, b in boundaries}
 
 
+def fit_clap(
+    clap_matrices: Iterable[tuple[str, np.ndarray]],
+) -> dict[str, np.ndarray] | None:
+    """Project CLAP 512-D vectors to 6D via corpus-wide PCA.
+
+    Identical fitting path to YAMNet — each clip contributes a
+    (frames, 512) matrix, we stack and PCA them together, then split
+    back. The only conceptual difference is that CLAP is a global
+    embedding, so every row of any one clip's input matrix is
+    identical (the audio branch returned a single vector that we
+    broadcast to numFrames rows). PCA + per-clip slicing still works.
+
+    Returns ``{clip_id: (frames, 6) matrix}`` or None when no CLAP
+    matrices are provided.
+    """
+    items = list(clap_matrices)
+    if not items:
+        return None
+
+    big = np.vstack([m for _, m in items])
+    if big.shape[0] < 6:
+        return None
+
+    boundaries: list[tuple[str, int, int]] = []
+    cursor = 0
+    for clip_id, m in items:
+        boundaries.append((clip_id, cursor, cursor + m.shape[0]))
+        cursor += m.shape[0]
+
+    pca_full = project_pca(big, n_components=6)
+    return {cid: normalize01(pca_full[a:b]) for cid, a, b in boundaries}
+
+
 def available_methods(produced: dict[str, dict[str, np.ndarray]]) -> list[str]:
     """Return the methods actually produced, in the canonical UI order."""
     return [m for m in EMBEDDING_METHODS if m in produced]
