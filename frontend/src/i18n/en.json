@@ -115,7 +115,10 @@
     "record_saving": "Saving...",
     "record_help": "Capture the canvas as a webm video. Plays back the trail exactly as you saw it.",
     "record_with_audio": "Include audio",
-    "record_with_audio_help": "Mux the playing audio track into the recording. Uncheck for a video-only export."
+    "record_with_audio_help": "Mux the playing audio track into the recording. Uncheck for a video-only export.",
+    "demo_tour_start": "Auto tour",
+    "demo_tour_stop": "Stop tour ({{i}}/{{n}})",
+    "demo_tour_help": "Cycles through 8 curated clip + mode + track combinations. Pair with Record video to capture a one-pass showcase."
   },
   "panels": {
     "spectrogram": "Spectrogram",
