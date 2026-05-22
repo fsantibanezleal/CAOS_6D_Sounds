@@ -7,7 +7,6 @@ import {
 } from "../lib/colormaps";
 import { snapshotCanvas } from "../lib/snapshot";
 import { useStore, type AxisRole } from "../store/useStore";
-import { DemoTourButton } from "./DemoTourButton";
 import { RecordButton } from "./RecordButton";
 
 export function ControlPanel() {
@@ -656,8 +655,6 @@ export function ControlPanel() {
         </button>
 
         <RecordButton />
-
-        <DemoTourButton />
       </section>
 
       {library && (
