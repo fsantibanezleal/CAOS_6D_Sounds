@@ -15,7 +15,8 @@ export type RenderMode =
   | "comet"
   | "tube"
   | "galaxy"
-  | "flowfield";
+  | "flowfield"
+  | "lightpainting";
 
 export interface VizConfig {
   /** Which embedding track to use (features / pca / tsne / umap / tonnetz / yamnet). */
