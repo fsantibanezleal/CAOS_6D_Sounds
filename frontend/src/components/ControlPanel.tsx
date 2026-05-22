@@ -616,19 +616,6 @@ export function ControlPanel() {
           {t("viz.show_grid")}
         </label>
 
-        <label style={{ marginTop: 10, fontSize: "0.85em" }} title={t("viz.bloom_help")}>
-          {t("viz.bloom_intensity")}: {viz.bloomIntensity.toFixed(2)}
-          <input
-            type="range"
-            min={0}
-            max={2}
-            step={0.05}
-            value={viz.bloomIntensity}
-            onChange={(e) => setViz({ bloomIntensity: parseFloat(e.target.value) })}
-            style={{ width: "100%" }}
-          />
-        </label>
-
         <button
           style={{ marginTop: 12, width: "100%" }}
           onClick={() =>
