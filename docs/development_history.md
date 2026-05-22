@@ -3,6 +3,52 @@
 Newest-first log of the design decisions that shaped Auralis. Each entry
 records what changed, why, and the alternative we considered.
 
+## v0.9.0 — CLAP track + NOAA underwater category (2026-05-22)
+
+Two audit issues closed in one release.
+
+### #48 phase 1 — CLAP embedding track
+
+LAION's open implementation of CLAP (Contrastive Language-Audio
+Pretraining, Wu et al. 2023) wired in as the **6th embedding track**
+alongside PCA / t-SNE / UMAP / Tonnetz / YAMNet. Conceptually
+identical to YAMNet:
+
+- Pipeline: `clap_embeddings.try_clap()` lazy-loads; returns None if
+  `torch` or `transformers` aren't installed. `AURALIS_SKIP_CLAP=1`
+  opts out at run time.
+- 512-D audio embeddings projected to 6D via corpus-wide PCA, then
+  normalised to [0, 1] per axis.
+- CLAP is a *global* embedding (one vector per clip, not per frame),
+  so we broadcast the same vector to every frame. The 6D trail is a
+  degenerate point inside CLAP space — useful for comparing clips'
+  *positions* in semantic space across the library.
+
+Pipeline now has 8 steps instead of 7. First run downloads ~600 MB
+model + ~700 MB torch wheels.
+
+Out of scope for this PR: the **text-prompt → 6D-point UI**. That
+needs CLAP loaded in production (a deployment decision — more VPS
+RAM, separate model service, or the HF Inference API). Will open a
+phase-2 issue.
+
+### #44 — NOAA Fisheries underwater category
+
+New `underwater` category with 8 clips from NOAA Fisheries' "Sounds
+in the Ocean" catalogue (PD under 17 U.S.C. §105). All URLs
+verified live on 2026-05-22 returning HTTP 200 + audio/mpeg:
+
+- humpback whale song, sperm whale clicks, beluga, Cuvier's beaked
+  whale, killer whale, bearded seal — marine mammals
+- snapping shrimp chorus — invertebrates
+- Antarctic ice calving — ice
+
+The original audit pointed at NOAA SanctSound (raw multi-hour data,
+not curated clips). Switched to the NOAA Fisheries education
+catalogue, which has short pre-curated PD clips ready to ingest via
+the existing `url=` path in `CurationEntry`. No new downloader logic
+needed.
+
 ## v0.8.0 — Light-painting render mode + NASA clips (2026-05-22)
 
 Two audit follow-ups in one release.
