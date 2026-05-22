@@ -31,3 +31,16 @@ tensorflow==2.21.0
 # via TensorFlow Hub. Adds a "yamnet" track in the manifest, projected to
 # 6D via corpus-wide PCA. Requires tensorflow (already pinned above).
 tensorflow-hub==0.16.1
+
+# Optional: CLAP (Wu et al. 2023) language-audio embeddings via Hugging
+# Face transformers. Adds a "clap" track in the manifest, projected to
+# 6D via corpus-wide PCA. Model `laion/clap-htsat-unfused` is ~600 MB
+# on first download; torch is ~700 MB. Pipeline-only — these libraries
+# don't ship to production. Set AURALIS_SKIP_CLAP=1 to opt out during
+# a quick rebuild.
+#
+# Install with:
+#   pip install torch transformers
+# (CPU-only is fine; CUDA is faster but not required at this corpus size.)
+torch>=2.2
+transformers>=4.40

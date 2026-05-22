@@ -102,4 +102,5 @@ EMBEDDING_METHODS: Final[tuple[str, ...]] = (
     "umap",
     "tonnetz",  # 6D harmonic space (Chew 2002; librosa.feature.tonnetz)
     "yamnet",
+    "clap",     # LAION CLAP (Wu et al. 2023) — 512-D contrastive language-audio embedding
 )
