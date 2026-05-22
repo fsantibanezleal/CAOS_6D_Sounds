@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 
 import { AudioPlayer } from "./components/AudioPlayer";
 import { ControlPanel } from "./components/ControlPanel";
@@ -10,7 +10,6 @@ import { Spectrogram } from "./components/Spectrogram";
 import { Toasts } from "./components/Toasts";
 import { Visualization6D } from "./components/Visualization6D";
 import { api } from "./lib/api";
-import { decodeState, encodeState } from "./lib/urlState";
 import { DEFAULT_CLIP_ID, useStore } from "./store/useStore";
 
 export default function App() {
@@ -27,68 +26,6 @@ export default function App() {
   const comparisonClipId = useStore((s) => s.comparisonClipId);
   const setComparisonClip = useStore((s) => s.setComparisonClip);
   const setLibraryError = useStore((s) => s.setLibraryError);
-
-  // URL state — read once at mount into a ref so the write-back effect
-  // can tell "hash → store" from "store → hash" and avoid a loop.
-  const pendingUrlStateRef = useRef(decodeState(window.location.hash));
-  const lastWrittenHashRef = useRef<string>("");
-
-  useEffect(() => {
-    const state = pendingUrlStateRef.current;
-    if (!state) return;
-    // Viz fields apply immediately — they don't depend on the library.
-    const patch: Parameters<typeof setViz>[0] = {};
-    if (state.renderMode) patch.renderMode = state.renderMode;
-    if (state.trackName) patch.trackName = state.trackName;
-    if (state.axes) patch.axes = state.axes;
-    if (Object.keys(patch).length > 0) setViz(patch);
-  }, [setViz]);
-
-  // Once the library arrives, apply the URL's clipId / comparisonClipId
-  // if present. Library load + this effect run on every mount so this is
-  // the first selection the user sees on a shared link.
-  useEffect(() => {
-    if (!library) return;
-    const state = pendingUrlStateRef.current;
-    if (!state) return;
-    if (state.clipId) {
-      const found = library.clips.find((c) => c.id === state.clipId);
-      if (found) setSelectedClip(found);
-    }
-    if (state.comparisonClipId === null) {
-      setComparisonClip(null);
-    } else if (state.comparisonClipId) {
-      const found = library.clips.find((c) => c.id === state.comparisonClipId);
-      if (found) setComparisonClip(found);
-    }
-    // Single-shot: consumed.
-    pendingUrlStateRef.current = null;
-  }, [library, setSelectedClip, setComparisonClip]);
-
-  // Sync store → location.hash, debounced so a slider drag doesn't
-  // thrash history.replaceState.
-  useEffect(() => {
-    const t = window.setTimeout(() => {
-      const hash = encodeState({
-        clipId: selectedClip?.id,
-        comparisonClipId,
-        renderMode: viz.renderMode,
-        trackName: viz.trackName,
-        axes: viz.axes
-      });
-      if (hash === lastWrittenHashRef.current) return;
-      lastWrittenHashRef.current = hash;
-      const url = `${window.location.pathname}${window.location.search}#${hash}`;
-      window.history.replaceState(null, "", url);
-    }, 300);
-    return () => window.clearTimeout(t);
-  }, [
-    selectedClip?.id,
-    comparisonClipId,
-    viz.renderMode,
-    viz.trackName,
-    viz.axes
-  ]);
 
   useEffect(() => {
     void api

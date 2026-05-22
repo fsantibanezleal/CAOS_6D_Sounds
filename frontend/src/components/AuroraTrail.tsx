@@ -175,8 +175,8 @@ export function AuroraTrail({
 
   return (
     <instancedMesh
-      ref={meshRef}
-      args={[undefined, material, numFrames]}
+      ref={meshRef as any}
+      args={[undefined as any, material as any, numFrames]}
       frustumCulled={false}
     >
       {/* PlaneGeometry — width = thin ribbon (constant), height = 1.

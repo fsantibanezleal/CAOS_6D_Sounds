@@ -225,20 +225,20 @@ export function ConstellationTrail({
   return (
     <group>
       <instancedMesh
-        ref={meshRef}
-        args={[undefined, material, numFrames]}
+        ref={meshRef as any}
+        args={[undefined as any, material as any, numFrames]}
         frustumCulled={false}
       >
         <planeGeometry args={[2, 2]} />
       </instancedMesh>
       <line>
-        <bufferGeometry ref={lineGeomRef} />
+        <bufferGeometry ref={lineGeomRef as any} />
         <lineBasicMaterial
           vertexColors
           transparent
           depthWrite={false}
           blending={THREE.AdditiveBlending}
-          {...({ vertexAlphas: true } as Record<string, unknown>)}
+          {...({ vertexAlphas: true } as any)}
         />
       </line>
     </group>
