@@ -54,7 +54,11 @@ export const TOUR_STOPS: TourStop[] = [
     caption: "Armstrong's first step — YAMNet semantic projection"
   },
   {
-    clipId: "underwater-humpback-whale-song",
+    // mammal-humpback-whale is bundled with the public manifest today;
+    // the NOAA underwater catalogue (underwater-humpback-whale-song) is
+    // queued for an operator ingest but not live yet. Swap once the
+    // pipeline has run with the new entries from PR #80.
+    clipId: "mammal-humpback-whale",
     renderMode: "flowfield",
     trackName: "yamnet",
     caption: "Humpback whale — Flowfield wake"
