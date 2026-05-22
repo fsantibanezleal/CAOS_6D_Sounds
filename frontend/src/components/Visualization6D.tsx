@@ -4,7 +4,7 @@ import { Bloom, EffectComposer } from "@react-three/postprocessing";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 
-import { AXIS_HALF, buildFrameMap, computeWindow } from "../lib/frameMap";
+import { sampleColormap } from "../lib/colormaps";
 import { useStore } from "../store/useStore";
 import { AuroraTrail } from "./AuroraTrail";
 import { BurstsTrail } from "./BurstsTrail";
@@ -35,6 +35,9 @@ import { TubeTrail } from "./TubeTrail";
  * - Per-frame useFrame writes the active visibility window only (fast
  *   even at 6 000+ frames).
  */
+
+const AXIS_HALF = 1.5; // world units → embedding values in [0,1] map to [-1.5, 1.5]
+const MIN_TRAIL_FRAMES = 8;
 
 export function Visualization6D() {
   return (
@@ -318,35 +321,49 @@ function Trail6D({
 
   // Static positions / colors / sizes for every frame.
   // Recomputed when the active track or any axis mapping changes.
-  const frames = useMemo(
-    () =>
-      buildFrameMap({
-        values,
-        numFrames,
-        axisX: viz.axes.x,
-        axisY: viz.axes.y,
-        axisZ: viz.axes.z,
-        axisColor: viz.axes.color,
-        axisSize: viz.axes.size,
-        colormap: viz.colormap,
-        reverseColormap: viz.reverseColormap,
-        sphereMin: viz.sphereMin,
-        sphereMax: viz.sphereMax
-      }),
-    [
-      values,
-      numFrames,
-      viz.axes.x,
-      viz.axes.y,
-      viz.axes.z,
-      viz.axes.color,
-      viz.axes.size,
-      viz.colormap,
-      viz.reverseColormap,
-      viz.sphereMin,
-      viz.sphereMax
-    ]
-  );
+  const frames = useMemo(() => {
+    const xi = viz.axes.x;
+    const yi = viz.axes.y;
+    const zi = viz.axes.z;
+    const ci = viz.axes.color;
+    const si = viz.axes.size;
+
+    const positions = new Float32Array(numFrames * 3);
+    const colors = new Float32Array(numFrames * 3);
+    const sizes = new Float32Array(numFrames);
+
+    for (let i = 0; i < numFrames; i++) {
+      const v = values[i] ?? [];
+      const x = (v[xi] ?? 0.5) * 2 - 1;
+      const y = (v[yi] ?? 0.5) * 2 - 1;
+      const z = (v[zi] ?? 0.5) * 2 - 1;
+      positions[3 * i] = x * AXIS_HALF;
+      positions[3 * i + 1] = y * AXIS_HALF;
+      positions[3 * i + 2] = z * AXIS_HALF;
+
+      const tColor = viz.reverseColormap ? 1 - (v[ci] ?? 0.5) : v[ci] ?? 0.5;
+      const [r, g, b] = sampleColormap(viz.colormap, tColor);
+      colors[3 * i] = r;
+      colors[3 * i + 1] = g;
+      colors[3 * i + 2] = b;
+
+      const sNorm = v[si] ?? 0.5;
+      sizes[i] = viz.sphereMin + (viz.sphereMax - viz.sphereMin) * sNorm;
+    }
+    return { positions, colors, sizes };
+  }, [
+    values,
+    numFrames,
+    viz.axes.x,
+    viz.axes.y,
+    viz.axes.z,
+    viz.axes.color,
+    viz.axes.size,
+    viz.colormap,
+    viz.reverseColormap,
+    viz.sphereMin,
+    viz.sphereMax
+  ]);
 
   // Allocate per-instance RGBA attribute and per-vertex RGBA line buffer
   // each time the frame count changes. Both are written every useFrame
@@ -443,12 +460,12 @@ function Trail6D({
     }
 
     // Animated mode: only the active visibility window is drawn.
-    const { cursor, start, trailFrames } = computeWindow(
-      currentTime,
-      hopSeconds,
-      viz.trailSeconds,
-      numFrames
+    const trailFrames = Math.max(
+      MIN_TRAIL_FRAMES,
+      Math.round(viz.trailSeconds / hopSeconds)
     );
+    const cursor = Math.min(numFrames - 1, Math.floor(currentTime / hopSeconds));
+    const start = Math.max(0, cursor - trailFrames + 1);
 
     for (let i = 0; i < numFrames; i++) {
       if (i < start || i > cursor) {

@@ -2,7 +2,7 @@ import { useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 
-import { buildFrameMap, computeWindow } from "../lib/frameMap";
+import { sampleColormap } from "../lib/colormaps";
 import { useStore } from "../store/useStore";
 
 /**
@@ -25,6 +25,9 @@ import { useStore } from "../store/useStore";
  *    seeded with a fixed RNG so a given frame's burst is the same
  *    every time the user scrubs back to it.
  */
+
+const AXIS_HALF = 1.5;
+const MIN_TRAIL_FRAMES = 8;
 
 export function BurstsTrail({
   values,
@@ -81,35 +84,42 @@ export function BurstsTrail({
     return { dirs, lengthJitter };
   }, [totalSegments]);
 
-  const frames = useMemo(
-    () =>
-      buildFrameMap({
-        values,
-        numFrames,
-        axisX: viz.axes.x,
-        axisY: viz.axes.y,
-        axisZ: viz.axes.z,
-        axisColor: viz.axes.color,
-        axisSize: viz.axes.size,
-        colormap: viz.colormap,
-        reverseColormap: viz.reverseColormap,
-        sphereMin: viz.sphereMin,
-        sphereMax: viz.sphereMax
-      }),
-    [
-      values,
-      numFrames,
-      viz.axes.x,
-      viz.axes.y,
-      viz.axes.z,
-      viz.axes.color,
-      viz.axes.size,
-      viz.colormap,
-      viz.reverseColormap,
-      viz.sphereMin,
-      viz.sphereMax
-    ]
-  );
+  // Per-frame static map of (parent_pos, parent_color, parent_size).
+  const frames = useMemo(() => {
+    const xi = viz.axes.x;
+    const yi = viz.axes.y;
+    const zi = viz.axes.z;
+    const ci = viz.axes.color;
+    const si = viz.axes.size;
+    const positions = new Float32Array(numFrames * 3);
+    const colors = new Float32Array(numFrames * 3);
+    const sizes = new Float32Array(numFrames);
+    for (let i = 0; i < numFrames; i++) {
+      const v = values[i] ?? [];
+      positions[3 * i] = ((v[xi] ?? 0.5) * 2 - 1) * AXIS_HALF;
+      positions[3 * i + 1] = ((v[yi] ?? 0.5) * 2 - 1) * AXIS_HALF;
+      positions[3 * i + 2] = ((v[zi] ?? 0.5) * 2 - 1) * AXIS_HALF;
+      const tColor = viz.reverseColormap ? 1 - (v[ci] ?? 0.5) : v[ci] ?? 0.5;
+      const [r, g, b] = sampleColormap(viz.colormap, tColor);
+      colors[3 * i] = r;
+      colors[3 * i + 1] = g;
+      colors[3 * i + 2] = b;
+      sizes[i] = viz.sphereMin + (viz.sphereMax - viz.sphereMin) * (v[si] ?? 0.5);
+    }
+    return { positions, colors, sizes };
+  }, [
+    values,
+    numFrames,
+    viz.axes.x,
+    viz.axes.y,
+    viz.axes.z,
+    viz.axes.color,
+    viz.axes.size,
+    viz.colormap,
+    viz.reverseColormap,
+    viz.sphereMin,
+    viz.sphereMax
+  ]);
 
   // Allocate position + color buffers once per (numFrames, rayCount).
   useEffect(() => {
@@ -133,12 +143,12 @@ export function BurstsTrail({
     const colorAttr = geo.getAttribute("color") as THREE.BufferAttribute;
     if (!positionAttr || !colorAttr) return;
 
-    const { cursor, start, trailFrames } = computeWindow(
-      currentTime,
-      hopSeconds,
-      viz.trailSeconds,
-      numFrames
+    const trailFrames = Math.max(
+      MIN_TRAIL_FRAMES,
+      Math.round(viz.trailSeconds / hopSeconds)
     );
+    const cursor = Math.min(numFrames - 1, Math.floor(currentTime / hopSeconds));
+    const start = Math.max(0, cursor - trailFrames + 1);
 
     const posArr = positionAttr.array as Float32Array;
     const colArr = colorAttr.array as Float32Array;
