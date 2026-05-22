@@ -1068,6 +1068,115 @@ CURATION: list[CurationEntry] = [
         wm_title="Alarmclock-mechanical.ogg",
         tags=("alarm", "clock", "ring"),
     ),
+
+    # ===================================================================== #
+    # UNDERWATER (NOAA Fisheries education catalogue, added 2026-05-22 #44)
+    #
+    # All URLs verified live on 2026-05-22 via curl -sL returning HTTP 200 +
+    # audio/mpeg (or audio/x-wav for the harbor seal). NOAA Fisheries content
+    # is U.S. public-domain under 17 U.S.C. §105.
+    #
+    # Tier A = recorded by NOAA personnel; Tier B = contributed by external
+    # researchers but published by NOAA Fisheries with attribution guidance.
+    # Both are clean to redistribute. Each clip's `attribution` field carries
+    # the recommended citation.
+    # ===================================================================== #
+    CurationEntry(
+        id="underwater-humpback-whale-song",
+        category="underwater",
+        subcategory="marine-mammals",
+        title_en="Humpback whale — song",
+        title_es="Canto de ballena jorobada",
+        source="NOAA Fisheries",
+        license="Public Domain",
+        attribution="NOAA Fisheries PAGroup, Sounds in the Ocean catalogue",
+        url="https://www.fisheries.noaa.gov/s3/2023-04/Meno-song-NOAA-PAGroup-13-humpback-clip.mp3",
+        tags=("noaa", "cetacean", "hydrophone", "song"),
+    ),
+    CurationEntry(
+        id="underwater-sperm-whale-clicks",
+        category="underwater",
+        subcategory="marine-mammals",
+        title_en="Sperm whale — echolocation clicks",
+        title_es="Cachalote — clics de ecolocalización",
+        source="NOAA Fisheries",
+        license="Public Domain",
+        attribution="NOAA Fisheries PAGroup, Sounds in the Ocean catalogue",
+        url="https://www.fisheries.noaa.gov/s3/2023-04/Phma-clicks-NOAA-PAGroup-01-sperm-clip.mp3",
+        tags=("noaa", "cetacean", "hydrophone", "echolocation"),
+    ),
+    CurationEntry(
+        id="underwater-beluga-multisound",
+        category="underwater",
+        subcategory="marine-mammals",
+        title_en="Beluga whale — whistles and clicks",
+        title_es="Beluga — silbidos y clics",
+        source="NOAA Fisheries",
+        license="Public Domain",
+        attribution="NOAA Fisheries / Castellote, Sounds in the Ocean catalogue",
+        url="https://www.fisheries.noaa.gov/s3/2023-04/Dele-multisound-NOAA-Castellote-01-beluga-clip.mp3",
+        tags=("noaa", "cetacean", "hydrophone", "whistle"),
+    ),
+    CurationEntry(
+        id="underwater-cuviers-beaked-whale-clicks",
+        category="underwater",
+        subcategory="marine-mammals",
+        title_en="Cuvier's beaked whale — echolocation clicks (0.3x slowed)",
+        title_es="Zifio de Cuvier — clics de ecolocalización (ralentizado 0.3x)",
+        source="NOAA Fisheries",
+        license="Public Domain",
+        attribution="NOAA Fisheries PAGroup, Sounds in the Ocean catalogue",
+        url="https://www.fisheries.noaa.gov/s3/2023-04/Zica-clicks-NOAA-PAGroup-01-0.3x-HPF12kHz-cuviers-clip.mp3",
+        tags=("noaa", "cetacean", "hydrophone", "echolocation"),
+    ),
+    CurationEntry(
+        id="underwater-snapping-shrimp",
+        category="underwater",
+        subcategory="invertebrates",
+        title_en="Snapping shrimp — chorus snaps",
+        title_es="Camarón pistola — coro de chasquidos",
+        source="NOAA Fisheries",
+        license="Public Domain",
+        attribution="NOAA Fisheries PAGroup, Sounds in the Ocean catalogue",
+        url="https://www.fisheries.noaa.gov/s3/2023-04/Alsp-snaps-NOAA-PAGroup-02-amplified-snapping-shrimp-clip.mp3",
+        tags=("noaa", "invertebrate", "hydrophone", "transient"),
+    ),
+    CurationEntry(
+        id="underwater-killer-whale",
+        category="underwater",
+        subcategory="marine-mammals",
+        title_en="Killer whale (orca) — calls and clicks",
+        title_es="Orca — llamadas y clics",
+        source="NOAA Fisheries",
+        license="Public Domain",
+        attribution="AWI Van-Opzeeland, published by NOAA Fisheries",
+        url="https://www.fisheries.noaa.gov/s3/2023-04/Oror-Multisound-AWI-Van-Opzeeland-01-killer-clip.mp3",
+        tags=("noaa", "cetacean", "hydrophone", "orca"),
+    ),
+    CurationEntry(
+        id="underwater-bearded-seal",
+        category="underwater",
+        subcategory="pinnipeds",
+        title_en="Bearded seal — descending trill",
+        title_es="Foca barbuda — trino descendente",
+        source="NOAA Fisheries",
+        license="Public Domain",
+        attribution="Cornell Ornithology Lab, published by NOAA Fisheries",
+        url="https://www.fisheries.noaa.gov/s3/2023-04/Erba-Multisound-Cornell-OrnithologyLab-01-bearded-seal-clip.mp3",
+        tags=("noaa", "pinniped", "arctic", "hydrophone"),
+    ),
+    CurationEntry(
+        id="underwater-ice-calving",
+        category="underwater",
+        subcategory="ice",
+        title_en="Antarctic ice calving",
+        title_es="Desprendimiento de hielo antártico",
+        source="NOAA Fisheries",
+        license="Public Domain",
+        attribution="AWI Van-Opzeeland, published by NOAA Fisheries",
+        url="https://www.fisheries.noaa.gov/s3/2023-04/Ice-Calving-AWI-Van-Opzeeland-03-ice-calving-clip.mp3",
+        tags=("noaa", "ice", "antarctic", "hydrophone"),
+    ),
 ]
 
 
