@@ -71,8 +71,6 @@
     "mode_tube_help": "A thick camera-aligned ribbon flowing along the trail; thickness = size axis.",
     "mode_galaxy_help": "Permanent twinkling star-clusters at every frame — the whole 6D path stays visible.",
     "mode_flowfield_help": "A swarm of glowing particles advecting along the trail's tangent vectors.",
-    "mode_lightpainting": "Light painting",
-    "mode_lightpainting_help": "Long-exposure look — the whole path stays visible with a glowing 'write head' at the cursor.",
     "smoke_density": "Smoke density",
     "smoke_spread": "Smoke spread",
     "smoke_drift": "Smoke drift",

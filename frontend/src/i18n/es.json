@@ -71,8 +71,6 @@
     "mode_tube_help": "Una cinta gruesa que fluye a lo largo del trail; el grosor sigue al eje de tamaño.",
     "mode_galaxy_help": "Cúmulos de estrellas titilando permanentemente en cada cuadro — toda la ruta 6D queda visible.",
     "mode_flowfield_help": "Un enjambre de partículas brillantes que fluyen siguiendo los vectores tangentes del trail.",
-    "mode_lightpainting": "Pintura de luz",
-    "mode_lightpainting_help": "Larga exposición fotográfica — toda la ruta queda visible con un brillo móvil en el cursor.",
     "smoke_density": "Densidad de humo",
     "smoke_spread": "Dispersión de humo",
     "smoke_drift": "Deriva de humo",
