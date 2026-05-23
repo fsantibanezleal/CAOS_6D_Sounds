@@ -221,7 +221,7 @@ export function BurstsTrail({
   });
 
   return (
-    <lineSegments ref={linesRef as any}>
+    <lineSegments ref={linesRef as any} frustumCulled={false}>
       <bufferGeometry ref={geomRef as any} />
       <lineBasicMaterial
         vertexColors
