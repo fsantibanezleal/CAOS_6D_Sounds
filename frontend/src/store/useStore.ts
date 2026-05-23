@@ -61,6 +61,12 @@ export interface VizConfig {
   flowfieldLifetime: number;  // 0.5..6 seconds before respawn
   /** Recording: include the playing audio track in the captured webm. */
   recordWithAudio: boolean;
+  /** Bloom post-processing intensity. 0 disables the pass entirely;
+   * roughly 0.6 is the sweet spot for Smoke / Aurora / Comet / Galaxy.
+   * Spheres + Tube don't benefit from bloom (no emissive), so they
+   * stay sharp even at the default. */
+  bloomIntensity: number;     // 0..2
+  bloomLuminanceThreshold: number; // 0..1 — only pixels brighter than this bleed
 }
 
 interface StoreState {
@@ -157,7 +163,9 @@ const DEFAULT_VIZ: VizConfig = {
   flowfieldParticles: 240,
   flowfieldSpeed: 0.35,
   flowfieldLifetime: 2.5,
-  recordWithAudio: true
+  recordWithAudio: true,
+  bloomIntensity: 0.6,
+  bloomLuminanceThreshold: 0.7
 };
 
 /** Stable id of the clip that loads automatically when the library
@@ -247,8 +255,9 @@ export const useStore = create<StoreState>()(
       //   v3 — added Tube + Galaxy fields (release 0.6.0)
       //   v4 — added Flowfield fields (release 0.7.0)
       //   v5 — added recordWithAudio (release 0.7.2)
-      //   v7 — added comparisonClipId (release 0.7.7); skipped v6 (bloom) when reverted
-      version: 7,
+      //   v7 — added comparisonClipId (release 0.7.7); v6 reserved for bloom (re-introduced post fix-frustum-culling)
+      //   v8 — re-introduced bloomIntensity + bloomLuminanceThreshold (post black-screen fix)
+      version: 8,
       partialize: (state) => ({
         theme: state.theme,
         viz: state.viz,

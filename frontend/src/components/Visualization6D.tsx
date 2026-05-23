@@ -1,5 +1,6 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, Grid } from "@react-three/drei";
+import { Bloom, EffectComposer } from "@react-three/postprocessing";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 
@@ -200,6 +201,7 @@ function SceneContents() {
         target={[0, 0, 0]}
       />
       <CameraReset />
+      <BloomPass />
     </>
   );
 }
@@ -567,4 +569,27 @@ export function CameraReset() {
     return () => window.removeEventListener("auralis:reset-camera", onReset);
   }, [camera]);
   return null;
+}
+
+/** Single bloom pass on the additive-blend render modes (Smoke, Aurora,
+ *  Comet, Galaxy, Flowfield, Bursts). When `viz.bloomIntensity === 0`
+ *  the composer is skipped entirely so non-emissive modes (Spheres,
+ *  Tube, Constellation) stay perfectly sharp.
+ *
+ *  multisampling={4} is the cheapest MSAA setting that still kills the
+ *  jagged silhouettes on the additive billboards. Bumping to 8 doubles
+ *  the per-frame cost without a perceptible improvement on a 2 K viewport. */
+function BloomPass() {
+  const intensity = useStore((s) => s.viz.bloomIntensity);
+  const luminanceThreshold = useStore((s) => s.viz.bloomLuminanceThreshold);
+  if (intensity <= 0) return null;
+  return (
+    <EffectComposer multisampling={4}>
+      <Bloom
+        intensity={intensity}
+        luminanceThreshold={luminanceThreshold}
+        mipmapBlur
+      />
+    </EffectComposer>
+  );
 }
