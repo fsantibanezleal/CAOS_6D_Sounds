@@ -105,6 +105,15 @@ export function ControlPanel() {
             {t("viz.mode_flowfield")}
           </button>
         </div>
+        <div className="mode-toggle three" style={{ marginTop: 4 }}>
+          <button
+            className={viz.renderMode === "lightpainting" ? "active" : ""}
+            onClick={() => setViz({ renderMode: "lightpainting" })}
+            title={t("viz.mode_lightpainting_help")}
+          >
+            {t("viz.mode_lightpainting")}
+          </button>
+        </div>
 
         {viz.renderMode === "smoke" && (
           <div style={{ marginTop: 8 }}>
