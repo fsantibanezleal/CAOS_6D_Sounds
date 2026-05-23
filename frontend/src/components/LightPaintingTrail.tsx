@@ -218,7 +218,11 @@ export function LightPaintingTrail({
 
   return (
     <group>
-      <line>
+      {/* frustumCulled={false} — same fix as ConstellationTrail / Trail6D.
+          Stops three.js from trying to compute the bounding sphere
+          before useEffect has populated `position` (would crash the
+          tree when EffectComposer/Bloom is active). */}
+      <line {...({ frustumCulled: false } as Record<string, unknown>)}>
         <bufferGeometry ref={lineGeomRef} />
         <lineBasicMaterial
           vertexColors
