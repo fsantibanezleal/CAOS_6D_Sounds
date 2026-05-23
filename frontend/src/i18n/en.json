@@ -104,6 +104,8 @@
     "show_trail_line": "Connect points with a line",
     "show_axes": "Show axes",
     "show_grid": "Show grid",
+    "bloom_intensity": "Bloom",
+    "bloom_help": "Glow on emissive render modes (Smoke, Aurora, Comet, Galaxy, Flowfield, Bursts). Set to 0 to disable.",
     "reset_camera": "Reset camera",
     "snapshot": "Snapshot",
     "record_start": "Record video",
