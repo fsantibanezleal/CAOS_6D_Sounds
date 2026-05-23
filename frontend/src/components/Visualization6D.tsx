@@ -12,6 +12,7 @@ import { CometTrail } from "./CometTrail";
 import { ConstellationTrail } from "./ConstellationTrail";
 import { FlowfieldTrail } from "./FlowfieldTrail";
 import { GalaxyTrail } from "./GalaxyTrail";
+import { LightPaintingTrail } from "./LightPaintingTrail";
 import { SmokeTrail } from "./SmokeTrail";
 import { TubeTrail } from "./TubeTrail";
 
@@ -176,6 +177,15 @@ function SceneContents() {
       {embedding && trackValues && viz.renderMode === "flowfield" && (
         <FlowfieldTrail
           key={"flowfield-" + embedding.id + "-" + viz.flowfieldParticles}
+          values={trackValues.values}
+          numFrames={embedding.num_frames}
+          hopSeconds={embedding.hop_seconds}
+        />
+      )}
+
+      {embedding && trackValues && viz.renderMode === "lightpainting" && (
+        <LightPaintingTrail
+          key={"lightpainting-" + embedding.id}
           values={trackValues.values}
           numFrames={embedding.num_frames}
           hopSeconds={embedding.hop_seconds}
