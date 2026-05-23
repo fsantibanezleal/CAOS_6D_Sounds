@@ -1,7 +1,7 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, Grid } from "@react-three/drei";
 import { Bloom, EffectComposer } from "@react-three/postprocessing";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 
 import { sampleColormap } from "../lib/colormaps";
@@ -577,12 +577,28 @@ export function CameraReset() {
  *  Tube, Constellation) stay perfectly sharp.
  *
  *  multisampling={4} is the cheapest MSAA setting that still kills the
- *  jagged silhouettes on the additive billboards. Bumping to 8 doubles
- *  the per-frame cost without a perceptible improvement on a 2 K viewport. */
+ *  jagged silhouettes on the additive billboards.
+ *
+ *  Mount-delay trick: EffectComposer's first render triggers
+ *  `BufferGeometry.computeBoundingSphere()` on every scene object. The
+ *  Trail components populate their geometry attributes inside `useEffect`,
+ *  which runs *after* the initial render. If Bloom mounts in the same
+ *  pass, the composer hits an empty `position` attribute and crashes the
+ *  whole React tree (no error boundary above the canvas). Waiting one
+ *  rAF tick before mounting Bloom guarantees every Trail's useEffect
+ *  has already attached its buffers. Combined with the
+ *  frustumCulled={false} fix on every custom-bufferGeometry mesh, this
+ *  closes the regression that black-screened the app between PRs #57 and
+ *  the emergency reverts. */
 function BloomPass() {
   const intensity = useStore((s) => s.viz.bloomIntensity);
   const luminanceThreshold = useStore((s) => s.viz.bloomLuminanceThreshold);
-  if (intensity <= 0) return null;
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setReady(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+  if (!ready || intensity <= 0) return null;
   return (
     <EffectComposer multisampling={4}>
       <Bloom
