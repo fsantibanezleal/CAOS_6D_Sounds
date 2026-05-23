@@ -534,7 +534,9 @@ function Trail6D({
       </instancedMesh>
 
       {viz.showTrailLine && (
-        <line>
+        // frustumCulled={false} — same fix as ConstellationTrail; prevents
+        // three.js from reading position.array before useEffect populates it.
+        <line {...({ frustumCulled: false } as Record<string, unknown>)}>
           <bufferGeometry ref={lineGeomRef as any} />
           {/* 4-component vertex colors + vertexAlphas = real per-vertex alpha.
               `vertexAlphas` is not declared on R3F's typed LineBasicMaterial
