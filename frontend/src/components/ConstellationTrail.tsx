@@ -231,7 +231,12 @@ export function ConstellationTrail({
       >
         <planeGeometry args={[2, 2]} />
       </instancedMesh>
-      <line>
+      {/* frustumCulled={false} stops three.js from computing bounding
+          sphere before our useEffect populates `position` — that was the
+          black-screen bug when Bloom was active (see #88-#94). The
+          spread cast works around R3F's `<line>` JSX intrinsic
+          colliding with SVGLineElement in the type system. */}
+      <line {...({ frustumCulled: false } as Record<string, unknown>)}>
         <bufferGeometry ref={lineGeomRef as any} />
         <lineBasicMaterial
           vertexColors

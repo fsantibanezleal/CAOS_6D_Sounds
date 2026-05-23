@@ -210,7 +210,7 @@ export function TubeTrail({
   });
 
   return (
-    <mesh ref={meshRef as any}>
+    <mesh ref={meshRef as any} frustumCulled={false}>
       <bufferGeometry ref={geomRef as any} />
       {/* Double-sided so the ribbon is visible from any camera angle. */}
       <meshBasicMaterial
