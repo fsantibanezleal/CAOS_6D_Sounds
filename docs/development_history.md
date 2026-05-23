@@ -3,6 +3,73 @@
 Newest-first log of the design decisions that shaped Auralis. Each entry
 records what changed, why, and the alternative we considered.
 
+## v0.10.0 — Black-screen incident + fix + features restored (2026-05-23)
+
+A multi-hour incident: every page load black-screened with a TypeError
+deep inside three.js. Four PRs got reverted in a panic before the real
+root cause was found.
+
+### Diagnosis
+
+The error stack was `Cannot read properties of undefined (reading
+'length')` inside the minified three.js chunk, fired during React
+reconcile. No source map was active in production, so the line pointed
+into bundle internals rather than our code.
+
+Three reverts in a row (`#88` demo tour, `#90` light-painting, `#92`
+0.7.9 refactors) did not stop the crash. Reverting Bloom (`#94`) did
+— which surfaced Bloom as the trigger, but did not explain *why* a
+year-stable component would suddenly crash.
+
+Bisecting deeper, we re-applied just Bloom (`#98`) and confirmed the
+crash returned. Adding `frustumCulled={false}` to every lazy-init
+geometry (`#96`) didn't help. Adding a one-rAF mount delay (`#100`)
+didn't help either.
+
+The real cause turned out to be a **peerDep mismatch**:
+
+- `@react-three/postprocessing@3.0.4` declares peerDeps
+  `@react-three/fiber: ^9.0.0` and `react: ^19.0`.
+- The project runs `@react-three/fiber@8.18.0` + `react@18.3.1`.
+- pnpm accepted the install because peerDep mismatches are *warnings*,
+  not errors. The 3.x EffectComposer uses APIs not present in R3F v8's
+  internal Canvas, hence the runtime TypeError on mount.
+
+### Fix (`#102`)
+
+Downgrade to `@react-three/postprocessing@2.19.0`, which is the latest
+v2 release and declares the correct peerDeps for this stack. The two
+extra defenses (`frustumCulled={false}` everywhere it was missing, plus
+the rAF mount-delay on BloomPass) were kept — they harden against any
+future race between Bloom's first render and lazy-init buffers.
+
+### Restoration order
+
+After the fix verified green in production, the reverted features were
+re-applied one PR at a time, each followed by a Playwright smoke test:
+
+- `#102` postprocessing@2.19.0 (real fix)
+- `#104` URL state — shareable links via `location.hash`
+- `#106` Light-painting render mode + its frustum fix
+- `#108` Auto demo tour + stop 5 fix
+
+Net effect: feature set is back to what it was at the would-be 0.9.2
+(pre-incident), with three preventive code changes layered on top. The
+two `0.7.9` refactors that didn't conflict cleanly with the frustum
+fix (dedup-frame-mapping and drop-as-any-casts) were skipped — they
+remain available to re-apply in isolation if anyone wants the code
+tidiness without the race risk.
+
+### Lessons captured
+
+- Add a runtime version check at startup that warns when peerDep
+  mismatches are present (open issue for follow-up).
+- Add `@react-three/postprocessing` to a `dependencies` lock list with
+  a strict major-version pin, not `^`, so pnpm cannot silently upgrade.
+- For future incidents: bisect by *reverting commits one by one and
+  redeploying*, not by grouping several reverts into one PR — saves
+  hours of false confidence.
+
 ## v0.9.0 — CLAP track + NOAA underwater category (2026-05-22)
 
 Two audit issues closed in one release.
