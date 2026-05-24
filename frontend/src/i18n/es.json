@@ -118,7 +118,14 @@
     "record_with_audio_help": "Mezcla la pista de audio que está sonando con el video. Desactívalo para exportar solo el video.",
     "demo_tour_start": "Tour automático",
     "demo_tour_stop": "Detener tour ({{i}}/{{n}})",
-    "demo_tour_help": "Recorre automáticamente 8 combinaciones curadas de clip + modo + pista. Combínalo con Grabar video para capturar un demo de una sola pasada."
+    "demo_tour_help": "Recorre automáticamente 8 combinaciones curadas de clip + modo + pista. Combínalo con Grabar video para capturar un demo de una sola pasada.",
+    "playback_section": "Reproducción",
+    "playback_rate": "Velocidad",
+    "playback_rate_value": "{{n}}×",
+    "playback_rate_help": "Reduce la velocidad del clip (<1) o acelera (>1) sin alterar la visualización, que sigue el embedding canónico. La trayectoria que ves es fija; sólo cambia el tiempo del audio.",
+    "preserves_pitch": "Preservar tono",
+    "preserves_pitch_help": "Activado: el navegador hace phase-vocoding para mantener el tono al bajar la velocidad. Desactivado: estilo cinta — lento = grave, rápido = agudo.",
+    "playback_reset": "Restablecer velocidad"
   },
   "panels": {
     "spectrogram": "Espectrograma",

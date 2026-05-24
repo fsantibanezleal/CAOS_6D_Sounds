@@ -18,6 +18,10 @@ export function ControlPanel() {
   const setAxis = useStore((s) => s.setAxis);
   const embedding = useStore((s) => s.embedding);
   const library = useStore((s) => s.library);
+  const playbackRate = useStore((s) => s.playbackRate);
+  const setPlaybackRate = useStore((s) => s.setPlaybackRate);
+  const preservesPitch = useStore((s) => s.preservesPitch);
+  const setPreservesPitch = useStore((s) => s.setPreservesPitch);
 
   const tracks = embedding?.tracks ?? [];
   const activeTrack = tracks.find((tr) => tr.name === viz.trackName) ?? tracks[0];
@@ -637,6 +641,43 @@ export function ControlPanel() {
             onChange={(e) => setViz({ bloomIntensity: parseFloat(e.target.value) })}
             style={{ width: "100%" }}
           />
+        </label>
+
+        <label
+          style={{ marginTop: 10, fontSize: "0.85em" }}
+          title={t("viz.playback_rate_help")}
+        >
+          {t("viz.playback_rate")}:{" "}
+          {t("viz.playback_rate_value", { n: playbackRate.toFixed(2) })}
+          <input
+            type="range"
+            min={0.25}
+            max={4}
+            step={0.05}
+            value={playbackRate}
+            onChange={(e) => setPlaybackRate(parseFloat(e.target.value))}
+            onDoubleClick={() => setPlaybackRate(1.0)}
+            style={{ width: "100%" }}
+          />
+        </label>
+
+        <label
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            marginTop: 4,
+            textTransform: "none",
+            letterSpacing: 0
+          }}
+          title={t("viz.preserves_pitch_help")}
+        >
+          <input
+            type="checkbox"
+            checked={preservesPitch}
+            onChange={(e) => setPreservesPitch(e.target.checked)}
+          />
+          {t("viz.preserves_pitch")}
         </label>
 
         <button
