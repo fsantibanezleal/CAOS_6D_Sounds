@@ -634,8 +634,9 @@ CURATION: list[CurationEntry] = [
         tags=("bee", "hive", "ambient"),
     ),
     # NOTE: `insect-tree-cricket` removed — Wikimedia ships it as
-    # Ogg/Theora video, libsndfile cannot read it. See
-    # `wip/auralis/known-issues.md` in CAOS_MANAGE.
+    # Ogg/Theora video, libsndfile cannot read it. ffmpeg could in
+    # principle transcode video → audio-only OGG/Vorbis, but for now
+    # we just skip until we find a pure-audio source.
 
     # ===================================================================== #
     # NATURE

@@ -1,18 +1,26 @@
 #!/usr/bin/env bash
-# First-time setup on Hetzner VPS (run as root).
-# Assumes A record auralis.fasl-work.com -> 91.99.199.70 already exists
-# (covered by the existing *.fasl-work.com wildcard / parent zone).
+# First-time setup on a fresh VPS (run as root).
+#
+# Assumes the A record <DOMAIN> -> <this host>'s public IP already
+# resolves. Override any of the variables below via the shell:
+#
+#   APP_NAME=auralis APP_DIR=/opt/auralis DOMAIN=audio.example.com \
+#     bash deploy/setup.sh
+#
+# The defaults reproduce the original maintainer's instance; fork-
+# friendly overrides keep the operator-specific binding outside this
+# public repo.
 
 set -euo pipefail
 
-APP_NAME="auralis"
-REPO="fsantibanezleal/CAOS_6D_Sounds"
-APP_DIR="/opt/fasl-apps/CAOS_6D_Sounds"
-DOMAIN="auralis.fasl-work.com"
-PORT=8104
+APP_NAME="${APP_NAME:-auralis}"
+REPO="${REPO:-fsantibanezleal/CAOS_6D_Sounds}"
+APP_DIR="${APP_DIR:-/opt/fasl-apps/CAOS_6D_Sounds}"
+DOMAIN="${DOMAIN:-auralis.fasl-work.com}"
+PORT="${PORT:-8104}"
 
 echo "[1/8] Clone or update repo..."
-mkdir -p /opt/fasl-apps
+mkdir -p "$(dirname "$APP_DIR")"
 if [ ! -d "$APP_DIR" ]; then
   git clone "https://github.com/${REPO}.git" "$APP_DIR"
 else
