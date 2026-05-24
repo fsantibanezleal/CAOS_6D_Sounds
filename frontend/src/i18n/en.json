@@ -7,7 +7,15 @@
     "library_title": "Library failed to load",
     "audio_title": "Audio error",
     "retry": "Retry",
-    "dismiss": "Dismiss"
+    "dismiss": "Dismiss",
+    "library_load_unknown": "Could not load the library.",
+    "embedding_load_failed": "Embedding load failed: {{msg}}",
+    "embedding_load_unknown": "Could not load the clip's embedding.",
+    "audio_network": "network error",
+    "audio_decode": "audio decode error",
+    "audio_unsupported": "unsupported audio format",
+    "unknown": "unknown error",
+    "playback_failed": "Playback failed ({{reason}})."
   },
   "header": {
     "language": "Language",

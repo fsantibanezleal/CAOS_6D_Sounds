@@ -45,8 +45,8 @@ export function AudioPlayer() {
           console.error("Failed to load embedding", err);
           setAudioError(
             err instanceof Error
-              ? `Embedding load failed: ${err.message}`
-              : "Could not load the clip's embedding."
+              ? t("error.embedding_load_failed", { msg: err.message })
+              : t("error.embedding_load_unknown")
           );
         }
       });
@@ -121,7 +121,7 @@ export function AudioPlayer() {
         disabled={!selectedClip}
         aria-label={isPlaying ? t("library.pause") : t("library.play")}
       >
-        {isPlaying ? "Pause" : "Play"}
+        {isPlaying ? t("library.pause") : t("library.play")}
       </button>
       <progress value={currentTime} max={dur || 1} />
       <span className="time">
@@ -158,14 +158,14 @@ export function AudioPlayer() {
           // MediaError codes: 1=ABORTED, 2=NETWORK, 3=DECODE, 4=SRC_NOT_SUPPORTED
           const reason =
             code === 2
-              ? "network error"
+              ? t("error.audio_network")
               : code === 3
-                ? "audio decode error"
+                ? t("error.audio_decode")
                 : code === 4
-                  ? "unsupported audio format"
-                  : err?.message || "unknown error";
+                  ? t("error.audio_unsupported")
+                  : err?.message || t("error.unknown");
           console.error("[Auralis] audio element error:", err);
-          setAudioError(`Playback failed (${reason}).`);
+          setAudioError(t("error.playback_failed", { reason }));
           setIsPlaying(false);
         }}
         crossOrigin="anonymous"

@@ -59,7 +59,7 @@ export function Header() {
           aria-label={t("header.theme")}
           title={theme === "dark" ? t("header.theme_light") : t("header.theme_dark")}
         >
-          {theme === "dark" ? "Light" : "Dark"}
+          {theme === "dark" ? t("header.theme_light") : t("header.theme_dark")}
         </button>
 
         <button className="icon" onClick={() => setHelpOpen(true)}>

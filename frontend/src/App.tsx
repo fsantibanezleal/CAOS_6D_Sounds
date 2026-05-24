@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 
 import { AudioPlayer } from "./components/AudioPlayer";
 import { ControlPanel } from "./components/ControlPanel";
@@ -14,6 +15,7 @@ import { decodeState, encodeState } from "./lib/urlState";
 import { DEFAULT_CLIP_ID, useStore } from "./store/useStore";
 
 export default function App() {
+  const { t } = useTranslation();
   const setLibrary = useStore((s) => s.setLibrary);
   const library = useStore((s) => s.library);
   const setSelectedClip = useStore((s) => s.setSelectedClip);
@@ -100,10 +102,10 @@ export default function App() {
       .catch((err) => {
         console.error("Failed to load library", err);
         const msg =
-          err instanceof Error ? err.message : "Could not load the library.";
+          err instanceof Error ? err.message : t("error.library_load_unknown");
         setLibraryError(msg);
       });
-  }, [setLibrary, setLibraryError]);
+  }, [setLibrary, setLibraryError, t]);
 
   // Auto-select the default clip on first load (when nothing is yet
   // chosen). This gives first-time visitors something immediate to

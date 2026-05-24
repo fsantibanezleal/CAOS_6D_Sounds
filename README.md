@@ -37,7 +37,7 @@ embedding space.
   drives X / Y / Z position, which drives color (4D), which drives
   sphere size (5D). Time is the implicit 6th axis (past frames fade
   out into a trail).
-* **Nine render modes**, switchable from the control panel:
+* **Ten render modes**, switchable from the control panel:
   * **Spheres** — discrete coloured spheres connected by a polyline.
   * **Smoke** — diffuse coloured clouds with additive blending and outward drift.
   * **Bursts** — each frame is a tiny explosion of coloured rays radiating from its centre.
@@ -47,26 +47,39 @@ embedding space.
   * **Tube** — a thick camera-aligned ribbon flowing along the trail.
   * **Galaxy** — permanent twinkling star-clusters at every frame; the whole 6D path stays visible.
   * **Flowfield** — a swarm of glowing particles advecting along the trail's tangent vectors.
+  * **Light-painting** — a single bright streak that accumulates every visited frame, like a slow-shutter photograph.
 * **Export** any frame as a PNG snapshot, or **record** the canvas as a webm video.
-* **Five 6D embedding tracks**, all min-max normalized to `[0, 1]`:
+* **Six 6D embedding tracks**, all min-max normalized to `[0, 1]`:
   * **Features** — six interpretable spectral scalars.
   * **PCA / t-SNE / UMAP** — corpus-wide projections of MFCC frames.
   * **Tonnetz** — natural 6D harmonic space (Harte et al. 2006), with
     axes encoding fifths, minor thirds and major thirds.
   * **YAMNet** — 1024-D deep AudioSet embeddings (Hershey et al.
     2017) projected to 6D via PCA.
+  * **CLAP** — 512-D contrastive language-audio embeddings (Wu et al.
+    2023) projected to 6D via PCA. Optional in the offline pipeline
+    (heavy deps); not bundled with the production deploy.
+* **Interactive playback controls** (release 0.11.0):
+  * **Speed slider** 0.25× .. 4× — slow the audio without altering
+    the 6D trajectory you're watching.
+  * **Preserve-pitch toggle** — keep pitch constant when changing
+    speed (default), or get tape-style behaviour by turning it off.
 * **Live spectrogram + waveform side panels.** Wired up via the Web
   Audio API and colored with the active colormap.
 * **Seven perceptually-uniform colormaps.** viridis, magma, plasma,
   inferno, cividis, turbo, RdBu (diverging).
 * **Bilingual UI from day one.** Spanish (default) + English with a
-  visible switcher; preference persists across reloads.
+  visible switcher; preference persists across reloads. Every visible
+  string flows through `react-i18next`.
 * **Light + dark themes**, also persistent.
-* **~70 ready-to-play clips** out of the box, organised in a
+* **87 ready-to-play clips** out of the box, organised in a
   collapsible tree by category and subcategory (synthetic, birds,
   mammals, amphibians/reptiles, insects, nature, speeches, music,
-  space, mechanical). Each clip ships with verified license metadata
-  and per-clip credits.
+  space, mechanical, underwater). Each clip ships with verified
+  license metadata and per-clip credits.
+* **Shareable URLs.** Every panel state (clip + comparison + render
+  mode + axis mapping + track) round-trips through `location.hash`,
+  so paste a link in chat and the recipient sees the exact same view.
 * **Snapshot export** — one button to grab the current 6D viz as a PNG.
 
 ## Diagrams
@@ -163,7 +176,7 @@ recommendation). The pipeline accepts `.ogg`, `.oga`, `.opus`,
 | `GET /health` | Liveness probe |
 | `GET /api/library` | Catalog (categories, clips list, embedding methods) |
 | `GET /api/clip/{id}` | Single clip metadata |
-| `GET /api/clip/{id}/embedding` | Per-frame 6D vectors (4 tracks) |
+| `GET /api/clip/{id}/embedding` | Per-frame 6D vectors (one entry per available track) |
 | `GET /audio/{id}` | Audio asset (range-request friendly) |
 | `GET /api/docs` | OpenAPI Swagger UI |
 | `GET /` | Built React SPA (and SPA fallback) |
