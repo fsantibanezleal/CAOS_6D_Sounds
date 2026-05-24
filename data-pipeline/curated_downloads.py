@@ -967,6 +967,80 @@ CURATION: list[CurationEntry] = [
         tags=("nasa", "voyager", "golden-record", "human-voice"),
     ),
 
+    # Cassini RPWS — Saturn / Enceladus / Jupiter (added 2026-05-24, issue #43).
+    # All sourced from Wikimedia Commons; original recordings by the
+    # Cassini Radio and Plasma Wave Science instrument team. These are
+    # sonified plasma-wave data, not air pressure — they sit way outside
+    # the biological clusters in embedding space.
+    CurationEntry(
+        id="space-cassini-saturn-radio",
+        category="space",
+        subcategory="saturn",
+        title_en="Cassini — Saturn radio emissions (sonified)",
+        title_es="Cassini — emisiones de radio de Saturno (sonificadas)",
+        source="NASA",
+        license="Public Domain",
+        attribution="NASA/JPL/University of Iowa (Cassini RPWS)",
+        wm_title="Saturn sound.ogg",
+        tags=("nasa", "cassini", "saturn", "radio", "sonification"),
+    ),
+    CurationEntry(
+        id="space-cassini-saturn-radio-2",
+        category="space",
+        subcategory="saturn",
+        title_en="Cassini — Saturn radio emissions, segment 2",
+        title_es="Cassini — emisiones de radio de Saturno, segmento 2",
+        source="NASA",
+        license="Public Domain",
+        attribution="NASA/JPL/University of Iowa (Cassini RPWS)",
+        wm_title="Saturn sound2.ogg",
+        tags=("nasa", "cassini", "saturn", "radio", "sonification"),
+    ),
+    CurationEntry(
+        id="space-cassini-enceladus",
+        category="space",
+        subcategory="saturn",
+        title_en="Cassini — radio emission from Enceladus",
+        title_es="Cassini — emisión de radio desde Encélado",
+        source="NASA",
+        license="Public Domain",
+        attribution="NASA/JPL (Cassini magnetometer)",
+        wm_title="Encelade.ogg",
+        tags=("nasa", "cassini", "enceladus", "saturn", "sonification"),
+    ),
+    CurationEntry(
+        id="space-cassini-jupiter",
+        category="space",
+        subcategory="jupiter",
+        title_en="Cassini RPWS — Jupiter (2001-01-04 flyby)",
+        title_es="Cassini RPWS — Júpiter (sobrevuelo 04-01-2001)",
+        source="NASA",
+        license="Public Domain",
+        attribution="NASA/JPL/University of Iowa (Cassini RPWS)",
+        wm_title="Cassini RPWS Jupiter 010104.ogg",
+        tags=("nasa", "cassini", "jupiter", "radio", "sonification"),
+    ),
+
+    # NOTE: Perseverance auxiliary instruments (Ingenuity helicopter flight
+    # and MOXIE) were initially curated but skipped — Wikimedia ships both
+    # as OGG-wrapped FLAC (`Ogg data, FLAC audio`), which our pipeline's
+    # `libsndfile` + `audioread` backends cannot decode without ffmpeg
+    # transcoding. Re-add after we wire ffmpeg into the downloader.
+
+    # Apollo additional voice clip.
+    CurationEntry(
+        id="space-apollo-eagle-landed",
+        category="space",
+        subcategory="apollo",
+        title_en="Apollo 11 — \"The Eagle has landed\"",
+        title_es="Apolo 11 — \"El Águila ha aterrizado\"",
+        source="NASA",
+        license="Public Domain",
+        attribution="NASA, 1969 (U.S. Government work)",
+        wm_title="Apollo 11 Eagle Has Landed.mp3",
+        tags=("nasa", "apollo", "voice", "history"),
+    ),
+
     # ===================================================================== #
     # MECHANICAL
     # ===================================================================== #
