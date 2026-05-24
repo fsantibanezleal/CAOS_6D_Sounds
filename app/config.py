@@ -13,8 +13,10 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 class Settings(BaseSettings):
     """Runtime settings sourced from the environment.
 
-    Defaults are tuned for local development. Production values are injected
-    via ``/etc/fasl-auralis.env`` on the VPS (see ``deploy/`` templates).
+    Defaults are tuned for local development. Production values are
+    typically injected via a per-app env file (chmod 600) loaded by the
+    systemd unit — see ``deploy/`` for the template files and the wiki
+    Deployment page for the recommended layout.
     """
 
     app_env: str = "development"

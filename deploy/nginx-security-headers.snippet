@@ -7,8 +7,11 @@
 # (i.e. anywhere we override Cache-Control), so the security headers
 # always ship regardless of which location served the response.
 #
-# Keep this file in sync with the audit findings in
-# CAOS_MANAGE/wip/auralis/audit-2026-05-09-internal.md (F-01, F-02).
+# Originated from the 2026-05-09 internal security audit (F-01 / F-02
+# findings on missing default security headers). Keep CSP narrow:
+# 'self' for everything except `worker-src blob:` (needed by the
+# AudioWorklet pitch-shifter loader) and `media-src 'self' blob:`
+# (needed by the canvas recording feature).
 
 add_header X-Content-Type-Options nosniff always;
 add_header X-Frame-Options SAMEORIGIN always;

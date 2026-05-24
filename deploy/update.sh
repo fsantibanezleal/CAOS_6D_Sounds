@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
-# Re-pull the repo, rebuild frontend and restart the service.
-# Idempotent — safe to call from cron or by hand on the VPS.
+# Re-pull the repo, rebuild the frontend and restart the service.
+# Idempotent — safe to call from cron or by hand. Override any of the
+# defaults below via the shell:
+#
+#   APP_NAME=auralis APP_DIR=/opt/auralis DOMAIN=audio.example.com \
+#     bash deploy/update.sh
 
 set -euo pipefail
 
-APP_NAME="auralis"
-APP_DIR="/opt/fasl-apps/CAOS_6D_Sounds"
-DOMAIN="auralis.fasl-work.com"
+APP_NAME="${APP_NAME:-auralis}"
+APP_DIR="${APP_DIR:-/opt/fasl-apps/CAOS_6D_Sounds}"
+DOMAIN="${DOMAIN:-auralis.fasl-work.com}"
 
 cd "$APP_DIR"
 

@@ -19,6 +19,7 @@ normalized per dimension to ``[0, 1]``.
 from __future__ import annotations
 
 import warnings
+from pathlib import Path
 from typing import Iterable
 
 import numpy as np
@@ -64,6 +65,31 @@ def normalize01(matrix: np.ndarray) -> np.ndarray:
     return out
 
 
+def normalize01_with_range(
+    matrix: np.ndarray,
+) -> tuple[np.ndarray, list[tuple[float, float]]]:
+    """Same as ``normalize01`` but also returns the per-axis (lo, hi) pairs.
+
+    Used by the persistent-projection pipeline so a runtime query (e.g.
+    CLAP text-to-6D for issue #48 phase 2) can apply the same range to
+    a fresh vector and land it in the same [0, 1] frame as the corpus.
+
+    For constant columns the stored range is the trivial (lo, lo) — the
+    caller should detect this and snap the corresponding axis to 0.5.
+    """
+    out = matrix.astype(np.float32, copy=True)
+    ranges: list[tuple[float, float]] = []
+    for j in range(out.shape[1]):
+        col = out[:, j]
+        lo, hi = float(col.min()), float(col.max())
+        ranges.append((lo, hi))
+        if hi - lo < 1e-9:
+            out[:, j] = 0.5
+        else:
+            out[:, j] = (col - lo) / (hi - lo)
+    return out, ranges
+
+
 # --------------------------------------------------------------------------- #
 # Per-method projection
 # --------------------------------------------------------------------------- #
@@ -74,6 +100,27 @@ def project_pca(matrix: np.ndarray, n_components: int = 6) -> np.ndarray:
     proj = PCA(n_components=n_components, svd_solver="auto", random_state=42)
     out = proj.fit_transform(matrix)
     return _pad_to_6(out)
+
+
+def project_pca_with_model(
+    matrix: np.ndarray, n_components: int = 6
+) -> tuple[np.ndarray, "PCA"]:
+    """Fit + project AND return the fitted PCA model.
+
+    Same math as ``project_pca`` — split out as a separate function so the
+    existing call sites stay simple. The returned model's ``mean_`` and
+    ``components_`` matrices are what a runtime query needs to project a
+    fresh embedding (e.g. CLAP text-side output) into the same 6D space.
+
+    Note: the padding to 6 dimensions still happens for the OUTPUT, but
+    the returned PCA model carries the original ``n_components`` it was
+    fitted with. A caller projecting a fresh vector with that model gets
+    an ``n_components``-D vector back and is responsible for padding.
+    """
+    n_components = min(n_components, matrix.shape[1], matrix.shape[0])
+    proj = PCA(n_components=n_components, svd_solver="auto", random_state=42)
+    out = proj.fit_transform(matrix)
+    return _pad_to_6(out), proj
 
 
 def project_tsne(matrix: np.ndarray) -> np.ndarray:
@@ -205,12 +252,18 @@ def fit_tonnetz(
 
 def fit_yamnet(
     yamnet_matrices: Iterable[tuple[str, np.ndarray]],
+    save_model_to: Path | None = None,
 ) -> dict[str, np.ndarray] | None:
     """Project YAMNet 1024-D vectors to 6D via corpus-wide PCA.
 
     Each clip contributes its own (frames, 1024) matrix. We stack them,
     fit a single 6-component PCA across the corpus, then split back so
     each clip lives in the same YAMNet-derived space.
+
+    If ``save_model_to`` is given, persists the fitted PCA + normalization
+    range to that path — same JSON schema as the CLAP saver. Symmetric
+    plumbing so a future YAMNet-text-prompt or YAMNet-audio-query
+    endpoint can reuse the same trick.
 
     Returns ``{clip_id: (frames, 6) matrix}`` or None when no YAMNet
     matrices are provided.
@@ -229,12 +282,24 @@ def fit_yamnet(
         boundaries.append((clip_id, cursor, cursor + m.shape[0]))
         cursor += m.shape[0]
 
-    pca_full = project_pca(big, n_components=6)
-    return {cid: normalize01(pca_full[a:b]) for cid, a, b in boundaries}
+    pca_full_padded, pca_model = project_pca_with_model(big, n_components=6)
+    normalized, per_axis_range = normalize01_with_range(pca_full_padded)
+
+    if save_model_to is not None:
+        save_projection_model(
+            path=save_model_to,
+            method="yamnet",
+            pca=pca_model,
+            per_axis_range=per_axis_range,
+            input_dim=big.shape[1],
+        )
+
+    return {cid: normalized[a:b] for cid, a, b in boundaries}
 
 
 def fit_clap(
     clap_matrices: Iterable[tuple[str, np.ndarray]],
+    save_model_to: Path | None = None,
 ) -> dict[str, np.ndarray] | None:
     """Project CLAP 512-D vectors to 6D via corpus-wide PCA.
 
@@ -244,6 +309,13 @@ def fit_clap(
     embedding, so every row of any one clip's input matrix is
     identical (the audio branch returned a single vector that we
     broadcast to numFrames rows). PCA + per-clip slicing still works.
+
+    If ``save_model_to`` is given, the fitted PCA mean + components and
+    the per-axis [lo, hi] normalization range are written to that path
+    as JSON. This is what a runtime text-to-6D query needs (issue #48
+    phase 2): project the text embedding through the saved PCA, then
+    normalize with the same range to land in the same [0, 1] frame as
+    the corpus.
 
     Returns ``{clip_id: (frames, 6) matrix}`` or None when no CLAP
     matrices are provided.
@@ -262,8 +334,86 @@ def fit_clap(
         boundaries.append((clip_id, cursor, cursor + m.shape[0]))
         cursor += m.shape[0]
 
-    pca_full = project_pca(big, n_components=6)
-    return {cid: normalize01(pca_full[a:b]) for cid, a, b in boundaries}
+    pca_full_padded, pca_model = project_pca_with_model(big, n_components=6)
+    # Use normalize01_with_range on the FULL projection so the per-axis
+    # ranges reflect the entire corpus. Each clip then re-normalizes
+    # against those same ranges so a runtime query lands in the same frame.
+    normalized, per_axis_range = normalize01_with_range(pca_full_padded)
+
+    if save_model_to is not None:
+        save_projection_model(
+            path=save_model_to,
+            method="clap",
+            pca=pca_model,
+            per_axis_range=per_axis_range,
+            input_dim=big.shape[1],
+        )
+
+    return {cid: normalized[a:b] for cid, a, b in boundaries}
+
+
+def save_projection_model(
+    *,
+    path: Path,
+    method: str,
+    pca: "PCA",
+    per_axis_range: list[tuple[float, float]],
+    input_dim: int,
+) -> None:
+    """Persist a fitted PCA + normalization range as JSON.
+
+    Format:
+
+    .. code-block:: json
+
+        {
+          "method": "clap",
+          "version": 1,
+          "input_dim": 512,
+          "n_components": 6,
+          "mean": [input_dim floats],
+          "components": [[n_components x input_dim floats]],
+          "per_axis_range": [[lo, hi], ...n_components entries]
+        }
+
+    Loading at runtime (e.g. in a CLAP text-prompt endpoint):
+
+    .. code-block:: python
+
+       import json
+       import numpy as np
+       d = json.load(open("data/projections/clap.json"))
+       mean = np.asarray(d["mean"], dtype=np.float32)
+       components = np.asarray(d["components"], dtype=np.float32)
+       ranges = d["per_axis_range"]
+
+       def project_text(text_embedding_512: np.ndarray) -> list[float]:
+           proj = (text_embedding_512 - mean) @ components.T
+           out = []
+           for j, (lo, hi) in enumerate(ranges):
+               if hi - lo < 1e-9:
+                   out.append(0.5)
+               else:
+                   out.append(float((proj[j] - lo) / (hi - lo)))
+           return out
+
+    JSON instead of pickle because (a) the matrices are tiny (6 * 512 =
+    3 KB for CLAP) and (b) JSON is language-portable should the
+    runtime ever move out of Python.
+    """
+    import json
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "method": method,
+        "version": 1,
+        "input_dim": int(input_dim),
+        "n_components": int(pca.n_components_),
+        "mean": pca.mean_.astype(float).tolist(),
+        "components": pca.components_.astype(float).tolist(),
+        "per_axis_range": [[float(lo), float(hi)] for lo, hi in per_axis_range],
+    }
+    path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
 
 def available_methods(produced: dict[str, dict[str, np.ndarray]]) -> list[str]:

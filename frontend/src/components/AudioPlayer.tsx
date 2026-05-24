@@ -2,7 +2,12 @@ import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
 import { api } from "../lib/api";
-import { getAnalyser, setPitchShift, setSharedAudio } from "../lib/audioBus";
+import {
+  ensureRunning,
+  getAnalyser,
+  setPitchShift,
+  setSharedAudio
+} from "../lib/audioBus";
 import { useStore } from "../store/useStore";
 
 function formatTime(s: number): string {
@@ -88,6 +93,13 @@ export function AudioPlayer() {
     };
   }, [isPlaying, setCurrentTime]);
 
+  // When the selected clip changes:
+  //  - load the new audio
+  //  - reset the cursor
+  //  - auto-play, EXCEPT when this is the very first clip load (the
+  //    initial bird-house-sparrow auto-assignment in App.tsx isn't a
+  //    user gesture, so browsers block play() with autoplay errors).
+  const hasUserSelectedClipRef = useRef(false);
   useEffect(() => {
     const el = audioRef.current;
     if (!el || !selectedClip) return;
@@ -96,6 +108,19 @@ export function AudioPlayer() {
     el.currentTime = 0;
     setCurrentTime(0);
     setIsPlaying(false);
+    if (hasUserSelectedClipRef.current) {
+      // The AudioContext may be suspended until a user gesture happens;
+      // selecting a clip IS a user gesture so we can resume it here.
+      void ensureRunning().then(() => {
+        void el.play().catch((err) => {
+          // Autoplay failures are non-fatal — the user can press Play
+          // manually. Log for debugging but don't surface to the user.
+          console.debug("[Auralis] autoplay blocked", err);
+        });
+      });
+    } else {
+      hasUserSelectedClipRef.current = true;
+    }
   }, [selectedClip, setCurrentTime, setIsPlaying]);
 
   useEffect(() => {
