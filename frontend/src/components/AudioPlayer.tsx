@@ -25,6 +25,8 @@ export function AudioPlayer() {
   const setEmbedding = useStore((s) => s.setEmbedding);
   const loopAudio = useStore((s) => s.loopAudio);
   const setLoopAudio = useStore((s) => s.setLoopAudio);
+  const playbackRate = useStore((s) => s.playbackRate);
+  const preservesPitch = useStore((s) => s.preservesPitch);
   const comparisonClip = useStore((s) => s.comparisonClip);
   const setComparisonEmbedding = useStore((s) => s.setComparisonEmbedding);
   const setAudioError = useStore((s) => s.setAudioError);
@@ -94,6 +96,13 @@ export function AudioPlayer() {
     setCurrentTime(0);
     setIsPlaying(false);
   }, [selectedClip, setCurrentTime, setIsPlaying]);
+
+  useEffect(() => {
+    const el = audioRef.current;
+    if (!el) return;
+    el.playbackRate = playbackRate;
+    (el as HTMLAudioElement & { preservesPitch: boolean }).preservesPitch = preservesPitch;
+  }, [playbackRate, preservesPitch, selectedClip]);
 
   function togglePlay() {
     const el = audioRef.current;
