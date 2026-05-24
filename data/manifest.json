@@ -1,6 +1,6 @@
 {
   "version": "0.1.0",
-  "generated_at": "2026-05-24T20:16:15Z",
+  "generated_at": "2026-05-24T20:48:09Z",
   "feature_names": [
     "rms",
     "zero_crossing_rate",
@@ -1487,6 +1487,48 @@
         "saturn",
         "radio",
         "sonification"
+      ]
+    },
+    {
+      "id": "space-mars-ingenuity-flight",
+      "title_en": "Ingenuity helicopter flying on Mars (recorded by Perseverance)",
+      "title_es": "Helic\u00f3ptero Ingenuity volando en Marte (grabado por Perseverance)",
+      "category": "space",
+      "subcategory": "mars",
+      "duration_seconds": 150.05,
+      "sample_rate": 22050,
+      "audio_path": "sounds/space/space-mars-ingenuity-flight.ogg",
+      "embedding_path": "embeddings/space-mars-ingenuity-flight.json",
+      "source": "NASA",
+      "license": "Public Domain",
+      "attribution": "NASA/JPL-Caltech (Perseverance SuperCam mic)",
+      "tags": [
+        "nasa",
+        "mars",
+        "ingenuity",
+        "perseverance",
+        "helicopter"
+      ]
+    },
+    {
+      "id": "space-mars-moxie",
+      "title_en": "MOXIE oxygen experiment running on Mars",
+      "title_es": "Experimento de ox\u00edgeno MOXIE operando en Marte",
+      "category": "space",
+      "subcategory": "mars",
+      "duration_seconds": 74.838,
+      "sample_rate": 22050,
+      "audio_path": "sounds/space/space-mars-moxie.ogg",
+      "embedding_path": "embeddings/space-mars-moxie.json",
+      "source": "NASA",
+      "license": "Public Domain",
+      "attribution": "NASA/JPL-Caltech (Perseverance MOXIE)",
+      "tags": [
+        "nasa",
+        "mars",
+        "perseverance",
+        "moxie",
+        "instrument"
       ]
     },
     {

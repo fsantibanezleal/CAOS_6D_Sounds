@@ -17,6 +17,18 @@ router = APIRouter(tags=["audio"])
 
 @router.get("/audio/{clip_id}")
 def stream_audio(clip_id: str) -> FileResponse:
+    """Stream a clip's audio file with a content-type matched to its
+    on-disk extension.
+
+    FastAPI's ``FileResponse`` automatically handles HTTP range requests,
+    so HTML5 ``<audio>`` can seek without re-downloading the whole file.
+    The 24h cache header is safe because clip ids are immutable: a re-
+    encoded clip gets a new id rather than replacing an existing file.
+
+    Returns 404 if the clip id is unknown or the underlying file is
+    missing from disk (e.g. a manifest entry references a sound that
+    wasn't committed).
+    """
     service = get_manifest_service()
     clip = service.get_clip(clip_id)
     if clip is None:
@@ -36,6 +48,15 @@ def stream_audio(clip_id: str) -> FileResponse:
 
 
 def _guess_media_type(suffix: str) -> str:
+    """Map an on-disk audio extension to the HTTP ``Content-Type`` header
+    the browser needs to decode it.
+
+    Wikimedia ships OGG-Vorbis under both ``.ogg`` and ``.oga`` extensions
+    — both are served as ``audio/ogg``. ``.opus`` is OGG-Opus and gets a
+    codec hint so Chrome / Firefox pick the right decoder path. Unknown
+    extensions fall back to ``application/octet-stream`` (browser will
+    refuse to decode rather than misinterpret).
+    """
     return {
         ".ogg": "audio/ogg",
         ".oga": "audio/ogg",

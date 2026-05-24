@@ -1021,11 +1021,35 @@ CURATION: list[CurationEntry] = [
         tags=("nasa", "cassini", "jupiter", "radio", "sonification"),
     ),
 
-    # NOTE: Perseverance auxiliary instruments (Ingenuity helicopter flight
-    # and MOXIE) were initially curated but skipped — Wikimedia ships both
-    # as OGG-wrapped FLAC (`Ogg data, FLAC audio`), which our pipeline's
-    # `libsndfile` + `audioread` backends cannot decode without ffmpeg
-    # transcoding. Re-add after we wire ffmpeg into the downloader.
+    # Perseverance auxiliary instruments — Ingenuity helicopter + MOXIE.
+    # These Wikimedia files are OGG-wrapped FLAC and would normally fail
+    # to ingest with libsndfile/audioread. The download step now detects
+    # that and transcodes through ffmpeg (`imageio-ffmpeg` ships the
+    # binary) — see `needs_transcoding` + `transcode_to_vorbis` below.
+    CurationEntry(
+        id="space-mars-ingenuity-flight",
+        category="space",
+        subcategory="mars",
+        title_en="Ingenuity helicopter flying on Mars (recorded by Perseverance)",
+        title_es="Helicóptero Ingenuity volando en Marte (grabado por Perseverance)",
+        source="NASA",
+        license="Public Domain",
+        attribution="NASA/JPL-Caltech (Perseverance SuperCam mic)",
+        wm_title="Sounds-of-Mars -Helicopter Flying on Mars.ogg",
+        tags=("nasa", "mars", "ingenuity", "perseverance", "helicopter"),
+    ),
+    CurationEntry(
+        id="space-mars-moxie",
+        category="space",
+        subcategory="mars",
+        title_en="MOXIE oxygen experiment running on Mars",
+        title_es="Experimento de oxígeno MOXIE operando en Marte",
+        source="NASA",
+        license="Public Domain",
+        attribution="NASA/JPL-Caltech (Perseverance MOXIE)",
+        wm_title="The Sound of MOXIE at Work on Mars.oga",
+        tags=("nasa", "mars", "perseverance", "moxie", "instrument"),
+    ),
 
     # Apollo additional voice clip.
     CurationEntry(
@@ -1312,6 +1336,75 @@ def download(url: str, dest: Path) -> bool:
     return True
 
 
+def needs_transcoding(audio_path: Path) -> bool:
+    """True if libsndfile cannot decode this file directly.
+
+    Used to detect the OGG-wrapped-FLAC files Wikimedia ships for some
+    NASA audio: they have an ``.ogg`` / ``.oga`` extension but the
+    inner stream is FLAC, which our librosa + audioread pipeline
+    cannot handle without ffmpeg.
+    """
+    try:
+        import soundfile as sf  # type: ignore
+    except ImportError:
+        # soundfile is a hard pipeline dep — if it's missing we'd fail
+        # later in ingest anyway, so don't pretend we can decide here.
+        return False
+    try:
+        with sf.SoundFile(str(audio_path)) as _f:
+            return False
+    except Exception:  # noqa: BLE001
+        return True
+
+
+def transcode_to_vorbis(src: Path) -> Path | None:
+    """Re-encode ``src`` to OGG/Vorbis via ffmpeg, replacing the file in
+    place.
+
+    Returns the (possibly new) on-disk path on success, ``None`` on
+    failure. We use the ``imageio-ffmpeg`` package's bundled binary so
+    contributors don't need a system-wide ffmpeg install — it's a soft
+    dependency declared in ``requirements.txt``.
+
+    Quality target is ``-q:a 5`` (~160 kbps VBR), well above the
+    transparency threshold for any of our use cases without bloating
+    the file. The original ``.ogg`` / ``.oga`` file is removed only
+    after the transcoded copy lands successfully.
+    """
+    try:
+        import imageio_ffmpeg  # type: ignore
+        ffmpeg = imageio_ffmpeg.get_ffmpeg_exe()
+    except ImportError:
+        print("  transcode SKIPPED: imageio-ffmpeg not installed (pip install imageio-ffmpeg)")
+        return None
+    import subprocess
+
+    out = src.with_suffix(".transcoded.ogg")
+    cmd = [
+        ffmpeg, "-y", "-loglevel", "error",
+        "-i", str(src),
+        "-c:a", "libvorbis", "-q:a", "5",
+        str(out),
+    ]
+    try:
+        res = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+    except Exception as exc:  # noqa: BLE001
+        print(f"  transcode FAILED: {exc}")
+        out.unlink(missing_ok=True)
+        return None
+    if res.returncode != 0:
+        print(f"  transcode FAILED: ffmpeg exit {res.returncode} — {res.stderr.strip()[:200]}")
+        out.unlink(missing_ok=True)
+        return None
+    # Replace the original. We always end up with a `.ogg` file even if
+    # the input was `.oga` — keeps the on-disk extension uniform.
+    final = src.with_suffix(".ogg")
+    src.unlink(missing_ok=True)
+    out.rename(final)
+    print(f"  transcoded -> OGG/Vorbis ({final.stat().st_size / 1024:.1f} KB)")
+    return final
+
+
 def write_sidecar(entry: CurationEntry, audio_path: Path) -> None:
     sidecar = audio_path.with_suffix(".meta.json")
     sidecar.write_text(
@@ -1401,6 +1494,19 @@ def main() -> int:
         out = SOUNDS_DIR / entry.category / f"{entry.id}{ext}"
         print(f"- [{entry.category}/{entry.subcategory}] {entry.id} ({entry.license})")
         if download(url, out):
+            # Some OGG containers wrap FLAC (Wikimedia ships several
+            # NASA clips that way). libsndfile + audioread cannot decode
+            # those, so we re-encode to OGG/Vorbis via ffmpeg first. The
+            # check is cheap (one SoundFile open attempt) and only
+            # triggers transcoding when actually needed.
+            if needs_transcoding(out):
+                print("  detected undecodable container - transcoding...")
+                transcoded = transcode_to_vorbis(out)
+                if transcoded is None:
+                    print(f"  SKIPPED writing sidecar — file is unusable")
+                    time.sleep(args.sleep)
+                    continue
+                out = transcoded
             write_sidecar(entry, out)
             success += 1
         time.sleep(args.sleep)
