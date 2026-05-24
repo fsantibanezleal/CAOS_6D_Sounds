@@ -1,6 +1,6 @@
 {
   "version": "0.1.0",
-  "generated_at": "2026-05-24T21:16:47Z",
+  "generated_at": "2026-05-24T22:13:41Z",
   "feature_names": [
     "rms",
     "zero_crossing_rate",
@@ -117,6 +117,14 @@
       "description_en": "Machines, engines, vehicles, industrial sounds",
       "description_es": "M\u00e1quinas, motores, veh\u00edculos, sonidos industriales",
       "icon": "GEAR"
+    },
+    {
+      "id": "underwater",
+      "name_en": "Underwater",
+      "name_es": "Submarinos",
+      "description_en": "Marine mammals, hydrophone ambience, ice \u2014 public-domain catalogue from NOAA Fisheries",
+      "description_es": "Mam\u00edferos marinos, ambiente de hidr\u00f3fono, hielo \u2014 cat\u00e1logo en dominio p\u00fablico de NOAA Fisheries",
+      "icon": "WAVE"
     }
   ],
   "clips": [
@@ -432,6 +440,24 @@
       "tags": [
         "duck",
         "waterfowl"
+      ]
+    },
+    {
+      "id": "bird-nightingale",
+      "title_en": "Thrush Nightingale (Luscinia luscinia) song",
+      "title_es": "Canto del ruise\u00f1or pechiazul (Luscinia luscinia)",
+      "category": "birds",
+      "subcategory": "songbirds",
+      "duration_seconds": 29.199,
+      "sample_rate": 22050,
+      "audio_path": "sounds/birds/bird-nightingale.mp3",
+      "embedding_path": "embeddings/bird-nightingale.json",
+      "source": "Wikimedia Commons / Xeno-canto",
+      "license": "CC-BY-NC-SA-3.0",
+      "attribution": "Xeno-canto contributor XC537550 \u2014 see file page on Wikimedia Commons",
+      "tags": [
+        "songbird",
+        "nightingale"
       ]
     },
     {
@@ -1804,6 +1830,166 @@
       "tags": [
         "synthetic",
         "calibration"
+      ]
+    },
+    {
+      "id": "underwater-bearded-seal",
+      "title_en": "Bearded seal \u2014 descending trill",
+      "title_es": "Foca barbuda \u2014 trino descendente",
+      "category": "underwater",
+      "subcategory": "pinnipeds",
+      "duration_seconds": 55.728,
+      "sample_rate": 22050,
+      "audio_path": "sounds/underwater/underwater-bearded-seal.mp3",
+      "embedding_path": "embeddings/underwater-bearded-seal.json",
+      "source": "NOAA Fisheries",
+      "license": "Public Domain",
+      "attribution": "Cornell Ornithology Lab, published by NOAA Fisheries",
+      "tags": [
+        "noaa",
+        "pinniped",
+        "arctic",
+        "hydrophone"
+      ]
+    },
+    {
+      "id": "underwater-beluga-multisound",
+      "title_en": "Beluga whale \u2014 whistles and clicks",
+      "title_es": "Beluga \u2014 silbidos y clics",
+      "category": "underwater",
+      "subcategory": "marine-mammals",
+      "duration_seconds": 30.617,
+      "sample_rate": 22050,
+      "audio_path": "sounds/underwater/underwater-beluga-multisound.mp3",
+      "embedding_path": "embeddings/underwater-beluga-multisound.json",
+      "source": "NOAA Fisheries",
+      "license": "Public Domain",
+      "attribution": "NOAA Fisheries / Castellote, Sounds in the Ocean catalogue",
+      "tags": [
+        "noaa",
+        "cetacean",
+        "hydrophone",
+        "whistle"
+      ]
+    },
+    {
+      "id": "underwater-cuviers-beaked-whale-clicks",
+      "title_en": "Cuvier's beaked whale \u2014 echolocation clicks (0.3x slowed)",
+      "title_es": "Zifio de Cuvier \u2014 clics de ecolocalizaci\u00f3n (ralentizado 0.3x)",
+      "category": "underwater",
+      "subcategory": "marine-mammals",
+      "duration_seconds": 26.639,
+      "sample_rate": 22050,
+      "audio_path": "sounds/underwater/underwater-cuviers-beaked-whale-clicks.mp3",
+      "embedding_path": "embeddings/underwater-cuviers-beaked-whale-clicks.json",
+      "source": "NOAA Fisheries",
+      "license": "Public Domain",
+      "attribution": "NOAA Fisheries PAGroup, Sounds in the Ocean catalogue",
+      "tags": [
+        "noaa",
+        "cetacean",
+        "hydrophone",
+        "echolocation"
+      ]
+    },
+    {
+      "id": "underwater-humpback-whale-song",
+      "title_en": "Humpback whale \u2014 song",
+      "title_es": "Canto de ballena jorobada",
+      "category": "underwater",
+      "subcategory": "marine-mammals",
+      "duration_seconds": 54.583,
+      "sample_rate": 22050,
+      "audio_path": "sounds/underwater/underwater-humpback-whale-song.mp3",
+      "embedding_path": "embeddings/underwater-humpback-whale-song.json",
+      "source": "NOAA Fisheries",
+      "license": "Public Domain",
+      "attribution": "NOAA Fisheries PAGroup, Sounds in the Ocean catalogue",
+      "tags": [
+        "noaa",
+        "cetacean",
+        "hydrophone",
+        "song"
+      ]
+    },
+    {
+      "id": "underwater-ice-calving",
+      "title_en": "Antarctic ice calving",
+      "title_es": "Desprendimiento de hielo ant\u00e1rtico",
+      "category": "underwater",
+      "subcategory": "ice",
+      "duration_seconds": 25.941,
+      "sample_rate": 22050,
+      "audio_path": "sounds/underwater/underwater-ice-calving.mp3",
+      "embedding_path": "embeddings/underwater-ice-calving.json",
+      "source": "NOAA Fisheries",
+      "license": "Public Domain",
+      "attribution": "AWI Van-Opzeeland, published by NOAA Fisheries",
+      "tags": [
+        "noaa",
+        "ice",
+        "antarctic",
+        "hydrophone"
+      ]
+    },
+    {
+      "id": "underwater-killer-whale",
+      "title_en": "Killer whale (orca) \u2014 calls and clicks",
+      "title_es": "Orca \u2014 llamadas y clics",
+      "category": "underwater",
+      "subcategory": "marine-mammals",
+      "duration_seconds": 53.5,
+      "sample_rate": 22050,
+      "audio_path": "sounds/underwater/underwater-killer-whale.mp3",
+      "embedding_path": "embeddings/underwater-killer-whale.json",
+      "source": "NOAA Fisheries",
+      "license": "Public Domain",
+      "attribution": "AWI Van-Opzeeland, published by NOAA Fisheries",
+      "tags": [
+        "noaa",
+        "cetacean",
+        "hydrophone",
+        "orca"
+      ]
+    },
+    {
+      "id": "underwater-snapping-shrimp",
+      "title_en": "Snapping shrimp \u2014 chorus snaps",
+      "title_es": "Camar\u00f3n pistola \u2014 coro de chasquidos",
+      "category": "underwater",
+      "subcategory": "invertebrates",
+      "duration_seconds": 5.0,
+      "sample_rate": 22050,
+      "audio_path": "sounds/underwater/underwater-snapping-shrimp.mp3",
+      "embedding_path": "embeddings/underwater-snapping-shrimp.json",
+      "source": "NOAA Fisheries",
+      "license": "Public Domain",
+      "attribution": "NOAA Fisheries PAGroup, Sounds in the Ocean catalogue",
+      "tags": [
+        "noaa",
+        "invertebrate",
+        "hydrophone",
+        "transient"
+      ]
+    },
+    {
+      "id": "underwater-sperm-whale-clicks",
+      "title_en": "Sperm whale \u2014 echolocation clicks",
+      "title_es": "Cachalote \u2014 clics de ecolocalizaci\u00f3n",
+      "category": "underwater",
+      "subcategory": "marine-mammals",
+      "duration_seconds": 6.373,
+      "sample_rate": 22050,
+      "audio_path": "sounds/underwater/underwater-sperm-whale-clicks.mp3",
+      "embedding_path": "embeddings/underwater-sperm-whale-clicks.json",
+      "source": "NOAA Fisheries",
+      "license": "Public Domain",
+      "attribution": "NOAA Fisheries PAGroup, Sounds in the Ocean catalogue",
+      "tags": [
+        "noaa",
+        "cetacean",
+        "hydrophone",
+        "echolocation"
       ]
     }
   ]
