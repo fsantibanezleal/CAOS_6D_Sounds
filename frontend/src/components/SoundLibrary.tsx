@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { Category, SoundClip } from "../lib/api";
@@ -138,15 +138,8 @@ export function SoundLibrary() {
     return out;
   }, [filteredClips, sortKey, lang]);
 
-  // Whenever a clip is selected, auto-expand its category.
-  useEffect(() => {
-    if (!selectedClip) return;
-    setExpanded((prev) =>
-      prev[selectedClip.category] ? prev : { ...prev, [selectedClip.category]: true }
-    );
-  }, [selectedClip]);
-
-  // When a search term is active, expand every matching category.
+  // When a search term is active, expand every matching category so
+  // the user can see the results without manual clicking.
   useEffect(() => {
     if (!search.trim()) return;
     const all: Record<string, boolean> = {};
@@ -154,15 +147,22 @@ export function SoundLibrary() {
     setExpanded(all);
   }, [search, grouped]);
 
-  // Default: expand the first category when the library loads.
+  // Auto-expand the active clip's category ONLY when the selection
+  // changes due to user action — never on the initial auto-load.
+  // The library starts fully collapsed; the user opens a category to
+  // browse. Tracked via a ref so the first selection (set in App.tsx
+  // once the library arrives) doesn't trigger expansion.
+  const seenInitialClipRef = useRef(false);
   useEffect(() => {
-    if (!library) return;
-    if (Object.keys(expanded).length > 0) return;
-    const first = library.categories.find((c) =>
-      library.clips.some((clip) => clip.category === c.id)
+    if (!selectedClip) return;
+    if (!seenInitialClipRef.current) {
+      seenInitialClipRef.current = true;
+      return;
+    }
+    setExpanded((prev) =>
+      prev[selectedClip.category] ? prev : { ...prev, [selectedClip.category]: true }
     );
-    if (first) setExpanded({ [first.id]: true });
-  }, [library, expanded]);
+  }, [selectedClip]);
 
   function toggleCategory(id: string) {
     setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));

@@ -133,7 +133,10 @@
     "playback_rate_help": "Reduce la velocidad del clip (<1) o acelera (>1) sin alterar la visualización, que sigue el embedding canónico. La trayectoria que ves es fija; sólo cambia el tiempo del audio.",
     "preserves_pitch": "Preservar tono",
     "preserves_pitch_help": "Activado: el navegador hace phase-vocoding para mantener el tono al bajar la velocidad. Desactivado: estilo cinta — lento = grave, rápido = agudo.",
-    "playback_reset": "Restablecer velocidad"
+    "playback_reset": "Restablecer velocidad",
+    "pitch_shift": "Desplazamiento de tono",
+    "pitch_shift_value": "{{n}} st",
+    "pitch_shift_help": "Cambia el tono del audio en semitonos (st) SIN alterar la velocidad de reproducción. Procesa por un AudioWorklet (pitch shifter por delay-line) en el hilo de audio. Doble-clic para restablecer a 0."
   },
   "panels": {
     "spectrogram": "Espectrograma",
