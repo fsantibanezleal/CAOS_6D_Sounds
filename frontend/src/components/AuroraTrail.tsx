@@ -137,6 +137,12 @@ export function AuroraTrail({
     const rgbaArr = instanceRgba.array as Float32Array;
     const hArr = instanceHeight.array as Float32Array;
 
+    // Defensive: if a persisted slider value somehow lands here as NaN
+    // it propagates into `instanceHeight` and the shader emits NaN
+    // gl_Position values that some drivers respond to by wiping the
+    // whole framebuffer. Clamp to a safe range.
+    const safeHeight = Number.isFinite(heightScale) ? heightScale : 1.0;
+
     for (let i = 0; i < numFrames; i++) {
       const visible = i >= start && i <= cursor;
       if (!visible) {
@@ -144,6 +150,13 @@ export function AuroraTrail({
         matrixObj.scale.setScalar(0.0001);
         matrixObj.updateMatrix();
         inst.setMatrixAt(i, matrixObj.matrix);
+        // Clear all four RGBA channels (not just alpha) — leftover RGB
+        // from when this frame was last visible can still contribute
+        // to the additive blend if the shader ever evaluates a vertex
+        // that wasn't fully discarded.
+        rgbaArr[4 * i] = 0;
+        rgbaArr[4 * i + 1] = 0;
+        rgbaArr[4 * i + 2] = 0;
         rgbaArr[4 * i + 3] = 0;
         hArr[i] = 0;
         continue;
@@ -161,7 +174,7 @@ export function AuroraTrail({
       const alpha = 1 - ageFrames / Math.max(1, trailFrames);
       // Curtain height is driven by the size axis (mapped via sphereMin/Max)
       // times the user's heightScale slider.
-      hArr[i] = frames.sizes[i] * heightScale * 6.0;
+      hArr[i] = frames.sizes[i] * safeHeight * 6.0;
 
       rgbaArr[4 * i] = frames.colors[3 * i];
       rgbaArr[4 * i + 1] = frames.colors[3 * i + 1];

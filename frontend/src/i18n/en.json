@@ -133,7 +133,10 @@
     "playback_rate_help": "Slow the clip down (<1) or speed it up (>1) while leaving the visualization driven by the canonical embedding. The trajectory you watch is fixed; only the audio timing changes.",
     "preserves_pitch": "Preserve pitch",
     "preserves_pitch_help": "On: the browser phase-vocodes so slowing the clip down does not drop the pitch. Off: tape-style — slow = lower pitch, fast = higher pitch.",
-    "playback_reset": "Reset speed"
+    "playback_reset": "Reset speed",
+    "pitch_shift": "Pitch shift",
+    "pitch_shift_value": "{{n}} st",
+    "pitch_shift_help": "Shift the audio up or down in semitones (st) WITHOUT changing playback rate. Runs through an AudioWorklet delay-line pitch shifter on the audio thread. Double-click the slider to reset to 0."
   },
   "panels": {
     "spectrogram": "Spectrogram",

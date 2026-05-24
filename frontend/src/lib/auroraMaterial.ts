@@ -31,19 +31,29 @@ const AURORA_VERT = /* glsl */ `
     float yNorm = position.y + 0.5;
     vY = yNorm;
 
-    // Read the instance translation from the 4th column of
-    // (modelViewMatrix * instanceMatrix). Then add the local quad
-    // offset in view space — that camera-aligns the horizontal axis
-    // while keeping the ribbon vertical (y stays world-up).
-    mat4 mvi = modelViewMatrix * instanceMatrix;
-    vec3 viewCenter = mvi[3].xyz;
-
     // Deterministic per-frame horizontal sway; bottom = no sway, top = max.
     float sway = sin(instancePhase + yNorm * 6.28318) * uWobbleAmplitude * yNorm;
 
-    viewCenter.x += position.x + sway;
-    viewCenter.y += yNorm * instanceHeight;
-    gl_Position = projectionMatrix * vec4(viewCenter, 1.0);
+    // 1. Build the world-space ribbon: start at the instance origin,
+    //    rise straight up world-Y by yNorm * instanceHeight. This keeps
+    //    the ribbon truly vertical regardless of camera orientation,
+    //    matching the "rising aurora curtain" intent.
+    vec4 worldOrigin = modelMatrix * instanceMatrix * vec4(0.0, 0.0, 0.0, 1.0);
+    worldOrigin.y += yNorm * instanceHeight;
+
+    // 2. Transform to view space.
+    vec4 viewPos = viewMatrix * worldOrigin;
+
+    // 3. Camera-billboard the WIDTH only — add the plane's local x
+    //    offset (plus the horizontal sway) in view-X. Width stays
+    //    facing the camera, height stays world-up. Doing the billboard
+    //    in view space avoids the previous bug where mixing view-space
+    //    Y displacement with world-space arithmetic produced degenerate
+    //    gl_Position values once several frames were visible (the
+    //    canvas went black after the first second).
+    viewPos.x += position.x + sway;
+
+    gl_Position = projectionMatrix * viewPos;
   }
 `;
 
