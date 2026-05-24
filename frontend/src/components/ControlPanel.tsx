@@ -22,6 +22,8 @@ export function ControlPanel() {
   const setPlaybackRate = useStore((s) => s.setPlaybackRate);
   const preservesPitch = useStore((s) => s.preservesPitch);
   const setPreservesPitch = useStore((s) => s.setPreservesPitch);
+  const pitchShiftSemitones = useStore((s) => s.pitchShiftSemitones);
+  const setPitchShiftSemitones = useStore((s) => s.setPitchShiftSemitones);
 
   const tracks = embedding?.tracks ?? [];
   const activeTrack = tracks.find((tr) => tr.name === viz.trackName) ?? tracks[0];
@@ -678,6 +680,26 @@ export function ControlPanel() {
             onChange={(e) => setPreservesPitch(e.target.checked)}
           />
           {t("viz.preserves_pitch")}
+        </label>
+
+        <label
+          style={{ marginTop: 8, fontSize: "0.85em" }}
+          title={t("viz.pitch_shift_help")}
+        >
+          {t("viz.pitch_shift")}:{" "}
+          {t("viz.pitch_shift_value", {
+            n: pitchShiftSemitones > 0 ? `+${pitchShiftSemitones}` : pitchShiftSemitones
+          })}
+          <input
+            type="range"
+            min={-12}
+            max={12}
+            step={1}
+            value={pitchShiftSemitones}
+            onChange={(e) => setPitchShiftSemitones(parseInt(e.target.value, 10))}
+            onDoubleClick={() => setPitchShiftSemitones(0)}
+            style={{ width: "100%" }}
+          />
         </label>
 
         <button

@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
 import { api } from "../lib/api";
-import { setSharedAudio } from "../lib/audioBus";
+import { getAnalyser, setPitchShift, setSharedAudio } from "../lib/audioBus";
 import { useStore } from "../store/useStore";
 
 function formatTime(s: number): string {
@@ -27,6 +27,7 @@ export function AudioPlayer() {
   const setLoopAudio = useStore((s) => s.setLoopAudio);
   const playbackRate = useStore((s) => s.playbackRate);
   const preservesPitch = useStore((s) => s.preservesPitch);
+  const pitchShiftSemitones = useStore((s) => s.pitchShiftSemitones);
   const comparisonClip = useStore((s) => s.comparisonClip);
   const setComparisonEmbedding = useStore((s) => s.setComparisonEmbedding);
   const setAudioError = useStore((s) => s.setAudioError);
@@ -103,6 +104,18 @@ export function AudioPlayer() {
     el.playbackRate = playbackRate;
     (el as HTMLAudioElement & { preservesPitch: boolean }).preservesPitch = preservesPitch;
   }, [playbackRate, preservesPitch, selectedClip]);
+
+  // Apply pitch shift via the AudioWorklet. We also have to nudge the
+  // audio graph (getAnalyser) the first time we send a non-zero value
+  // — that's what triggers the worklet to be loaded + inserted. The
+  // graph stays in place from then on.
+  useEffect(() => {
+    if (pitchShiftSemitones !== 0) {
+      // Force-init the analyser chain so the worklet load kicks off.
+      getAnalyser();
+    }
+    setPitchShift(pitchShiftSemitones);
+  }, [pitchShiftSemitones]);
 
   function togglePlay() {
     const el = audioRef.current;

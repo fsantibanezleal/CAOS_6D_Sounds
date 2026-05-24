@@ -118,6 +118,10 @@ interface StoreState {
   setPlaybackRate: (r: number) => void;
   preservesPitch: boolean;
   setPreservesPitch: (b: boolean) => void;
+  /** Pitch shift in semitones, applied independently of playbackRate
+   *  via an AudioWorklet (delay-line pitch shifter). Range [-12, +12]. */
+  pitchShiftSemitones: number;
+  setPitchShiftSemitones: (n: number) => void;
 
   viz: VizConfig;
   setViz: (patch: Partial<VizConfig>) => void;
@@ -243,6 +247,9 @@ export const useStore = create<StoreState>()(
       setPlaybackRate: (r) => set({ playbackRate: Math.max(0.25, Math.min(4, r)) }),
       preservesPitch: true,
       setPreservesPitch: (b) => set({ preservesPitch: b }),
+      pitchShiftSemitones: 0,
+      setPitchShiftSemitones: (n) =>
+        set({ pitchShiftSemitones: Math.max(-12, Math.min(12, n)) }),
 
       viz: DEFAULT_VIZ,
       setViz: (patch) => set({ viz: { ...get().viz, ...patch } }),
