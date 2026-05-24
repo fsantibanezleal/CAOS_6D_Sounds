@@ -118,7 +118,14 @@
     "record_with_audio_help": "Mux the playing audio track into the recording. Uncheck for a video-only export.",
     "demo_tour_start": "Auto tour",
     "demo_tour_stop": "Stop tour ({{i}}/{{n}})",
-    "demo_tour_help": "Cycles through 8 curated clip + mode + track combinations. Pair with Record video to capture a one-pass showcase."
+    "demo_tour_help": "Cycles through 8 curated clip + mode + track combinations. Pair with Record video to capture a one-pass showcase.",
+    "playback_section": "Playback",
+    "playback_rate": "Speed",
+    "playback_rate_value": "{{n}}×",
+    "playback_rate_help": "Slow the clip down (<1) or speed it up (>1) while leaving the visualization driven by the canonical embedding. The trajectory you watch is fixed; only the audio timing changes.",
+    "preserves_pitch": "Preserve pitch",
+    "preserves_pitch_help": "On: the browser phase-vocodes so slowing the clip down does not drop the pitch. Off: tape-style — slow = lower pitch, fast = higher pitch.",
+    "playback_reset": "Reset speed"
   },
   "panels": {
     "spectrogram": "Spectrogram",

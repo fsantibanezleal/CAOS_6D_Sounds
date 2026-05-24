@@ -111,6 +111,14 @@ interface StoreState {
   loopAudio: boolean;
   setLoopAudio: (b: boolean) => void;
 
+  /** Interactive playback controls. Not persisted — they reset to
+   *  the defaults on every page load so the user always starts from
+   *  the canonical playback. */
+  playbackRate: number;
+  setPlaybackRate: (r: number) => void;
+  preservesPitch: boolean;
+  setPreservesPitch: (b: boolean) => void;
+
   viz: VizConfig;
   setViz: (patch: Partial<VizConfig>) => void;
   setAxis: (role: AxisRole, dim: number) => void;
@@ -230,6 +238,11 @@ export const useStore = create<StoreState>()(
       setCurrentTime: (t) => set({ currentTime: t }),
       loopAudio: true,
       setLoopAudio: (b) => set({ loopAudio: b }),
+
+      playbackRate: 1.0,
+      setPlaybackRate: (r) => set({ playbackRate: Math.max(0.25, Math.min(4, r)) }),
+      preservesPitch: true,
+      setPreservesPitch: (b) => set({ preservesPitch: b }),
 
       viz: DEFAULT_VIZ,
       setViz: (patch) => set({ viz: { ...get().viz, ...patch } }),
