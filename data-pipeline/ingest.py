@@ -25,6 +25,7 @@ import numpy as np  # noqa: F401  (re-exported via type hints in modules)
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from build_manifest import write_clip_embedding, write_manifest
+from common import DATA_DIR
 from clap_embeddings import (
     broadcast_to_frames as clap_broadcast,
     clap_audio_embedding,
@@ -99,7 +100,10 @@ def main() -> int:
             upsampled = upsample_to_hop(emb, f.num_frames, f.hop_seconds)
             yamnet_matrices.append((f.clip_id, upsampled))
             print(f"  [{f.category}] {f.clip_id}  yamnet frames={emb.shape[0]} -> {upsampled.shape[0]}")
-        yamnet_per_clip = fit_yamnet(yamnet_matrices)
+        yamnet_per_clip = fit_yamnet(
+            yamnet_matrices,
+            save_model_to=DATA_DIR / "projections" / "yamnet.json",
+        )
         if yamnet_per_clip is not None:
             projections_by_method["yamnet"] = yamnet_per_clip
     else:
@@ -120,7 +124,10 @@ def main() -> int:
             framed = clap_broadcast(clip_vec, f.num_frames)
             clap_matrices.append((f.clip_id, framed))
             print(f"  [{f.category}] {f.clip_id}  clap dim={clip_vec.shape[0]} broadcast={framed.shape[0]}")
-        clap_per_clip = fit_clap(clap_matrices)
+        clap_per_clip = fit_clap(
+            clap_matrices,
+            save_model_to=DATA_DIR / "projections" / "clap.json",
+        )
         if clap_per_clip is not None:
             projections_by_method["clap"] = clap_per_clip
     else:

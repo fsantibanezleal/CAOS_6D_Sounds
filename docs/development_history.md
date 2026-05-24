@@ -858,7 +858,7 @@ React power without the Next.js footprint.
 > handle 6 000+ markers with per-frame re-coloring and per-frame
 > visibility windows.
 
-**Six-dimensional axis mapping.** Felipe's specification: "let the user
+**Six-dimensional axis mapping.** Original specification: "let the user
 pick which dim goes to X / Y / Z, which to color, which to size, with
 time as the implicit 6th axis." The data pipeline therefore emits
 `(num_frames, 6)` per track and the user picks the mapping at runtime.

@@ -117,12 +117,14 @@ This holds 60 fps for clips up to ~10 minutes (~12 000 frames).
 
 ## Deployment
 
-See `../deployments/auralis.md` (in `_CAOS_MANAGE` repo) for the binding,
-and `../deploy/` here for the templates.
+See [`../deploy/`](../deploy/) for the systemd unit, nginx vhost,
+`setup.sh` and `update.sh` templates. The
+[Deployment wiki page](https://github.com/fsantibanezleal/CAOS_6D_Sounds/wiki/Deployment)
+covers the topology, env vars, and smoke checks.
 
 The whole production install is:
 
-1. `git clone` the repo into `/opt/fasl-apps/CAOS_6D_Sounds`.
+1. `git clone` the repo into the app directory (e.g. `/opt/auralis`).
 2. `pip install -r requirements.txt` into `.venv`.
 3. `pnpm install && pnpm build` inside `frontend/`.
 4. `cp deploy/fasl-auralis.service /etc/systemd/system/`.

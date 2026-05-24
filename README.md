@@ -12,8 +12,49 @@ trail that paints the structure of the sound.
 
 ## Quickstart
 
+### Prerequisites
+
+- **Python 3.12+** (for the backend + data pipeline)
+- **Node.js 20+** with **pnpm 9+** (for the frontend)
+- **Git**
+
+### First-time setup
+
+Create one Python virtualenv for the FastAPI backend and a second one
+for the data pipeline (the pipeline pulls in heavy ML deps — librosa,
+scikit-learn, tensorflow, etc. — that production never needs).
+
 ```powershell
-# Windows (Felipe's default)
+# Windows / PowerShell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install --upgrade pip
+.\.venv\Scripts\pip.exe install -r requirements.txt
+
+python -m venv .venv-pipeline
+.\.venv-pipeline\Scripts\python.exe -m pip install --upgrade pip
+.\.venv-pipeline\Scripts\pip.exe install -r data-pipeline\requirements.txt
+
+# Frontend
+pnpm --dir frontend install
+```
+
+```bash
+# macOS / Linux / Git Bash
+python3 -m venv .venv
+.venv/bin/pip install --upgrade pip
+.venv/bin/pip install -r requirements.txt
+
+python3 -m venv .venv-pipeline
+.venv-pipeline/bin/pip install --upgrade pip
+.venv-pipeline/bin/pip install -r data-pipeline/requirements.txt
+
+pnpm --dir frontend install
+```
+
+### Running locally
+
+```powershell
+# Windows / PowerShell
 .\scripts\local.ps1 seed     # generate synthetic seed clips + run pipeline
 .\scripts\local.ps1 dev      # backend :8104 + Vite dev :5173
 ```
@@ -194,16 +235,18 @@ recommendation). The pipeline accepts `.ogg`, `.oga`, `.opus`,
 
 ## Deployment
 
-Production runs on Felipe's Hetzner VPS at
-<https://auralis.fasl-work.com> on port 8104. Templates live under
-[`deploy/`](deploy/); the operational binding (host + domain + port)
-is documented in the private CAOS_MANAGE repo at
-`deployments/auralis.md`.
+A public instance runs at <https://auralis.fasl-work.com>. Reusable
+templates (systemd unit, nginx vhost, `setup.sh`, `update.sh`) live
+under [`deploy/`](deploy/); they take overridable `APP_NAME`,
+`APP_DIR`, `DOMAIN`, `PORT` env vars so you can fork and deploy to
+your own VPS without editing the scripts. See the
+[Deployment wiki page](https://github.com/fsantibanezleal/CAOS_6D_Sounds/wiki/Deployment)
+for the full topology and smoke checks.
 
 ```bash
-# On the VPS, as root:
-bash /opt/fasl-apps/CAOS_6D_Sounds/deploy/setup.sh   # first-time setup
-bash /opt/fasl-apps/CAOS_6D_Sounds/deploy/update.sh  # subsequent redeploys
+# On the VPS, as root, after cloning the repo:
+APP_DIR=/opt/auralis DOMAIN=audio.example.com bash deploy/setup.sh   # first-time setup
+APP_DIR=/opt/auralis bash deploy/update.sh                            # subsequent redeploys
 ```
 
 ## License
@@ -214,6 +257,6 @@ license.
 
 ---
 
-*Auralis is part of [Felipe Santibañez-Leal](https://github.com/fsantibanezleal)'s
-portfolio of small, well-documented science / data-visualization web
+*Auralis is part of the author's
+[portfolio](https://github.com/fsantibanezleal) of small, well-documented science / data-visualization web
 apps.*
