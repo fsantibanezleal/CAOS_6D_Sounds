@@ -44,3 +44,10 @@ tensorflow-hub==0.16.1
 # (CPU-only is fine; CUDA is faster but not required at this corpus size.)
 torch>=2.2
 transformers>=4.40
+
+# Optional: bundled ffmpeg binary used by `curated_downloads.py` to
+# transcode OGG-wrapped FLAC files (e.g. some NASA clips on Wikimedia)
+# into OGG/Vorbis so `libsndfile` can decode them at ingest time.
+# Without this, those clips download but get skipped at ingest with a
+# "flac decoder lost sync" error. Tiny dep (~50 MB binary).
+imageio-ffmpeg>=0.5
