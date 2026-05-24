@@ -22,6 +22,13 @@ def get_library() -> SoundLibrary:
 
 @router.get("/clip/{clip_id}", response_model=SoundClip)
 def get_clip(clip_id: str) -> SoundClip:
+    """Return metadata for a single clip — same shape as one entry in
+    ``/api/library``'s ``clips`` array.
+
+    Useful when the caller already has a clip id (deep link, shared URL,
+    library cache miss) and wants the full record without re-fetching the
+    whole catalog. Returns 404 if the id is unknown.
+    """
     clip = get_manifest_service().get_clip(clip_id)
     if clip is None:
         raise HTTPException(status_code=404, detail=f"clip '{clip_id}' not found")
