@@ -3,6 +3,121 @@
 Newest-first log of the design decisions that shaped Auralis. Each entry
 records what changed, why, and the alternative we considered.
 
+## v0.12.0 — Data integrity sweep + ffmpeg transcoding + complete i18n (2026-05-24)
+
+A six-PR pass to bring everything to "actually working end-to-end"
+after the previous release closed feature work on paper.
+
+### YAMNet regression (PR #127 → #128)
+
+PR #118's re-ingest had silently dropped the `yamnet` track from all 87
+clips because the local TF Hub cache had a corrupted module
+(`~/AppData/Local/Temp/tfhub_modules/<hash>/` was missing
+`saved_model.pb`). `try_yamnet()` caught the load error and returned
+None, so the pipeline ran without YAMNet — and the empty embeddings
+got committed and deployed. Production was serving 5 tracks per clip
+instead of 6 for ~24 hours.
+
+**Fix:** cleared the cache, re-ran ingest from clean. All 87 clips
+back to 6 tracks.
+
+**Lesson captured:** silent optional-dep fallbacks need a banner in
+the ingest output (`[!] yamnet skipped` already prints, but the diff
+in the JSON files doesn't make the regression obvious from a code
+review). Filing a follow-up to add a manifest-level
+`available_embedding_methods` field that the CI can assert against.
+
+### Complete i18n coverage (PR #126)
+
+Six hardcoded strings were still slipping through:
+
+- `AudioPlayer` Play/Pause button label
+- `AudioPlayer` 4 toast error bodies (embedding-load + MediaError codes 2/3/4)
+- `App.tsx` library-load fallback
+- `Header` theme-toggle button label
+
+Routed every one through `t()`. Added 8 new keys under the existing
+`error` namespace. Both locales kept at perfect parity (149 keys
+each, no diff). The only remaining literals in JSX are music-note
+labels (`"C"`, `"C#"`, …, `"B"`) — universal across languages.
+
+### Documentation pass (PR #129)
+
+Filled in docstrings on backend routers + manifest service + frameMap
+helpers — focusing on rationale that isn't obvious from the
+signature: why `stream_audio` doesn't validate file size, why
+`get_clip` is a linear scan, why `load_embedding` is async-def with
+`asyncio.to_thread`, why `buildFrameMap` defaults missing axis
+values to 0.5 rather than throwing.
+
+### ffmpeg transcoding wired into the data pipeline (PR #130 → #131)
+
+The trailing piece of #120: some Wikimedia files are OGG-wrapped FLAC
+(`Ogg data, FLAC audio`), which libsndfile + audioread cannot decode.
+The downloader now detects this via a one-line `soundfile.SoundFile`
+probe and transcodes through `imageio-ffmpeg`'s bundled binary to
+OGG/Vorbis q5. Added `imageio-ffmpeg>=0.5` as a pipeline-only soft
+dep.
+
+This unblocked **5 NASA clips** that had been failing or skipped:
+
+| Clip | Before | After |
+|---|---|---|
+| `space-mars-supercam-wind` | OGG/FLAC 2.1 MB (broken) | OGG/Vorbis 0.19 MB |
+| `space-mars-microphone` | OGG/FLAC 0.86 MB (broken) | OGG/Vorbis 0.28 MB |
+| `space-mars-microphone-clean` | OGG/FLAC 0.36 MB (broken) | OGG/Vorbis 0.18 MB |
+| `space-mars-ingenuity-flight` | OGG/FLAC 2.5 MB (broken) | OGG/Vorbis 0.95 MB |
+| `space-mars-moxie` | OGG/FLAC 2.5 MB (broken) | OGG/Vorbis 0.16 MB |
+
+### Missing-audio sweep (PR #132 + #134)
+
+Auditing the curation list against `data/sounds/` surfaced **13 clips**
+defined as `CurationEntry` rows but never actually downloaded into the
+repo. They lived in the manifest as references that would 404. All 13
+are now on disk + ingested:
+
+- 3 Perseverance clips (above — OGG/FLAC, needed the new transcoder)
+- Voyager Greetings (MP3, ingested directly)
+- 8 NOAA underwater (MP3, ingested directly)
+- bird-nightingale (Common Nightingale OGG is 27 MB — over the 24 MB
+  cap; swapped to *Luscinia luscinia* / Thrush Nightingale XC537550,
+  0.6 MB — close relative, same evocative night-singing)
+
+The audit was automated:
+
+```python
+for entry in CURATION:
+    pat = Path("data/sounds")/entry.category/entry.id
+    if not any(pat.with_suffix(s).exists() for s in [".ogg",".oga",".mp3",...]):
+        print(entry.id)  # missing
+```
+
+Worth re-running periodically — easy to introduce more drift when
+new entries land.
+
+### Library state at end of cycle
+
+**102 clips, 11 categories**, all with full 6-track embeddings:
+
+| Category | Clips |
+|---|---|
+| amphibians_reptiles | 10 |
+| birds               | 16 |
+| insects             |  5 |
+| mammals             | 14 |
+| mechanical          |  8 |
+| music               | 13 |
+| nature              |  3 |
+| space               | 14 |
+| speeches            |  3 |
+| synthetic           |  8 |
+| underwater          |  8 |
+
+The wiki (`Home`, `Render-Modes`, `Embedding-Methods`, `Cookbook`,
+`API-Reference`) was also updated to match — including the
+Light-painting render-mode section and the new CLAP embedding-methods
+section that had been missing.
+
 ## v0.11.0 — Post-incident hardening + first interactive control (2026-05-24)
 
 Three back-to-back deploys after the 0.10.0 recovery, each a focused
