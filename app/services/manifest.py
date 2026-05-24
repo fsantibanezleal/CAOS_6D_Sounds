@@ -71,26 +71,43 @@ class ManifestService:
     # ------------------------------------------------------------------ #
 
     def get_library(self) -> SoundLibrary:
+        """Return the catalog, reloading from disk if the cache has expired.
+
+        Cache-miss / staleness reads from disk synchronously — acceptable
+        because the manifest is small (kilobytes), the TTL keeps reads
+        rare, and an empty/corrupted manifest falls back to a stub.
+        """
         if self._cache is None or self._is_stale():
             self._cache = self._load()
             self._loaded_at = time.time()
         return self._cache
 
     def get_clip(self, clip_id: str):
+        """Return one clip's metadata or ``None`` if the id is unknown.
+
+        Linear scan because the catalog is small (~100 clips) and the
+        scan happens at most once per HTTP request — building a dict
+        index here would add memory + maintenance cost without a
+        measurable win.
+        """
         for clip in self.get_library().clips:
             if clip.id == clip_id:
                 return clip
         return None
 
     async def load_embedding(self, clip_id: str) -> dict[str, Any] | None:
+        """Load one clip's per-frame embedding payload from disk.
+
+        Returns ``None`` if the embedding file is missing — the route
+        translates that to a 404. Embedding JSONs are 100s of KB; the
+        read + JSON parse happens on a worker thread so the uvicorn
+        event loop stays free for other requests while disk I/O is in
+        flight. The manifest cache stays sync because it's small and
+        hit at most once per TTL window.
+        """
         path = self._settings.embeddings_path / f"{clip_id}.json"
         if not path.is_file():
             return None
-        # Embedding JSONs are 100s of KB; run the read+parse on a worker
-        # thread so async-def callers (the API route) don't stall the
-        # event loop while the disk is slow or another request is in
-        # flight. The cache for the manifest itself stays sync because
-        # it's hit at most once per TTL window.
         return await asyncio.to_thread(_read_json, path)
 
     # ------------------------------------------------------------------ #
@@ -115,10 +132,17 @@ class ManifestService:
 
 
 def _read_json(path: Path) -> dict[str, Any]:
+    """Synchronous JSON read — called via ``asyncio.to_thread`` so it
+    doesn't block the event loop. Caller is responsible for `is_file()`."""
     with path.open("r", encoding="utf-8") as fh:
         return json.load(fh)
 
 
 @lru_cache
 def get_manifest_service() -> ManifestService:
+    """FastAPI dependency factory — returns the process-wide singleton.
+
+    ``lru_cache`` makes this safe to call from every request handler
+    without re-instantiating the service or re-reading settings.
+    """
     return ManifestService(get_settings())

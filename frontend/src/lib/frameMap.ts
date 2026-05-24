@@ -34,6 +34,20 @@ export interface FrameMap {
   sizes: Float32Array;     // shape (numFrames,)
 }
 
+/**
+ * Build the per-frame mapping for one clip.
+ *
+ * Reads the user's axis assignment (which dimension drives X / Y / Z /
+ * color / size) from the input, then produces three flat typed arrays
+ * that every render mode iterates over identically.
+ *
+ * Defensive fallbacks: a missing per-frame row or a missing axis value
+ * collapses to 0.5 — that lands the frame at the world origin with a
+ * mid-range size + colour rather than producing NaN coordinates (which
+ * would freeze the WebGL pipeline). The defensive defaults exist
+ * because embeddings come from disk and a malformed file should not
+ * crash the canvas.
+ */
 export function buildFrameMap(input: FrameMapInput): FrameMap {
   const {
     values,
@@ -68,6 +82,28 @@ export function buildFrameMap(input: FrameMapInput): FrameMap {
   return { positions, colors, sizes };
 }
 
+/**
+ * Compute the visible-window indices for the current playhead.
+ *
+ * Every animated render mode (spheres, smoke, bursts, …) needs to
+ * answer the same two questions every frame: where is the cursor (the
+ * frame at the current audio playhead), and what range of trailing
+ * frames is still visible.
+ *
+ * - ``cursor`` — the latest frame at or before the playhead. Clamped
+ *   to the last valid index so the cursor never reads past the
+ *   embedding array.
+ * - ``trailFrames`` — how many frames back are kept visible, derived
+ *   from the user's trail-length slider. Floored to ``minTrailFrames``
+ *   so very short trail settings still render *something*; without the
+ *   floor a 0.5 s trail on a 50 ms hop would only show 10 frames and
+ *   modes like Comet would lose their visual signature.
+ * - ``start`` — the first visible frame index (clamped to 0).
+ *
+ * For light-painting mode the caller ignores ``start`` and draws
+ * everything from 0 to ``cursor`` (the "accumulate every visited
+ * frame" semantics).
+ */
 export function computeWindow(
   currentTime: number,
   hopSeconds: number,
