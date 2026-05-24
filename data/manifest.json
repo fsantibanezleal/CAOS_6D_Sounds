@@ -1,6 +1,6 @@
 {
   "version": "0.1.0",
-  "generated_at": "2026-04-30T17:21:40Z",
+  "generated_at": "2026-05-24T12:39:15Z",
   "feature_names": [
     "rms",
     "zero_crossing_rate",
@@ -34,8 +34,7 @@
     "pca",
     "tsne",
     "umap",
-    "tonnetz",
-    "yamnet"
+    "tonnetz"
   ],
   "categories": [
     {
@@ -1383,6 +1382,110 @@
       "tags": [
         "nasa",
         "apollo"
+      ]
+    },
+    {
+      "id": "space-apollo-eagle-landed",
+      "title_en": "Apollo 11 \u2014 \"The Eagle has landed\"",
+      "title_es": "Apolo 11 \u2014 \"El \u00c1guila ha aterrizado\"",
+      "category": "space",
+      "subcategory": "apollo",
+      "duration_seconds": 5.331,
+      "sample_rate": 22050,
+      "audio_path": "sounds/space/space-apollo-eagle-landed.mp3",
+      "embedding_path": "embeddings/space-apollo-eagle-landed.json",
+      "source": "NASA",
+      "license": "Public Domain",
+      "attribution": "NASA, 1969 (U.S. Government work)",
+      "tags": [
+        "nasa",
+        "apollo",
+        "voice",
+        "history"
+      ]
+    },
+    {
+      "id": "space-cassini-enceladus",
+      "title_en": "Cassini \u2014 radio emission from Enceladus",
+      "title_es": "Cassini \u2014 emisi\u00f3n de radio desde Enc\u00e9lado",
+      "category": "space",
+      "subcategory": "saturn",
+      "duration_seconds": 11.084,
+      "sample_rate": 22050,
+      "audio_path": "sounds/space/space-cassini-enceladus.ogg",
+      "embedding_path": "embeddings/space-cassini-enceladus.json",
+      "source": "NASA",
+      "license": "Public Domain",
+      "attribution": "NASA/JPL (Cassini magnetometer)",
+      "tags": [
+        "nasa",
+        "cassini",
+        "enceladus",
+        "saturn",
+        "sonification"
+      ]
+    },
+    {
+      "id": "space-cassini-jupiter",
+      "title_en": "Cassini RPWS \u2014 Jupiter (2001-01-04 flyby)",
+      "title_es": "Cassini RPWS \u2014 J\u00fapiter (sobrevuelo 04-01-2001)",
+      "category": "space",
+      "subcategory": "jupiter",
+      "duration_seconds": 87.214,
+      "sample_rate": 22050,
+      "audio_path": "sounds/space/space-cassini-jupiter.ogg",
+      "embedding_path": "embeddings/space-cassini-jupiter.json",
+      "source": "NASA",
+      "license": "Public Domain",
+      "attribution": "NASA/JPL/University of Iowa (Cassini RPWS)",
+      "tags": [
+        "nasa",
+        "cassini",
+        "jupiter",
+        "radio",
+        "sonification"
+      ]
+    },
+    {
+      "id": "space-cassini-saturn-radio-2",
+      "title_en": "Cassini \u2014 Saturn radio emissions, segment 2",
+      "title_es": "Cassini \u2014 emisiones de radio de Saturno, segmento 2",
+      "category": "space",
+      "subcategory": "saturn",
+      "duration_seconds": 73.561,
+      "sample_rate": 22050,
+      "audio_path": "sounds/space/space-cassini-saturn-radio-2.ogg",
+      "embedding_path": "embeddings/space-cassini-saturn-radio-2.json",
+      "source": "NASA",
+      "license": "Public Domain",
+      "attribution": "NASA/JPL/University of Iowa (Cassini RPWS)",
+      "tags": [
+        "nasa",
+        "cassini",
+        "saturn",
+        "radio",
+        "sonification"
+      ]
+    },
+    {
+      "id": "space-cassini-saturn-radio",
+      "title_en": "Cassini \u2014 Saturn radio emissions (sonified)",
+      "title_es": "Cassini \u2014 emisiones de radio de Saturno (sonificadas)",
+      "category": "space",
+      "subcategory": "saturn",
+      "duration_seconds": 13.003,
+      "sample_rate": 22050,
+      "audio_path": "sounds/space/space-cassini-saturn-radio.ogg",
+      "embedding_path": "embeddings/space-cassini-saturn-radio.json",
+      "source": "NASA",
+      "license": "Public Domain",
+      "attribution": "NASA/JPL/University of Iowa (Cassini RPWS)",
+      "tags": [
+        "nasa",
+        "cassini",
+        "saturn",
+        "radio",
+        "sonification"
       ]
     },
     {
