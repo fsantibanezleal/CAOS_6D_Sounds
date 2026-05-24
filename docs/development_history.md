@@ -3,6 +3,78 @@
 Newest-first log of the design decisions that shaped Auralis. Each entry
 records what changed, why, and the alternative we considered.
 
+## v0.11.0 — Post-incident hardening + first interactive control (2026-05-24)
+
+Three back-to-back deploys after the 0.10.0 recovery, each a focused
+single-axis cycle:
+
+### Typing hygiene (PR #116 → #117)
+
+Removed 22 `as any` casts from the 9 Trail/Visualization components.
+With the now-pinned R3F 8.18.0 / three 0.169.0 / @types/three 0.169.0
+stack, the underlying types compose cleanly:
+
+- `useRef<THREE.InstancedMesh>(null)` is assignable to `<instancedMesh
+  ref={...}>` without coercion.
+- `args={[undefined, material, count]}` is the correct shape for the
+  `InstancedMesh` ctor — no `undefined as any` needed.
+- The single remaining material prop without typed counterpart is
+  `vertexAlphas`, now spread as `Record<string, unknown>` instead of
+  `any` so the escape hatch is narrower.
+
+One legitimate `as any` survives: `(window as any).webkitAudioContext`
+in `lib/audioBus.ts` (Safari legacy fallback).
+
+### NASA category expansion (PR #118 → #119)
+
+Closed the trailing remainder of the audit's #43 with 5 new clips from
+Wikimedia Commons (PD): three Cassini sonifications at Saturn (incl.
+Enceladus), one Cassini at Jupiter (2001 flyby), and the Apollo 11 "the
+Eagle has landed" voice clip. Library: 82 → 87. New space subcategories
+visible in the UI: `saturn` (3), `jupiter` (1).
+
+Two further candidates (Ingenuity helicopter, MOXIE) were attempted and
+removed when the ingest step failed — Wikimedia ships both as OGG-wrapped
+FLAC, and our `libsndfile` / `audioread` pipeline can't decode that
+without ffmpeg transcoding. Filed as #120 follow-up.
+
+Side-effect: the global PCA / t-SNE / UMAP projections re-fit when the
+corpus changes, so all 82 existing embedding JSONs updated too. Manifest
+diff is large (~99 files) and expected.
+
+### First interactive control: playback speed + preserve-pitch (PR #121 → #122)
+
+Issue #49 originally called for AudioWorklet PSOLA / phase-vocoder DSP.
+Shipped the pragmatic half first via standard HTMLAudioElement APIs:
+
+- **Speed slider** 0.25× .. 4× (double-click to reset) bound to
+  `HTMLAudioElement.playbackRate`. The visualization stays driven by the
+  canonical embedding, so the trajectory you watch is fixed — only the
+  audio timing changes. Slowing down lets the user see exactly which
+  segment of the 6D path corresponds to which sound.
+- **Preserve-pitch checkbox** — on by default (browser phase-vocodes so
+  slowing the clip does not drop pitch). Toggle off for tape-style
+  behavior (slow = lower pitch, fast = higher).
+
+Implementation: top-level non-persisted store fields (these should reset
+to defaults on each page load, like `currentTime`). An effect in
+`AudioPlayer` re-applies both after each clip change because
+`HTMLAudioElement.load()` resets `playbackRate` and `preservesPitch`
+back to 1.0 / true.
+
+The AudioWorklet path for **pitch-shift independent of rate** stays open
+as #123 follow-up — that's ~150-300 LOC of careful DSP and deserves its
+own focused cycle.
+
+### Why three small releases instead of one bundle
+
+Each cycle is a complete, independently-deployable unit. Bundling them
+into one PR would have hidden the typing pass behind the NASA data
+churn (the embedding JSON diffs would dominate the review) and would
+have delayed the interactive control behind the data ingest. Shipping
+each as its own develop→main PR keeps the post-merge bookkeeping clear
+and matches the "frequent small PRs" rule for this repo.
+
 ## v0.10.0 — Black-screen incident + fix + features restored (2026-05-23)
 
 A multi-hour incident: every page load black-screened with a TypeError
