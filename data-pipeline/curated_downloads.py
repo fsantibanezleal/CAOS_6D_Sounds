@@ -96,16 +96,21 @@ CURATION: list[CurationEntry] = [
         tags=("songbird",),
     ),
     CurationEntry(
+        # Common Nightingale is the canonical species but the only PD
+        # recording on Wikimedia (`Common Nightingale's song 1.ogg`) is
+        # 27 MB — over our 24 MB per-file cap. Switched to its close
+        # relative Luscinia luscinia (Thrush Nightingale, XC537550),
+        # also evocative night-singer, only 0.6 MB.
         id="bird-nightingale",
         category="birds",
         subcategory="songbirds",
-        title_en="Common Nightingale song",
-        title_es="Canto del ruiseñor común",
-        source="Wikimedia Commons",
-        license="CC-BY-SA-3.0",
-        attribution="Wikimedia Commons contributors",
-        wm_title="Common Nightingale's song 1.ogg",
-        tags=("songbird",),
+        title_en="Thrush Nightingale (Luscinia luscinia) song",
+        title_es="Canto del ruiseñor pechiazul (Luscinia luscinia)",
+        source="Wikimedia Commons / Xeno-canto",
+        license="CC-BY-NC-SA-3.0",
+        attribution="Xeno-canto contributor XC537550 — see file page on Wikimedia Commons",
+        wm_title="Luscinia luscinia - Thrush Nightingale XC537550.mp3",
+        tags=("songbird", "nightingale"),
     ),
     CurationEntry(
         id="bird-house-sparrow",
