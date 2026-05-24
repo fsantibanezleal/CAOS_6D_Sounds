@@ -3,7 +3,15 @@
     "library_title": "No se pudo cargar la biblioteca",
     "audio_title": "Error de audio",
     "retry": "Reintentar",
-    "dismiss": "Cerrar"
+    "dismiss": "Cerrar",
+    "library_load_unknown": "No se pudo cargar la biblioteca.",
+    "embedding_load_failed": "Falló la carga del embedding: {{msg}}",
+    "embedding_load_unknown": "No se pudo cargar el embedding del clip.",
+    "audio_network": "error de red",
+    "audio_decode": "error al decodificar audio",
+    "audio_unsupported": "formato de audio no soportado",
+    "unknown": "error desconocido",
+    "playback_failed": "Falló la reproducción ({{reason}})."
   },
   "app": {
     "title": "Auralis",
