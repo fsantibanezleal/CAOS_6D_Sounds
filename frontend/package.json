@@ -11,22 +11,22 @@
     "typecheck": "tsc -b --noEmit"
   },
   "dependencies": {
-    "@react-three/drei": "^9.114.0",
-    "@react-three/fiber": "^8.17.10",
+    "@react-three/drei": "9.122.0",
+    "@react-three/fiber": "8.18.0",
     "@react-three/postprocessing": "2.19.0",
     "i18next": "^23.16.4",
     "i18next-browser-languagedetector": "^8.0.0",
-    "postprocessing": "^6.39.1",
+    "postprocessing": "6.39.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-i18next": "^15.1.1",
-    "three": "^0.169.0",
+    "three": "0.169.0",
     "zustand": "^5.0.1"
   },
   "devDependencies": {
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
-    "@types/three": "^0.169.0",
+    "@types/three": "0.169.0",
     "@vitejs/plugin-react": "^4.3.3",
     "typescript": "^5.6.3",
     "vite": "^5.4.10"
