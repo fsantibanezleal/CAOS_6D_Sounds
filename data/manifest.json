@@ -1,6 +1,6 @@
 {
   "version": "0.1.0",
-  "generated_at": "2026-05-24T20:48:09Z",
+  "generated_at": "2026-05-24T21:16:47Z",
   "feature_names": [
     "rms",
     "zero_crossing_rate",
@@ -1511,6 +1511,45 @@
       ]
     },
     {
+      "id": "space-mars-microphone-clean",
+      "title_en": "Perseverance microphone \u2014 Mars sounds (rover noise removed)",
+      "title_es": "Micr\u00f3fono de Perseverance \u2014 sonidos marcianos sin ruido del rover",
+      "category": "space",
+      "subcategory": "mars",
+      "duration_seconds": 18.018,
+      "sample_rate": 22050,
+      "audio_path": "sounds/space/space-mars-microphone-clean.ogg",
+      "embedding_path": "embeddings/space-mars-microphone-clean.json",
+      "source": "NASA",
+      "license": "Public Domain",
+      "attribution": "NASA/JPL-Caltech (U.S. Government work)",
+      "tags": [
+        "nasa",
+        "mars",
+        "perseverance",
+        "denoised"
+      ]
+    },
+    {
+      "id": "space-mars-microphone",
+      "title_en": "Perseverance microphone \u2014 first sounds from Mars",
+      "title_es": "Micr\u00f3fono de Perseverance \u2014 primeros sonidos de Marte",
+      "category": "space",
+      "subcategory": "mars",
+      "duration_seconds": 18.018,
+      "sample_rate": 22050,
+      "audio_path": "sounds/space/space-mars-microphone.ogg",
+      "embedding_path": "embeddings/space-mars-microphone.json",
+      "source": "NASA",
+      "license": "Public Domain",
+      "attribution": "NASA/JPL-Caltech (U.S. Government work)",
+      "tags": [
+        "nasa",
+        "mars",
+        "perseverance"
+      ]
+    },
+    {
       "id": "space-mars-moxie",
       "title_en": "MOXIE oxygen experiment running on Mars",
       "title_es": "Experimento de ox\u00edgeno MOXIE operando en Marte",
@@ -1529,6 +1568,46 @@
         "perseverance",
         "moxie",
         "instrument"
+      ]
+    },
+    {
+      "id": "space-mars-supercam-wind",
+      "title_en": "Perseverance SuperCam \u2014 wind on Mars",
+      "title_es": "Perseverance SuperCam \u2014 viento en Marte",
+      "category": "space",
+      "subcategory": "mars",
+      "duration_seconds": 39.959,
+      "sample_rate": 22050,
+      "audio_path": "sounds/space/space-mars-supercam-wind.ogg",
+      "embedding_path": "embeddings/space-mars-supercam-wind.json",
+      "source": "NASA",
+      "license": "Public Domain",
+      "attribution": "NASA/JPL-Caltech (U.S. Government work)",
+      "tags": [
+        "nasa",
+        "mars",
+        "perseverance",
+        "wind"
+      ]
+    },
+    {
+      "id": "space-voyager-greetings",
+      "title_en": "Voyager Golden Record \u2014 Greetings in 55 languages",
+      "title_es": "Disco Dorado de Voyager \u2014 Saludos en 55 idiomas",
+      "category": "space",
+      "subcategory": "voyager",
+      "duration_seconds": 265.172,
+      "sample_rate": 22050,
+      "audio_path": "sounds/space/space-voyager-greetings.mp3",
+      "embedding_path": "embeddings/space-voyager-greetings.json",
+      "source": "NASA",
+      "license": "Public Domain",
+      "attribution": "NASA, 1977 (U.S. Government work)",
+      "tags": [
+        "nasa",
+        "voyager",
+        "golden-record",
+        "human-voice"
       ]
     },
     {
