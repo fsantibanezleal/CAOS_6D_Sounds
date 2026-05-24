@@ -211,14 +211,14 @@ export function BurstsTrail({
   });
 
   return (
-    <lineSegments ref={linesRef as any} frustumCulled={false}>
-      <bufferGeometry ref={geomRef as any} />
+    <lineSegments ref={linesRef} frustumCulled={false}>
+      <bufferGeometry ref={geomRef} />
       <lineBasicMaterial
         vertexColors
         transparent
         depthWrite={false}
         blending={THREE.AdditiveBlending}
-        {...({ vertexAlphas: true } as any)}
+        {...({ vertexAlphas: true } as Record<string, unknown>)}
       />
     </lineSegments>
   );

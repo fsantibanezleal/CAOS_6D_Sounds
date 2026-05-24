@@ -277,8 +277,8 @@ export function FlowfieldTrail({
 
   return (
     <instancedMesh
-      ref={meshRef as any}
-      args={[undefined as any, material as any, particleCount]}
+      ref={meshRef}
+      args={[undefined, material, particleCount]}
       frustumCulled={false}
     >
       <planeGeometry args={[2, 2]} />
