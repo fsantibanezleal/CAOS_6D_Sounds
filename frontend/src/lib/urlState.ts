@@ -31,7 +31,8 @@ const VALID_RENDER_MODES: ReadonlySet<RenderMode> = new Set([
   "comet",
   "tube",
   "galaxy",
-  "flowfield"
+  "flowfield",
+  "lightpainting"
 ]);
 
 /** Encode a minimal state object as a URL-safe base64 string. */
