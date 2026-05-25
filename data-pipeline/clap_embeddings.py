@@ -109,8 +109,13 @@ def clap_audio_embedding(model_and_proc, y: np.ndarray, sr: int) -> np.ndarray:
     except TypeError:
         inputs = processor(audios=waveform, sampling_rate=CLAP_SR, return_tensors="pt")
     with torch.no_grad():
-        audio_embed = model.get_audio_features(**inputs)
-    # Shape: (1, 512) -> (512,)
+        audio_out = model.get_audio_features(**inputs)
+    # transformers 4.x returned a (1, 512) tensor directly;
+    # transformers 5.x returns a BaseModelOutputWithPooling whose
+    # `pooler_output` holds the same vector. Handle both.
+    audio_embed = (
+        audio_out.pooler_output if hasattr(audio_out, "pooler_output") else audio_out
+    )
     return audio_embed.squeeze(0).cpu().numpy().astype(np.float32)
 
 
@@ -126,7 +131,10 @@ def clap_text_embedding(model_and_proc, prompt: str) -> np.ndarray:
     model, processor = model_and_proc
     inputs = processor(text=[prompt], return_tensors="pt", padding=True)
     with torch.no_grad():
-        text_embed = model.get_text_features(**inputs)
+        text_out = model.get_text_features(**inputs)
+    text_embed = (
+        text_out.pooler_output if hasattr(text_out, "pooler_output") else text_out
+    )
     return text_embed.squeeze(0).cpu().numpy().astype(np.float32)
 
 
