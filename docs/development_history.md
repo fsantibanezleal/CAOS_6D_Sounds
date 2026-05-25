@@ -3,6 +3,94 @@
 Newest-first log of the design decisions that shaped Auralis. Each entry
 records what changed, why, and the alternative we considered.
 
+## v0.14.0 — CLAP 7th track + test expansion + lightpainting URL fix (2026-05-25)
+
+A 10-PR block focused on correctness and offline readiness for #48
+phase 2 (CLAP text-prompt UI).
+
+### CLAP (laion/clap-htsat-unfused) enabled on every clip
+
+torch (CPU wheel from the official PyTorch index) + transformers 5.x
+installed in the local pipeline venv, re-ingest produced the CLAP
+audio embedding for every clip. The manifest now reports 7
+embedding methods:
+
+  features, pca, tsne, umap, tonnetz, yamnet, **clap**
+
+`/api/clip/<id>/embedding` carries the new track; the UI's track
+selector shows it automatically. The fitted PCA mean + components +
+per-axis [0, 1] ranges are persisted to
+`data/projections/clap.json` (~101 KB). Combined with the YAMNet
+equivalent persisted in 0.13.0, all of the offline preparation for
+the future text-prompt endpoint is now committed.
+
+### Two transformers-5.x compat fixes for CLAP
+
+Discovered when running the actual ingest:
+
+1. `ClapProcessor(audios=…)` was deprecated in 4.x and removed
+   outright in 5.x — renamed to `audio=`. Fixed by trying the new
+   keyword first and falling back to the old one for 4.x
+   compatibility.
+2. `ClapModel.get_audio_features(…)` used to return a (1, 512)
+   tensor; in 5.x it returns `BaseModelOutputWithPooling`. Fixed
+   by reading `.pooler_output` if present, falling back to the bare
+   object otherwise. Same fix on `get_text_features` for symmetry.
+
+### Test expansion: 5 backend tests → 56 across the stack
+
+Backend (`tests/`):
+
+- `test_smoke.py` — kept the original 5 happy-path tests
+- `test_endpoints.py` — 11 negative-path + invariant tests (404
+  handling, every track agrees on `num_frames`, every declared
+  method appears in each clip's payload, audio content-type matches
+  extension, unique clip ids, no empty titles, projection-model
+  schema check)
+- `test_pipeline_helpers.py` — 6 unit tests for
+  `normalize01_with_range`, `project_pca_with_model`,
+  `save_projection_model`, `needs_transcoding`. `pytest.importorskip`
+  gate so the module skips cleanly in the lean backend venv (no
+  numpy / scikit-learn there).
+
+Frontend (`frontend/src/lib/`):
+
+- `frameMap.test.ts` — 11 tests on the foundational `buildFrameMap`
+  + `computeWindow` helpers used by every render mode (axis
+  mapping, defensive 0.5 fallback, trail-window math).
+- `urlState.test.ts` — 23 tests on the shareable-URL codec (round
+  trip, validation hardening, render-mode whitelist parity).
+
+CI runs all of them via `pnpm test` after typecheck and before
+build.
+
+### Bug found writing the tests
+
+The `it.each` parity test for render-mode whitelist parity caught
+that `lightpainting` was missing from `VALID_RENDER_MODES` in
+`urlState.ts` since v0.8.0 — shared URLs that included
+`renderMode: "lightpainting"` silently dropped the mode on decode,
+the recipient saw the default. Fixed; the parity test will catch
+this kind of drift the next time a render mode is added.
+
+### Polish
+
+- Help-modal step list refreshed to mention autoplay, all 7
+  embedding tracks, all 10 render modes, and the new playback-speed
+  + pitch-shift sliders. Both EN and ES.
+- `CONTRIBUTING.md` + `SECURITY.md` added — standard community
+  files, small and honest about the project being a personal one
+  with no SLA.
+
+### Why I held off on shipping the text-prompt endpoint with this
+
+The offline preparation is done — projection model on disk, ingest
+helpers all written — but the runtime endpoint still requires the
+deployment decision around hosting a 1.3 GB torch + transformers +
+CLAP install. The three paths offered (bigger VPS in process,
+separate service behind nginx, HF Inference API) each have real
+trade-offs that belong outside an autonomous shipping cycle.
+
 ## v0.12.0 — Data integrity sweep + ffmpeg transcoding + complete i18n (2026-05-24)
 
 A six-PR pass to bring everything to "actually working end-to-end"
