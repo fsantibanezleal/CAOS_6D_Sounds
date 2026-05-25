@@ -154,11 +154,11 @@
     "title": "Cómo usar Auralis",
     "intro": "Auralis convierte cada clip de audio en un punto que se mueve por un espacio de seis dimensiones, y lo proyecta en pantalla como una estela 3D donde el color y el tamaño codifican las dimensiones restantes.",
     "steps": [
-      "Elige un clip en la biblioteca de la izquierda.",
-      "Presiona reproducir. La visualización avanza en sincronía con el audio.",
-      "En el panel derecho elige la pista 6D (características interpretables, PCA, t-SNE o UMAP).",
+      "Elige un clip en la biblioteca de la izquierda — la reproducción se inicia automáticamente.",
+      "En el panel derecho cambia la pista 6D: características espectrales interpretables, PCA, t-SNE, UMAP, Tonnetz (armónica), YAMNet (CNN de AudioSet) o CLAP (lengua-audio).",
+      "Elige el modo de render: esferas, humo, ráfagas, constelación, aurora, cometa, tubo, galaxia, flujo o pintura de luz. La misma trayectoria se ve muy distinta en cada uno.",
       "Asocia cualquier dimensión a X / Y / Z, al mapa de color o al tamaño. El mapeo es en vivo — cámbialo mientras suena.",
-      "Ajusta el largo de la estela para controlar cuánto persiste el rastro."
+      "Ajusta el largo de la estela, la velocidad de reproducción (con o sin preservar el tono) y el slider de pitch shift (±12 semitonos, independiente de la velocidad) al final del panel."
     ],
     "shortcuts": "Atajos de teclado",
     "shortcut_space": "Espacio — reproducir / pausar",

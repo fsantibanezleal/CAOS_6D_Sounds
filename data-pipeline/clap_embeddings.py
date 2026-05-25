@@ -101,7 +101,13 @@ def clap_audio_embedding(model_and_proc, y: np.ndarray, sr: int) -> np.ndarray:
         import librosa
         waveform = librosa.resample(waveform, orig_sr=sr, target_sr=CLAP_SR)
 
-    inputs = processor(audios=waveform, sampling_rate=CLAP_SR, return_tensors="pt")
+    # `audios=` was the keyword in transformers 4.x; renamed to `audio=`
+    # in 5.x and the old name was removed (not just deprecated). Try the
+    # new name first, fall back to the old one for 4.x compat.
+    try:
+        inputs = processor(audio=waveform, sampling_rate=CLAP_SR, return_tensors="pt")
+    except TypeError:
+        inputs = processor(audios=waveform, sampling_rate=CLAP_SR, return_tensors="pt")
     with torch.no_grad():
         audio_embed = model.get_audio_features(**inputs)
     # Shape: (1, 512) -> (512,)

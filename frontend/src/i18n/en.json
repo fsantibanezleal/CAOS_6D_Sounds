@@ -154,11 +154,11 @@
     "title": "How to use Auralis",
     "intro": "Auralis turns each audio clip into a moving point in a six-dimensional space and projects it onto your screen as a 3D trail with color and size encoding the remaining dimensions.",
     "steps": [
-      "Pick a clip from the library on the left.",
-      "Press play. The visualization advances in lock-step with the audio.",
-      "Use the panel on the right to choose which 6D track to use (interpretable features, PCA, t-SNE, UMAP).",
-      "Map any dimension to X / Y / Z, the colormap, or the sphere size. The mapping is live — change it while the audio plays.",
-      "Adjust the trail length to control how long past frames remain visible."
+      "Pick a clip from the library on the left — playback starts automatically.",
+      "Use the panel on the right to switch the 6D track: interpretable spectral features, PCA, t-SNE, UMAP, Tonnetz (harmonic), YAMNet (deep AudioSet), or CLAP (language-audio).",
+      "Pick the render mode: spheres, smoke, bursts, constellation, aurora, comet, tube, ribbon, galaxy, flowfield, or light-painting. The same trajectory looks very different in each.",
+      "Map any dimension to X / Y / Z, color, or sphere size. The mapping is live — change it while the audio plays.",
+      "Adjust the trail length, playback speed (with or without preserved pitch), and the pitch-shift slider (±12 semitones, independent of speed) at the bottom of the panel."
     ],
     "shortcuts": "Keyboard shortcuts",
     "shortcut_space": "Space — play / pause",
