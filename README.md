@@ -1,5 +1,9 @@
 # Auralis — 6D audio visualization
 
+[![CI](https://img.shields.io/github/actions/workflow/status/fsantibanezleal/CAOS_6D_Sounds/ci.yml?branch=main&label=CI)](https://github.com/fsantibanezleal/CAOS_6D_Sounds/actions)
+[![License](https://img.shields.io/github/license/fsantibanezleal/CAOS_6D_Sounds)](LICENSE)
+[![Live demo](https://img.shields.io/badge/demo-live-2ea44f)](https://auralis.fasl-work.com)
+
 > *Real-time visualization of audio in a six-dimensional embedding space.*
 
 Auralis turns each sound clip into a moving point in a six-dimensional
