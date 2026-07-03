@@ -1,84 +1,49 @@
-# Contributing to Auralis
+# Contributing
 
-Thanks for the interest. This is a small personal project, so the bar
-for contributions is "useful and well-explained" rather than process-
-heavy.
+Thanks for your interest in this project. It is maintained by Felipe Santibanez-Leal. Contributions,
+issues, and suggestions are welcome.
 
-## How to file an issue
+## Reporting issues
 
-- **Bugs**: include browser + OS, what you did, what you expected,
-  what happened. A screenshot or short screen-record of the canvas
-  helps a lot — the rendering modes have subtle visual states that
-  are hard to describe in words.
-- **Feature ideas**: explain the use case first, the implementation
-  is a separate conversation. Most accepted features have a short
-  rationale ("I wanted to do X with the visualization but couldn't")
-  rather than a generic improvement claim.
-- **Audio clip suggestions**: the curation list lives in
-  [`data-pipeline/curated_downloads.py`](data-pipeline/curated_downloads.py).
-  PD or CC-licensed sources only; under 24 MB per file (the
-  `MAX_BYTES` cap stays so the repo doesn't bloat); link the source
-  page so the license can be verified.
+Please open a GitHub issue before starting non-trivial work, so intent is visible and effort is not
+duplicated. A good issue states:
 
-## How to send a pull request
+- What you observed (or want), with steps to reproduce for a bug.
+- The environment (OS, versions) when relevant.
+- One logical topic per issue.
 
-The repo follows a three-tier branch model that's documented in
-[`docs/development_history.md`](docs/development_history.md): work on
-a `task/<slug>` branch, PR to `develop`, then `develop` → `main`
-when a release is ready. For an outside contributor: open the PR
-against `develop`. The maintainer handles the second hop.
+## Development flow
 
-Before you push, run the local checks the CI runs:
+This project uses a three-level branch flow:
 
-```bash
-# Backend
-.venv/bin/pytest tests/ -q
+1. Branch from `develop` as `task/<short-slug>`.
+2. Commit in small, focused units (one logical change per commit).
+3. Open a pull request from your `task/<slug>` branch **into `develop`** (never straight into `main`).
+4. `develop` is promoted to `main` via its own pull request when a change is release-ready.
 
-# Frontend
-cd frontend
-pnpm typecheck
-pnpm test
-pnpm build
-```
+`main` is the deployed/released branch; it is never committed to directly.
 
-All four should pass on green. If any of them fails on `develop`
-before your change, that's already a bug — say so in the PR.
+## Pull requests
 
-## Code style
+- Reference the issue it addresses (for example `Fixes #123`).
+- Describe what changed and how you verified it.
+- Keep pull requests small and frequent rather than large and batched.
+- Do not disable commit hooks or force-push shared branches.
 
-There's no enforced linter beyond TypeScript's strict mode and
-Python's standard `ruff`-style defaults. The conventions that
-matter:
+## Code conventions
 
-- **Docstring-the-WHY, not the WHAT.** If a function's name and
-  signature are obvious, leave the body uncommented. Save the
-  prose for surprising decisions or non-obvious invariants
-  (`buildFrameMap` defaulting missing axis values to 0.5 to
-  prevent NaN gl_Position is a good example).
-- **Two locales stay in sync.** Every UI string goes through
-  `t()`, with matching keys in `frontend/src/i18n/en.json` AND
-  `es.json`. A CI parity check is on the roadmap.
-- **No co-author trailers** on commits or PRs.
-- **Three.js stack is exact-pinned.** See
-  [`frontend/DEPENDENCIES.md`](frontend/DEPENDENCIES.md) for why —
-  the v0.10.0 incident in development history is the cautionary tale.
+- Code, identifiers, comments, and commit messages are written in **English**.
+- User-facing UI strings may be localized (bilingual where the product is bilingual).
+- Match the style of the surrounding code (naming, formatting, comment density).
+- Add or update tests and documentation alongside the change.
 
 ## Local setup
 
-See [`README.md`](README.md#quickstart) for the venv + frontend
-install commands, and the
-[Local development wiki page](https://github.com/fsantibanezleal/CAOS_6D_Sounds/wiki/Local-Development)
-for the rest of the dev loop.
+See the project `README.md` for how to install dependencies and run the app and its tests locally.
+Dependencies are installed into an isolated environment (a project-local virtualenv for Python, a local
+`node_modules` for Node), never globally.
 
-## Communicating
+## License of contributions
 
-Open an issue or comment on an existing PR — easier than email and
-keeps the conversation visible. There's no Discord, no Slack, no
-mailing list — by design.
-
-## License
-
-By contributing you agree your code ships under the MIT license that
-covers the rest of the repo. Audio clips remain under their original
-upstream license; check `data/sounds/<category>/<id>.meta.json` for
-the per-clip attribution.
+By contributing, you agree that your contributions are licensed under the same license as this repository
+(see `LICENSE`).
