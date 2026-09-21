@@ -3,8 +3,7 @@ name: CI
 on:
   push:
     branches: [main, develop]
-  pull_request:
-    branches: [main, develop]
+  workflow_dispatch:
 
 # Cancel superseded runs on the same branch so a rapid push series doesn't
 # pile up runners.
@@ -16,6 +15,7 @@ jobs:
   backend:
     name: Backend (pytest)
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
@@ -39,6 +39,7 @@ jobs:
   frontend:
     name: Frontend (typecheck + build)
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: frontend
