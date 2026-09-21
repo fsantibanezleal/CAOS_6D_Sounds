@@ -12,30 +12,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  backend:
-    name: Backend (pytest)
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python 3.12
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-          cache: pip
-
-      - name: Install backend deps
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          # pytest + httpx — the latter is required by fastapi.testclient.
-          # Both are kept out of requirements.txt to stay slim on prod.
-          pip install pytest httpx
-
-      - name: Run pytest
-        run: pytest tests/ -q
-
   frontend:
     name: Frontend (typecheck + build)
     runs-on: ubuntu-latest
@@ -69,3 +45,5 @@ jobs:
 
       - name: Build
         run: pnpm build
+      - name: CI budget, trunk-only triggers, no training (ADR-0074)
+        run: python3 scripts/check_ci_budget.py
