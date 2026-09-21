@@ -47,3 +47,4 @@ jobs:
         run: pnpm build
       - name: CI budget, trunk-only triggers, no training (ADR-0074)
         run: python3 scripts/check_ci_budget.py
+        working-directory: .
